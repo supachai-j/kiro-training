@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiro Training — Course (EN)</title>
+<meta name="description" content="Self-paced internal course on AWS Kiro: specs, steering, hooks, MCP, and Powers.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%91%BB%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="lang-en">
+
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="ghost">👻</span> Kiro Training</a>
+  <span class="spacer"></span>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="slides/training-en.html">Slides</a>
+    <a href="course-th.html">ภาษาไทย</a>
+  </nav>
+  <button class="btn" onclick="toggleTheme()" aria-label="Toggle theme"><span id="theme-label">☾</span></button>
+</header>
+
+<div class="course-shell">
+  <aside class="toc">
+    <strong>Course</strong>
+    <a href="#intro">Overview</a>
+    <strong>Modules</strong>
+    <a href="#m1">1 · What is Kiro &amp; why</a>
+    <a href="#m2">2 · Vibe / Chat mode</a>
+    <a href="#m3">3 · Specs</a>
+    <a href="#m4">4 · Agent Steering</a>
+    <a href="#m5">5 · Agent Hooks</a>
+    <a href="#m6">6 · MCP</a>
+    <a href="#m7">7 · Kiro Powers</a>
+    <a href="#m8">8 · Team adoption playbook</a>
+    <strong>More</strong>
+    <a href="#cheatsheet">.kiro/ cheat sheet</a>
+    <a href="https://kiro.dev/docs/" target="_blank" rel="noopener">Official docs ↗</a>
+  </aside>
+
+  <main class="content">
+
+  <article id="intro">
+    <span class="eyebrow">Internal enablement · ~2.5 hours</span>
+    <h1>Building with AWS Kiro</h1>
+    <p>This course takes you from "I've heard of Kiro" to "I can run a feature through a spec, set up steering for our repo, wire an MCP server, and install a Power." It's written for developers who already ship code but are new to Kiro specifically.</p>
+    <p>Work through the modules in order. Each one is 15–20 minutes, ends with <strong>key takeaways</strong> and a short <strong>Try it</strong> task, and every config snippet is copy-pasteable.</p>
+    <div class="callout">
+      <span class="label">The one-line version</span>
+      Kiro is one AI agent that works across IDE, CLI, Web, and Mobile, driven by a <code>.kiro/</code> folder in your repo. Its headline idea is <em>spec-driven development</em>: agree on requirements and design <em>before</em> the agent writes code, so the output is reviewable and doesn't drift.
+    </div>
+    <div class="callout warn">
+      <span class="label">Freshness</span>
+      Kiro ships fast. Exact trigger names, flags, and the Powers catalogue can change — treat this course as the mental model and confirm specifics against <a href="https://kiro.dev/docs/" target="_blank" rel="noopener">kiro.dev/docs</a>.
+    </div>
+  </article>
+
+  <!-- ================= MODULE 1 ================= -->
+  <article id="m1">
+    <span class="module-tag">MODULE 1</span>
+    <h1>What is Kiro &amp; why</h1>
+
+    <h2>The problem Kiro is built around</h2>
+    <p>Chatting with an AI until code appears — "vibe coding" — is great for exploration and terrible for anything a team has to maintain. You get a working demo, but the requirements only ever lived in the chat scrollback, nobody reviewed the design, and the next change breaks something because there was no shared understanding of what the feature was supposed to do.</p>
+    <p>Kiro's answer is to make the <em>planning artifacts</em> first-class: written requirements, a written design, and a task list the agent executes against — all stored in your repo, all reviewable like code. You still get to vibe when you want to; you just have a structured path for the work that matters.</p>
+
+    <h2>One agent, every surface</h2>
+    <p>Kiro is not just an IDE. It's a single agent "harness" exposed through several interfaces:</p>
+    <table>
+      <tr><th>Surface</th><th>What it's for</th></tr>
+      <tr><td><strong>IDE</strong> (desktop app)</td><td>The main experience — editor, chat panel, specs, steering, hooks UI.</td></tr>
+      <tr><td><strong>CLI</strong></td><td>Drive the same agent from the terminal or scripts / CI.</td></tr>
+      <tr><td><strong>Web</strong></td><td>Browser-based agent; hand off long-running tasks.</td></tr>
+      <tr><td><strong>Mobile</strong></td><td>Check in on tasks from your phone (no MCP).</td></tr>
+    </table>
+    <p>The important part: <strong>your <code>.kiro/</code> configuration is shared across all of them</strong> and travels with the repository. Set up steering once, and it applies whether a teammate is in the IDE or CI is running the CLI.</p>
+
+    <h2>What's in the box</h2>
+    <table>
+      <tr><th>Area</th><th>Feature</th><th>Covered in</th></tr>
+      <tr><td>Planning</td><td>Specs, Bugfix Specs, Chat (vibe)</td><td>Modules 2–3</td></tr>
+      <tr><td>Control</td><td>Steering, Hooks, MCP, Permissions, <code>.kiroignore</code></td><td>Modules 4–6</td></tr>
+      <tr><td>Advanced</td><td>Custom agents, Skills, Sub-agents, Checkpoints / rewind, Compaction</td><td>Modules 2 &amp; 8</td></tr>
+      <tr><td>Ecosystem</td><td>Powers (installable capability packs)</td><td>Module 7</td></tr>
+    </table>
+
+    <h2>The <code>.kiro/</code> directory</h2>
+    <p>Everything project-specific lives in one folder at the repo root. You commit it like any other source:</p>
+    <pre><code>.kiro/
+├── steering/          # persistent project knowledge (Module 4)
+│   ├── product.md
+│   ├── tech.md
+│   └── structure.md
+├── hooks/             # event-driven automation as JSON (Module 5)
+│   └── lint-on-save.json
+├── specs/             # one folder per feature / bugfix (Module 3)
+│   └── checkout-refactor/
+│       ├── requirements.md
+│       ├── design.md
+│       └── tasks.md
+└── settings/
+    └── mcp.json       # external tool connections (Module 6)</code></pre>
+
+    <h2>Getting started</h2>
+    <ol>
+      <li><strong>Install</strong> the IDE (desktop), the CLI, or use the Web agent.</li>
+      <li><strong>Sign in</strong> with the account your org uses.</li>
+      <li><strong>Import your VS Code settings</strong> when prompted — keybindings, theme, and extensions carry over, so the IDE feels familiar on day one.</li>
+      <li><strong>Open a real repo</strong> and run "Generate Steering Docs" (Module 4) so the agent has project context before you ask it anything.</li>
+    </ol>
+
+    <div class="key-takeaways">
+      <span class="label">Key takeaways</span>
+      <ul>
+        <li>Kiro = one agent, many surfaces (IDE / CLI / Web / Mobile), one shared <code>.kiro/</code> config in your repo.</li>
+        <li>Its core bet is <em>spec-driven development</em>: requirements + design as reviewable files, not chat history.</li>
+        <li>You still have free-form "vibe" mode for exploration and debugging.</li>
+        <li><code>.kiro/</code> holds <code>steering/</code>, <code>hooks/</code>, <code>specs/</code>, and <code>settings/mcp.json</code>.</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">Try it</span>
+      Install the IDE, open a small side project, import your VS Code settings, and run "Generate Steering Docs". Read the three files it produces — that's your first look at how Kiro sees your project.
+    </div>
+  </article>
+
+  <!-- ================= MODULE 2 ================= -->
+  <article id="m2">
+    <span class="module-tag">MODULE 2</span>
+    <h1>Vibe / Chat mode</h1>
+
+    <h2>The default agent</h2>
+    <p>When you open the chat panel, you're talking to the <strong>Default agent</strong> — "vibe" mode. It's free-flow: describe what you want in natural language and Kiro responds with edits, explanations, or commands. There's no required structure and no generated documents. Use it for:</p>
+    <ul>
+      <li>Questions about the codebase ("where do we validate the JWT?")</li>
+      <li>Debugging a specific failure</li>
+      <li>Small, local changes</li>
+      <li>Exploring an approach before committing to a spec</li>
+    </ul>
+
+    <h2>Vibe vs Spec — and the modes in between</h2>
+    <table>
+      <tr><th>Mode</th><th>Output</th><th>Use when</th></tr>
+      <tr><td><strong>Vibe</strong> (Default)</td><td>Direct edits / answers, no docs</td><td>Questions, debugging, exploratory work</td></tr>
+      <tr><td><strong>Spec</strong></td><td><code>requirements.md</code> + <code>design.md</code> + <code>tasks.md</code></td><td>Feature work that needs review or touches several files</td></tr>
+      <tr><td><strong>Plan</strong></td><td>A plan only — no code changes</td><td>You want the approach written down before anything moves</td></tr>
+      <tr><td><strong>Bug Fix</strong></td><td>Bug analysis → fix</td><td>Reproducible defect; you want regression protection</td></tr>
+      <tr><td><strong>Quick Spec</strong></td><td>Brief clarification, then auto-generated spec</td><td>Small feature, you trust the agent to fill in the gaps</td></tr>
+    </table>
+
+    <h2>Autopilot vs Supervised</h2>
+    <p>Independently of the mode, you choose how much rope the agent gets:</p>
+    <ul>
+      <li><strong>Supervised</strong> — you approve every file change before it lands. Slower, safe, and the right default while you're learning a workflow.</li>
+      <li><strong>Autopilot</strong> — the agent executes changes autonomously and you review the result. Good for narrow, well-scoped tasks you've seen it do reliably.</li>
+    </ul>
+    <div class="callout">
+      <span class="label">Rule of thumb</span>
+      Stay Supervised until you've watched the agent do <em>this kind of task</em> correctly a few times. Then move that specific task type to Autopilot — not everything at once.
+    </div>
+
+    <h2>Context providers — the <code>#</code> menu</h2>
+    <p>Kiro only knows what's in its context. The <code>#</code> prefix pulls specific things in:</p>
+    <table>
+      <tr><th>Provider</th><th>Adds</th></tr>
+      <tr><td><code>#codebase</code></td><td>Kiro searches the repo and pulls in the files it judges relevant</td></tr>
+      <tr><td><code>#file</code> / <code>#folder</code></td><td>A specific file or directory you name</td></tr>
+      <tr><td><code>#git diff</code></td><td>Your uncommitted changes</td></tr>
+      <tr><td><code>#terminal</code></td><td>Recent command output and history</td></tr>
+      <tr><td><code>#problems</code></td><td>Diagnostics / errors for a file</td></tr>
+      <tr><td><code>#url</code> · <code>#docs</code> · <code>#repository</code> · <code>#code</code> · <code>#mcp</code></td><td>External page, docs, another repo, a code snippet, or an MCP resource</td></tr>
+    </table>
+    <p>Combine them in one message: <code>Fix the failing test in #problems using the pattern from #file:src/auth/session.ts</code>.</p>
+    <p>You can also paste an <strong>image</strong> (a screenshot, a mockup, an error dialog) directly into chat as context.</p>
+
+    <h2>Long sessions: checkpoints and compaction</h2>
+    <ul>
+      <li><strong>Checkpoints / rewind</strong> — Kiro snapshots state as it works, so you can roll back to a known-good point instead of unpicking changes by hand.</li>
+      <li><strong>Compaction</strong> — when a session gets long, Kiro summarises earlier context to stay within the model's limits without losing the thread.</li>
+    </ul>
+
+    <div class="key-takeaways">
+      <span class="label">Key takeaways</span>
+      <ul>
+        <li>Vibe = free-form, no docs. Spec = structured docs. Plan / Bug Fix / Quick Spec sit in between.</li>
+        <li>Supervised vs Autopilot is a separate choice — start Supervised, graduate task types one at a time.</li>
+        <li><code>#</code> providers are how you feed the agent: <code>#codebase</code>, <code>#file</code>, <code>#git diff</code>, <code>#terminal</code>, <code>#problems</code>, and more — combine freely.</li>
+        <li>Checkpoints let you rewind; compaction keeps long sessions coherent.</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">Try it</span>
+      In vibe mode, ask: <code>Explain how #file:&lt;some entry point&gt; wires up the app, then list the top 3 risks in #git diff</code>. Notice how the answer quality tracks exactly what you put in context.
+    </div>
+  </article>
+
+  <!-- ================= MODULE 3 ================= -->
+  <article id="m3">
+    <span class="module-tag">MODULE 3</span>
+    <h1>Specs</h1>
+
+    <h2>What a spec is</h2>
+    <p>A <strong>spec</strong> is a structured set of artifacts that formalises how a feature or bug fix gets built. Instead of one long chat, you get three files in <code>.kiro/specs/&lt;name&gt;/</code>, each gated by your approval:</p>
+    <table>
+      <tr><th>File</th><th>Contents</th></tr>
+      <tr><td><code>requirements.md</code> <span class="text-faint">(or <code>bugfix.md</code>)</span></td><td>User stories + acceptance criteria (feature), or current / expected / unchanged behaviour (bug)</td></tr>
+      <tr><td><code>design.md</code></td><td>Architecture, component breakdown, sequence diagrams, data flow, error handling, testing strategy</td></tr>
+      <tr><td><code>tasks.md</code></td><td>Discrete, individually trackable implementation tasks with live status</td></tr>
+    </table>
+
+    <h2>The three-phase workflow</h2>
+    <ol>
+      <li><strong>Requirements</strong> — Kiro drafts user stories and acceptance criteria from your description. You edit and approve before anything else happens.</li>
+      <li><strong>Design</strong> — Kiro turns approved requirements into a technical design. Review it here; this is the cheapest place to catch a wrong approach.</li>
+      <li><strong>Tasks</strong> — Kiro breaks the design into an ordered task list, then implements task by task, updating status as it goes.</li>
+    </ol>
+    <div class="callout">
+      <span class="label">Why the gates matter</span>
+      Fixing a misunderstanding in <code>requirements.md</code> costs a sentence. Fixing it after the agent has written 12 files costs an afternoon. The approval gates exist to force the cheap conversation first.
+    </div>
+
+    <h2>EARS notation for requirements</h2>
+    <p>Kiro writes acceptance criteria in <strong>EARS</strong> (Easy Approach to Requirements Syntax) — a small set of sentence templates that keep requirements testable and unambiguous:</p>
+    <pre><code>WHEN &lt;trigger&gt; THE SYSTEM SHALL &lt;response&gt;
+WHILE &lt;state&gt; THE SYSTEM SHALL &lt;response&gt;
+WHERE &lt;feature is included&gt; THE SYSTEM SHALL &lt;response&gt;
+IF &lt;condition&gt; THEN THE SYSTEM SHALL &lt;response&gt;</code></pre>
+    <p>Example: <em>WHEN a user submits the checkout form with an expired card THE SYSTEM SHALL reject the payment and display "Your card has expired".</em> Each line becomes a test.</p>
+
+    <h2>Task execution in waves</h2>
+    <p>Kiro analyses dependencies between tasks and builds a dependency graph, then runs them in <strong>waves</strong>:</p>
+    <ul>
+      <li><strong>Wave 1</strong> — tasks with no dependencies, run concurrently.</li>
+      <li><strong>Wave 2+</strong> — tasks whose dependencies are now satisfied, run concurrently.</li>
+      <li>Waves run in sequence; tasks inside a wave run in parallel.</li>
+    </ul>
+    <p>You don't configure this — it's automatic, and it's why a spec often finishes faster than issuing the same tasks one at a time in chat.</p>
+
+    <h2>Spec types</h2>
+    <table>
+      <tr><th>Type</th><th>Flavours</th><th>Notes</th></tr>
+      <tr><td><strong>Feature Spec</strong></td><td>Requirements-First, Design-First, or Quick Spec (auto-generated, no approval gates)</td><td>New capability</td></tr>
+      <tr><td><strong>Bugfix Spec</strong></td><td>Analyse current vs expected vs unchanged behaviour, then fix</td><td>Surgical; built to prevent regressions</td></tr>
+    </table>
+
+    <div class="key-takeaways">
+      <span class="label">Key takeaways</span>
+      <ul>
+        <li>A spec = <code>requirements.md</code> → <code>design.md</code> → <code>tasks.md</code>, each behind an approval gate.</li>
+        <li>Requirements use EARS templates so every criterion is testable.</li>
+        <li>Tasks run in dependency-ordered <em>waves</em> with parallelism inside each wave — automatically.</li>
+        <li>Use a Bugfix Spec for defects: it explicitly records what must <em>not</em> change.</li>
+        <li>Keep specs small. One coherent feature per spec beats one giant spec.</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">Try it</span>
+      Pick a small feature you actually need. Start a Feature Spec, and <em>stop at the requirements phase</em>. Read the EARS criteria, tighten two of them, then approve and let it design.
+    </div>
+  </article>
+
+  <!-- ================= MODULE 4 ================= -->
+  <article id="m4">
+    <span class="module-tag">MODULE 4</span>
+    <h1>Agent Steering</h1>
+
+    <h2>Persistent project knowledge</h2>
+    <p><strong>Steering</strong> gives Kiro durable context about your project through markdown files, so you stop re-explaining the same conventions in every conversation. Steering files live in <code>.kiro/steering/</code> and are plain markdown.</p>
+
+    <h2>The three foundation files</h2>
+    <p>"Generate Steering Docs" creates these, and they're <strong>included in every interaction by default</strong>:</p>
+    <table>
+      <tr><th>File</th><th>Captures</th></tr>
+      <tr><td><code>product.md</code></td><td>Product purpose, target users, key features, business goals — the "why" behind technical decisions</td></tr>
+      <tr><td><code>tech.md</code></td><td>Frameworks, libraries, tools, constraints — so Kiro favours your stack over alternatives</td></tr>
+      <tr><td><code>structure.md</code></td><td>File organisation, naming conventions, import patterns, architectural decisions</td></tr>
+    </table>
+
+    <h2>Scopes</h2>
+    <table>
+      <tr><th>Scope</th><th>Location</th><th>Applies to</th></tr>
+      <tr><td>Workspace</td><td><code>.kiro/steering/</code></td><td>Just this repo (wins on conflict)</td></tr>
+      <tr><td>Global</td><td><code>~/.kiro/steering/</code></td><td>All your workspaces</td></tr>
+      <tr><td>Team</td><td>Global, distributed via MDM / Group Policy / a repo</td><td>Everyone in the org</td></tr>
+    </table>
+
+    <h2>Inclusion modes (YAML front-matter)</h2>
+    <p>A front-matter block at the top of a steering file controls when it loads:</p>
+    <pre><code>---
+inclusion: always          # default — every interaction
+---</code></pre>
+    <pre><code>---
+inclusion: fileMatch
+fileMatchPattern: ["**/*.tsx", "src/components/**/*"]
+---
+# loads only when you're working on matching files</code></pre>
+    <pre><code>---
+inclusion: manual          # load on demand with #file-name in chat, or via /
+---</code></pre>
+    <pre><code>---
+inclusion: auto
+name: api-design
+description: REST API design patterns. Use when creating API endpoints.
+---
+# loads when your request matches the description</code></pre>
+
+    <h2>Referencing live files</h2>
+    <p>Point a steering file at a real file in the repo so guidance stays in sync with source:</p>
+    <pre><code>Follow the schema in #[[file:api/openapi.yaml]]
+Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
+
+    <h2>AGENTS.md and custom agents</h2>
+    <ul>
+      <li>Kiro also reads the cross-tool <strong><code>AGENTS.md</code></strong> standard — put one at the workspace root or in <code>~/.kiro/steering/</code>. It has no inclusion modes; it's always included.</li>
+      <li><strong>Custom agents don't get steering automatically.</strong> Add it explicitly: <code>"resources": ["file://.kiro/steering/**/*.md"]</code>.</li>
+    </ul>
+
+    <h2>Best practices</h2>
+    <ul>
+      <li>One domain per file — <code>api-rest-conventions.md</code>, <code>testing-unit-patterns.md</code>, <code>security-guidelines.md</code>.</li>
+      <li>Explain the <em>reasoning</em>, not just the rule. Include before/after code snippets.</li>
+      <li>Never put secrets, keys, or passwords in steering files.</li>
+      <li>Review steering changes like code — they change agent behaviour for the whole team.</li>
+    </ul>
+
+    <div class="key-takeaways">
+      <span class="label">Key takeaways</span>
+      <ul>
+        <li>Steering = markdown in <code>.kiro/steering/</code> that gives Kiro persistent project context.</li>
+        <li><code>product.md</code> / <code>tech.md</code> / <code>structure.md</code> load on every interaction.</li>
+        <li>Front-matter <code>inclusion</code> controls loading: <code>always</code>, <code>fileMatch</code>, <code>manual</code>, <code>auto</code>.</li>
+        <li><code>#[[file:path]]</code> links guidance to live source; <code>AGENTS.md</code> is always included.</li>
+        <li>Commit steering to the repo and review changes — it's shared team behaviour.</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">Try it</span>
+      Add <code>.kiro/steering/code-style.md</code> with 5 real rules from your team (naming, error handling, imports) and one before/after example. Ask the agent to write a small function and check it obeys all five.
+    </div>
+  </article>
+
+  <!-- ================= MODULE 5 ================= -->
+  <article id="m5">
+    <span class="module-tag">MODULE 5</span>
+    <h1>Agent Hooks</h1>
+
+    <h2>Automation on events</h2>
+    <p>A <strong>hook</strong> runs a shell command or an agent prompt automatically when something happens in your session. Hooks are JSON files in <code>.kiro/hooks/</code> and activate when a session starts — no manual registration.</p>
+
+    <h2>Trigger types</h2>
+    <table>
+      <tr><th>Category</th><th>Triggers</th></tr>
+      <tr><td>File (IDE)</td><td><code>PostFileCreate</code>, <code>PostFileSave</code>, <code>PostFileDelete</code></td></tr>
+      <tr><td>Execution</td><td><code>PreToolUse</code> / <code>PostToolUse</code> (Pre can block), <code>PromptSubmit</code> (can block)</td></tr>
+      <tr><td>Lifecycle</td><td><code>SessionStart</code> (IDE), <code>AgentSpawn</code> (CLI), <code>AgentStop</code></td></tr>
+      <tr><td>Task (IDE)</td><td><code>PreTaskExecution</code> / <code>PostTaskExecution</code> — around spec tasks</td></tr>
+    </table>
+    <div class="callout warn">
+      <span class="label">Important</span>
+      File triggers only fire on <em>agent-initiated</em> changes — not when you edit and save a file yourself in the editor.
+    </div>
+
+    <h2>Hook file format</h2>
+    <pre><code>{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Lint on save",
+      "trigger": "PostFileSave",
+      "matcher": "\\.(ts|tsx)$",
+      "action": { "type": "command", "command": "npx eslint --fix" },
+      "timeout": 60
+    }
+  ]
+}</code></pre>
+    <table>
+      <tr><th>Field</th><th>Meaning</th></tr>
+      <tr><td><code>trigger</code></td><td>Event type, PascalCase</td></tr>
+      <tr><td><code>matcher</code></td><td>Optional regex to filter which events fire the hook</td></tr>
+      <tr><td><code>action.type</code></td><td><code>"command"</code> (run a shell command) or <code>"agent"</code> (inject a prompt)</td></tr>
+      <tr><td><code>timeout</code></td><td>Seconds before the hook is killed (default 60)</td></tr>
+    </table>
+
+    <h2>Common use cases</h2>
+    <ul>
+      <li>Run linters, formatters, or type checks after the agent changes files.</li>
+      <li>Auto-create tests, docs, or translations when a new source file appears.</li>
+      <li>Block a tool with <code>PreToolUse</code> unless a precondition is met.</li>
+      <li>Run a quality check before the agent finalises its changes.</li>
+    </ul>
+
+    <h2>Creating hooks</h2>
+    <p>In the IDE: the <strong>+</strong> button in the Agent Hooks panel → "Ask Kiro to create a hook" → describe the automation in plain language and Kiro writes the JSON. Use kebab-case filenames (<code>lint-on-save.json</code>); related hooks can share one file.</p>
+
+    <div class="key-takeaways">
+      <span class="label">Key takeaways</span>
+      <ul>
+        <li>Hooks = JSON in <code>.kiro/hooks/</code>; they run commands or agent prompts on events.</li>
+        <li>Triggers span file changes, tool use, session lifecycle, and spec tasks.</li>
+        <li>File triggers respond to agent edits only, not your manual saves.</li>
+        <li><code>PreToolUse</code> and <code>PromptSubmit</code> can <em>block</em> — powerful, so introduce them carefully.</li>
+        <li>Use <code>matcher</code> regexes to keep hooks narrowly targeted.</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">Try it</span>
+      Create a <code>PostFileSave</code> hook that runs your formatter on <code>\\.(ts|js)$</code>. Ask the agent to add a function, then confirm the file comes back formatted without you touching it.
+    </div>
+  </article>
+
+  <!-- ================= MODULE 6 ================= -->
+  <article id="m6">
+    <span class="module-tag">MODULE 6</span>
+    <h1>MCP — Model Context Protocol</h1>
+
+    <h2>What MCP does</h2>
+    <p><strong>MCP</strong> is a protocol that lets Kiro talk to external servers to use specialised <em>tools</em>, <em>prompts</em>, and <em>resources</em> that aren't baked into the model — internal knowledge bases, ticketing systems, cloud APIs, docs search, and so on.</p>
+
+    <h2>Where config lives</h2>
+    <table>
+      <tr><th>Level</th><th>How to open</th><th>Scope</th></tr>
+      <tr><td>Workspace</td><td>Command palette → "Kiro: Open workspace MCP config (JSON)"</td><td>This repo (commit it to share with the team)</td></tr>
+      <tr><td>User</td><td>Command palette → the user MCP config</td><td>All your projects</td></tr>
+      <tr><td>Agent</td><td><code>mcpServers</code> in a custom agent, with <code>includeMcpJson</code> to inherit or not</td><td>That agent only</td></tr>
+    </table>
+
+    <h2>Server types</h2>
+    <table>
+      <tr><th>Type</th><th>IDE</th><th>CLI</th><th>Web</th><th>Mobile</th></tr>
+      <tr><td>Local (stdio)</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+      <tr><td>Remote (HTTP / SSE)</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+    </table>
+
+    <h2>Config example</h2>
+    <pre><code>{
+  "mcpServers": {
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "disabled": false
+    },
+    "aws-docs": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@latest"],
+      "disabled": false,
+      "autoApprove": ["search_documentation"]
+    }
+  }
+}</code></pre>
+    <table>
+      <tr><th>Field</th><th>Meaning</th></tr>
+      <tr><td><code>command</code> / <code>args</code></td><td>How to launch a stdio server</td></tr>
+      <tr><td><code>disabled</code></td><td>Toggle the server off without deleting the entry</td></tr>
+      <tr><td><code>autoApprove</code></td><td>Tool names allowed to run without a per-call prompt — keep this to read-only tools</td></tr>
+      <tr><td><code>env</code></td><td>Environment variables (e.g. API keys) — reference secrets, don't hard-code them</td></tr>
+    </table>
+    <p>The <strong>AWS Documentation MCP server</strong> is a common first server: it gives the agent direct access to search AWS docs and return current, cited guidance instead of relying on training data.</p>
+
+    <h2>Managing &amp; troubleshooting</h2>
+    <ul>
+      <li>Watch connection status in the <strong>MCP Servers</strong> tab; read logs in the <strong>Output</strong> tab.</li>
+      <li>Kiro shows a confirmation dialog before applying an install link, listing commands and env var <em>names</em> (values hidden).</li>
+      <li>Tool names must match <code>^[a-zA-Z][a-zA-Z0-9_]*$</code> and stay under 64 characters, or you'll get validation errors.</li>
+    </ul>
+    <div class="callout warn">
+      <span class="label">Security</span>
+      Only install MCP servers from sources you trust — a server can run code on your machine and see whatever context the agent sends it. Vet the package, pin versions, and never commit secrets.
+    </div>
+
+    <div class="key-takeaways">
+      <span class="label">Key takeaways</span>
+      <ul>
+        <li>MCP connects Kiro to external tools / data via <code>mcp.json</code> at workspace, user, or agent level.</li>
+        <li>Local (stdio) and remote (HTTP/SSE) servers both work everywhere except Mobile.</li>
+        <li><code>disabled</code> toggles a server; <code>autoApprove</code> should list read-only tools only.</li>
+        <li>Commit a vetted workspace <code>mcp.json</code> so the team shares the same servers.</li>
+        <li>Treat MCP servers as supply-chain risk: trusted sources, pinned versions, secrets via env.</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">Try it</span>
+      Add the AWS Documentation MCP server to a workspace <code>mcp.json</code>. Ask the agent a question that needs current AWS docs and watch it call the tool instead of guessing.
+    </div>
+  </article>
+
+  <!-- ================= MODULE 7 ================= -->
+  <article id="m7">
+    <span class="module-tag">MODULE 7</span>
+    <h1>Kiro Powers</h1>
+
+    <h2>What a Power is</h2>
+    <p>A <strong>Power</strong> is an installable package that bundles everything an agent needs to be good at a specific tool or framework:</p>
+    <table>
+      <tr><th>Part</th><th>Provides</th></tr>
+      <tr><td><code>plugin.json</code></td><td>Manifest + keywords that trigger automatic activation</td></tr>
+      <tr><td><code>skills/</code></td><td>Agent Skills — task-specific instructions and reference material</td></tr>
+      <tr><td><code>mcp.json</code></td><td>Optional MCP server(s) for tool access</td></tr>
+      <tr><td><code>dev.kiro/</code></td><td>Kiro-specific extensions such as steering files</td></tr>
+    </table>
+    <p>Powers are built on the <strong>Agent Plugins specification</strong> — an open, vendor-neutral standard backed by Amazon, Cursor, Microsoft, OpenAI, and Vercel — so a Power isn't locked to Kiro.</p>
+
+    <h2>The two problems Powers solve</h2>
+    <ul>
+      <li><strong>Expertise scattered across docs.</strong> Getting an agent to genuinely understand a framework's patterns means reading docs and tuning prompts by trial and error, repeated for every new tool. A Power ships that expertise upfront — and from the tool's own makers, not a third-party interpretation.</li>
+      <li><strong>Context overload.</strong> Connecting more MCP servers doesn't automatically help; too much unstructured context slows the agent and lowers quality. Powers fix this with <em>intelligent loading</em>.</li>
+    </ul>
+
+    <h2>Intelligent loading</h2>
+    <p>Rather than loading every installed Power's context upfront (which can be 50,000+ tokens), Kiro matches your <em>task description</em> against installed Powers and loads only the relevant ones. Mention "payment" and the Stripe Power activates; switch to database work and Supabase loads instead. You never toggle Powers manually.</p>
+
+    <h2>Installing &amp; managing</h2>
+    <ul>
+      <li>One-click install from the IDE / CLI, or the curated registry at <a href="https://kiro.dev/powers" target="_blank" rel="noopener">kiro.dev/powers</a>.</li>
+      <li>Import a community Power by pasting its GitHub repo URL.</li>
+      <li>Cloud-synced Powers appear in <strong>Settings → Powers</strong> in Kiro Web and sync to recent IDE versions.</li>
+    </ul>
+
+    <h2>Launch-partner Powers</h2>
+    <p>Datadog · Dynatrace · Figma · Neon · Netlify · Postman · Supabase · Stripe · AWS Aurora — each built by the company behind the tool. Examples:</p>
+    <ul>
+      <li><strong>Figma</strong> — fetch design specs, use Code Connect to map designs to existing components, apply design tokens instead of hard-coded values, validate the build matches the design.</li>
+      <li><strong>Supabase</strong> — enforce Row Level Security on every table, generate TypeScript types from the schema, use correct auth patterns, review migrations for security issues.</li>
+    </ul>
+
+    <h2>Powers vs Skills vs Steering</h2>
+    <table>
+      <tr><th>Mechanism</th><th>Is</th></tr>
+      <tr><td><strong>Steering</strong></td><td>Kiro-specific behaviour shaping via markdown you write</td></tr>
+      <tr><td><strong>Skills</strong></td><td>Standalone instruction packages</td></tr>
+      <tr><td><strong>Powers</strong></td><td>Installable, context-aware packages that combine tools + knowledge + guidance</td></tr>
+    </table>
+
+    <div class="key-takeaways">
+      <span class="label">Key takeaways</span>
+      <ul>
+        <li>A Power bundles <code>skills/</code> + optional <code>mcp.json</code> + <code>dev.kiro/</code> steering, described by <code>plugin.json</code>.</li>
+        <li>Built on the open Agent Plugins spec — portable across vendors.</li>
+        <li>Intelligent loading pulls in only the Powers relevant to your current task.</li>
+        <li>Install from <code>kiro.dev/powers</code>, the IDE, or a community GitHub URL.</li>
+        <li>You can package your team's own standards + internal MCP as a private Power.</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">Try it</span>
+      Install a Power relevant to your stack (e.g. Supabase or AWS Aurora). Start a task that mentions its domain and confirm the Power activates on its own — check the editor's Powers indicator.
+    </div>
+  </article>
+
+  <!-- ================= MODULE 8 ================= -->
+  <article id="m8">
+    <span class="module-tag">MODULE 8</span>
+    <h1>Team adoption playbook</h1>
+    <p>This is <strong>our</strong> plan — a small team (2–5 devs) on GitHub, shipping TypeScript/Node/React, Python, and JVM/.NET/Go on AWS. It's not Kiro documentation; revise it as we learn.</p>
+
+    <h2>Week 1 — everyone on board</h2>
+    <ul>
+      <li>The whole team is the pilot. We're small enough that a "subset first" phase would only add coordination overhead.</li>
+      <li>Everyone installs the IDE, signs in, imports VS Code settings.</li>
+      <li>Pick <strong>one active repo</strong>. Run "Generate Steering Docs", then hand-edit <code>product.md</code> / <code>tech.md</code> / <code>structure.md</code> <em>in a PR</em> until they're actually true. Merge it — steering lands through review from day one.</li>
+    </ul>
+
+    <h2>Steering for a polyglot team</h2>
+    <p>Structure steering so each language's rules load only when relevant:</p>
+    <table>
+      <tr><th>File</th><th>Mode</th><th>Contents</th></tr>
+      <tr><td><code>security.md</code>, <code>structure.md</code>, <code>code-review.md</code></td><td><code>always</code></td><td>Cross-cutting rules. Keep them short — they cost tokens every turn.</td></tr>
+      <tr><td><code>code-style-ts.md</code></td><td><code>fileMatch</code> <code>**/*.{ts,tsx}</code></td><td>Naming, error handling, React patterns</td></tr>
+      <tr><td><code>code-style-python.md</code></td><td><code>fileMatch</code> <code>**/*.py</code></td><td>Typing, packaging, lint rules</td></tr>
+      <tr><td><code>code-style-jvm.md</code></td><td><code>fileMatch</code> <code>**/*.{java,kt,cs,go}</code></td><td>Per-language conventions</td></tr>
+      <tr><td><code>infra-aws.md</code></td><td><code>fileMatch</code> <code>infra/**</code>, <code>**/*.tf</code></td><td>Tagging, IAM least-privilege, region rules</td></tr>
+    </table>
+    <p>Each file holds the rules we already argue about in review, with one before/after example and the <em>reason</em> behind the rule.</p>
+
+    <h2>When to use a spec — ticket-driven</h2>
+    <div class="callout">
+      <span class="label">Our rule of thumb</span>
+      If it has a ticket, it gets a spec folder named after the ticket: <code>.kiro/specs/PROJ-1234-checkout-retry/</code>. No ticket and trivial? Vibe it.
+    </div>
+    <ul>
+      <li><strong>Feature ticket → Feature Spec.</strong> Read and tighten <code>requirements.md</code> before approving design.</li>
+      <li><strong>Bug ticket → Bugfix Spec.</strong> It records what must <em>not</em> change — the regression protection reviewers ask for.</li>
+      <li>Commit the spec folder in the same PR as the code, so the reasoning ships with the change.</li>
+    </ul>
+
+    <h2>Cost discipline</h2>
+    <ul>
+      <li>Keep <code>always</code> steering short; push everything else to <code>fileMatch</code> / <code>manual</code>.</li>
+      <li>Let <strong>compaction</strong> handle long sessions instead of starting over.</li>
+      <li><strong>Supervised by default.</strong> An Autopilot run that goes wrong burns the whole run plus your review time. Move a task type to Autopilot only after it's been boringly reliable.</li>
+      <li>Use Quick Spec sparingly — the approval gates are what prevent expensive rework.</li>
+    </ul>
+
+    <h2>Guardrails — sensitive code</h2>
+    <ul>
+      <li><code>.kiroignore</code> from day one: secrets, <code>.env*</code>, customer-data fixtures, anything under a compliance boundary, large generated dirs.</li>
+      <li><strong>Permissions</strong> — restrict what the agent can read and run; default-deny outside the working repo.</li>
+      <li>MCP: only reviewed servers, pinned versions, in one committed workspace <code>mcp.json</code>. <code>autoApprove</code> read-only tools only — never one that writes or calls out.</li>
+      <li>Be deliberate about the <strong>Web / Mobile handoff</strong> — it sends context off your machine. Keep sensitive work in the IDE.</li>
+      <li>Hooks: non-blocking only until we trust them. No <code>PreToolUse</code> / <code>PromptSubmit</code> blockers early.</li>
+    </ul>
+
+    <h2>MCP &amp; Powers to start with</h2>
+    <ul>
+      <li><strong>AWS Documentation MCP server</strong> in the shared <code>mcp.json</code> — the common thread across our stacks.</li>
+      <li>Install the <strong>AWS Aurora</strong> Power, plus any partner Power matching a service we lean on.</li>
+      <li>Once steering is stable, package our conventions + an internal MCP as a <strong>private Power</strong> so a new hire's agent is useful on day one.</li>
+    </ul>
+
+    <h2>Rollout checklist</h2>
+    <table>
+      <tr><th>Step</th><th>Owner</th><th>Done when</th></tr>
+      <tr><td>Everyone installed + signed in</td><td>All</td><td>—</td></tr>
+      <tr><td>Foundation steering merged &amp; accurate</td><td>All</td><td>Merged PR</td></tr>
+      <tr><td>Per-language <code>fileMatch</code> steering</td><td>Whoever owns that stack</td><td>Merged PR</td></tr>
+      <tr><td><code>.kiroignore</code> + Permissions reviewed</td><td>Lead</td><td>Merged PR</td></tr>
+      <tr><td>Workspace <code>mcp.json</code> (AWS docs, vetted only)</td><td>Lead</td><td>Merged PR</td></tr>
+      <tr><td>First ticket shipped via a spec</td><td>Pair</td><td>Spec folder + PR merged</td></tr>
+      <tr><td>2-week retro: keep / adjust / stop</td><td>All</td><td>Notes shared</td></tr>
+    </table>
+
+    <div class="key-takeaways">
+      <span class="label">Key takeaways</span>
+      <ul>
+        <li>Small team: everyone pilots at once, on one active repo.</li>
+        <li>Steering: a tiny <code>always</code> set plus per-language <code>fileMatch</code> files, all via PR.</li>
+        <li>Every ticket gets a spec folder named after it; the spec ships in the code PR.</li>
+        <li>Sensitive code: <code>.kiroignore</code> + Permissions + Supervised + vetted read-only MCP; keep sensitive work off Web/Mobile.</li>
+        <li>Cost: short <code>always</code> steering, lean on compaction, don't let Autopilot run unwatched.</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- ================= CHEAT SHEET ================= -->
+  <article id="cheatsheet">
+    <span class="module-tag">REFERENCE</span>
+    <h1><code>.kiro/</code> cheat sheet</h1>
+    <table>
+      <tr><th>You want to…</th><th>Do this</th></tr>
+      <tr><td>Give Kiro permanent project context</td><td><code>.kiro/steering/*.md</code> — foundation files load always; use front-matter <code>inclusion</code> for the rest</td></tr>
+      <tr><td>Load a steering file only for certain files</td><td><code>inclusion: fileMatch</code> + <code>fileMatchPattern</code></td></tr>
+      <tr><td>Load a steering file on request</td><td><code>inclusion: manual</code>, then <code>#file-name</code> in chat</td></tr>
+      <tr><td>Structured feature work</td><td>Start a Spec → <code>requirements.md</code> → <code>design.md</code> → <code>tasks.md</code></td></tr>
+      <tr><td>Fix a bug with regression protection</td><td>Start a Bugfix Spec</td></tr>
+      <tr><td>Run a command after the agent edits files</td><td>Hook in <code>.kiro/hooks/*.json</code>, trigger <code>PostFileSave</code></td></tr>
+      <tr><td>Connect an external tool / API / KB</td><td>Add it to <code>mcp.json</code> (workspace or user)</td></tr>
+      <tr><td>Give the agent expert knowledge for a framework</td><td>Install a Power from <code>kiro.dev/powers</code></td></tr>
+      <tr><td>Feed specific context into a chat</td><td><code>#codebase</code>, <code>#file</code>, <code>#folder</code>, <code>#git diff</code>, <code>#terminal</code>, <code>#problems</code>, <code>#docs</code>, <code>#mcp</code></td></tr>
+      <tr><td>Hide files from the agent</td><td><code>.kiroignore</code></td></tr>
+      <tr><td>Undo a bad run</td><td>Rewind to a checkpoint</td></tr>
+    </table>
+
+    <div class="pager">
+      <a href="index.html">← Back to overview</a>
+      <a href="slides/training-en.html">Slide deck →</a>
+    </div>
+  </article>
+
+  </main>
+</div>
+
+<footer class="site">
+  Internal training material · Built for the team · Not affiliated with AWS ·
+  Sourced from <a href="https://kiro.dev/docs/" target="_blank" rel="noopener">kiro.dev/docs</a>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

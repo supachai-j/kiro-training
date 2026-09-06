@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiro Training — คอร์ส (ไทย)</title>
+<meta name="description" content="คอร์สเรียนด้วยตัวเองสำหรับทีม เรื่อง AWS Kiro: specs, steering, hooks, MCP และ Powers">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%91%BB%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="lang-th">
+
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="ghost">👻</span> Kiro Training</a>
+  <span class="spacer"></span>
+  <nav>
+    <a href="index.html">หน้าแรก</a>
+    <a href="slides/training-th.html">สไลด์</a>
+    <a href="course-en.html">English</a>
+  </nav>
+  <button class="btn" onclick="toggleTheme()" aria-label="สลับธีม"><span id="theme-label">☾</span></button>
+</header>
+
+<div class="course-shell">
+  <aside class="toc">
+    <strong>คอร์ส</strong>
+    <a href="#intro">ภาพรวม</a>
+    <strong>บทเรียน</strong>
+    <a href="#m1">1 · Kiro คืออะไร และทำไม</a>
+    <a href="#m2">2 · โหมด Vibe / Chat</a>
+    <a href="#m3">3 · Specs</a>
+    <a href="#m4">4 · Agent Steering</a>
+    <a href="#m5">5 · Agent Hooks</a>
+    <a href="#m6">6 · MCP</a>
+    <a href="#m7">7 · Kiro Powers</a>
+    <a href="#m8">8 · แผนนำไปใช้ในทีม</a>
+    <strong>เพิ่มเติม</strong>
+    <a href="#cheatsheet">สรุป <code>.kiro/</code></a>
+    <a href="https://kiro.dev/docs/" target="_blank" rel="noopener">เอกสารทางการ ↗</a>
+  </aside>
+
+  <main class="content">
+
+  <article id="intro">
+    <span class="eyebrow">อบรมภายในทีม · ~2.5 ชั่วโมง</span>
+    <h1>พัฒนางานด้วย AWS Kiro</h1>
+    <p>คอร์สนี้พาคุณจาก "เคยได้ยินชื่อ Kiro" ไปสู่ "รันฟีเจอร์ผ่าน spec ได้, ตั้ง steering ให้ repo ของเราได้, ต่อ MCP server ได้ และติดตั้ง Power ได้" เขียนสำหรับนักพัฒนาที่เขียนโค้ดส่งงานอยู่แล้ว แต่เพิ่งเริ่มใช้ Kiro</p>
+    <p>อ่านบทเรียนตามลำดับ แต่ละบทใช้เวลา 15–20 นาที จบด้วย <strong>สรุปประเด็นสำคัญ</strong> และแบบฝึก <strong>ลองทำ</strong> สั้น ๆ ตัวอย่าง config ทุกอันคัดลอกไปใช้ได้เลย</p>
+    <div class="callout">
+      <span class="label">สรุปบรรทัดเดียว</span>
+      Kiro คือ AI agent ตัวเดียวที่ใช้ได้ทั้ง IDE, CLI, Web และ Mobile ขับเคลื่อนด้วยโฟลเดอร์ <code>.kiro/</code> ใน repo ของคุณ แนวคิดหลักคือ <em>spec-driven development</em>: ตกลง requirements และ design ให้เรียบร้อย <em>ก่อน</em> ให้ agent เขียนโค้ด เพื่อให้ผลลัพธ์ตรวจทานได้และไม่หลุดประเด็น
+    </div>
+    <div class="callout warn">
+      <span class="label">ความสดของข้อมูล</span>
+      Kiro ออกอัปเดตเร็วมาก ชื่อ trigger, flag และรายการ Powers อาจเปลี่ยนได้ ให้ใช้คอร์สนี้เป็น "แนวคิดหลัก" แล้วตรวจรายละเอียดเป๊ะ ๆ กับ <a href="https://kiro.dev/docs/" target="_blank" rel="noopener">kiro.dev/docs</a> อีกครั้ง
+    </div>
+  </article>
+
+  <!-- ================= MODULE 1 ================= -->
+  <article id="m1">
+    <span class="module-tag">บทที่ 1</span>
+    <h1>Kiro คืออะไร และทำไม</h1>
+
+    <h2>ปัญหาที่ Kiro ถูกสร้างมาเพื่อแก้</h2>
+    <p>การคุยกับ AI ไปเรื่อย ๆ จนโค้ดโผล่ออกมา — "vibe coding" — เหมาะกับการสำรวจไอเดีย แต่แย่มากสำหรับอะไรก็ตามที่ทีมต้องดูแลต่อ คุณได้ demo ที่ทำงานได้ แต่ requirements อยู่แค่ในประวัติแชต ไม่มีใครรีวิว design และการแก้ครั้งถัดไปก็พังของเดิม เพราะไม่มีความเข้าใจร่วมกันว่าฟีเจอร์นี้ควรทำอะไร</p>
+    <p>คำตอบของ Kiro คือทำให้ <em>เอกสารการวางแผน</em> เป็นของหลัก: requirements ที่เขียนไว้, design ที่เขียนไว้ และรายการ task ที่ agent ทำตาม — ทั้งหมดเก็บใน repo และรีวิวได้เหมือนโค้ด คุณยังเลือก vibe ได้เมื่อต้องการ แต่มีเส้นทางที่มีโครงสร้างสำหรับงานที่สำคัญ</p>
+
+    <h2>agent เดียว ทุกช่องทาง</h2>
+    <p>Kiro ไม่ได้เป็นแค่ IDE แต่เป็น agent "harness" ตัวเดียวที่เปิดให้ใช้ผ่านหลายช่องทาง:</p>
+    <table>
+      <tr><th>ช่องทาง</th><th>ไว้ทำอะไร</th></tr>
+      <tr><td><strong>IDE</strong> (แอปเดสก์ท็อป)</td><td>ประสบการณ์หลัก — editor, chat panel, specs, steering, UI ของ hooks</td></tr>
+      <tr><td><strong>CLI</strong></td><td>สั่ง agent ตัวเดียวกันจาก terminal หรือ script / CI</td></tr>
+      <tr><td><strong>Web</strong></td><td>agent บนเบราว์เซอร์ เหมาะกับงานที่ใช้เวลานาน</td></tr>
+      <tr><td><strong>Mobile</strong></td><td>ตามงานจากมือถือ (ไม่รองรับ MCP)</td></tr>
+    </table>
+    <p>จุดสำคัญ: <strong>config <code>.kiro/</code> ของคุณใช้ร่วมกันทุกช่องทาง</strong> และติดไปกับ repository ตั้ง steering ครั้งเดียว ก็มีผลไม่ว่าเพื่อนร่วมทีมจะอยู่ใน IDE หรือ CI กำลังรัน CLI</p>
+
+    <h2>มีอะไรให้ใช้บ้าง</h2>
+    <table>
+      <tr><th>กลุ่ม</th><th>ฟีเจอร์</th><th>อยู่ในบท</th></tr>
+      <tr><td>การวางแผน</td><td>Specs, Bugfix Specs, Chat (vibe)</td><td>บทที่ 2–3</td></tr>
+      <tr><td>การควบคุม</td><td>Steering, Hooks, MCP, Permissions, <code>.kiroignore</code></td><td>บทที่ 4–6</td></tr>
+      <tr><td>ขั้นสูง</td><td>Custom agents, Skills, Sub-agents, Checkpoints / rewind, Compaction</td><td>บทที่ 2 และ 8</td></tr>
+      <tr><td>Ecosystem</td><td>Powers (ชุดความสามารถที่ติดตั้งได้)</td><td>บทที่ 7</td></tr>
+    </table>
+
+    <h2>โฟลเดอร์ <code>.kiro/</code></h2>
+    <p>ทุกอย่างที่เฉพาะกับโปรเจกต์อยู่ในโฟลเดอร์เดียวที่ root ของ repo และ commit ได้เหมือน source อื่น ๆ:</p>
+    <pre><code>.kiro/
+├── steering/          # ความรู้ถาวรของโปรเจกต์ (บทที่ 4)
+│   ├── product.md
+│   ├── tech.md
+│   └── structure.md
+├── hooks/             # automation ตาม event เก็บเป็น JSON (บทที่ 5)
+│   └── lint-on-save.json
+├── specs/             # หนึ่งโฟลเดอร์ต่อหนึ่ง feature / bugfix (บทที่ 3)
+│   └── checkout-refactor/
+│       ├── requirements.md
+│       ├── design.md
+│       └── tasks.md
+└── settings/
+    └── mcp.json       # การเชื่อมต่อเครื่องมือภายนอก (บทที่ 6)</code></pre>
+
+    <h2>เริ่มต้นใช้งาน</h2>
+    <ol>
+      <li><strong>ติดตั้ง</strong> IDE (เดสก์ท็อป), CLI หรือใช้ Web agent</li>
+      <li><strong>ลงชื่อเข้าใช้</strong> ด้วยบัญชีที่องค์กรใช้</li>
+      <li><strong>นำเข้าการตั้งค่า VS Code</strong> เมื่อระบบถาม — keybinding, theme และ extension จะย้ายตามมา ทำให้ IDE คุ้นมือตั้งแต่วันแรก</li>
+      <li><strong>เปิด repo จริง</strong> แล้วสั่ง "Generate Steering Docs" (บทที่ 4) เพื่อให้ agent มีบริบทของโปรเจกต์ก่อนที่คุณจะถามอะไร</li>
+    </ol>
+
+    <div class="key-takeaways">
+      <span class="label">สรุปประเด็นสำคัญ</span>
+      <ul>
+        <li>Kiro = agent เดียว หลายช่องทาง (IDE / CLI / Web / Mobile), config <code>.kiro/</code> ชุดเดียวใน repo</li>
+        <li>เดิมพันหลักคือ <em>spec-driven development</em>: requirements + design เป็นไฟล์ที่รีวิวได้ ไม่ใช่ประวัติแชต</li>
+        <li>ยังมีโหมด "vibe" แบบอิสระสำหรับสำรวจไอเดียและ debug</li>
+        <li><code>.kiro/</code> เก็บ <code>steering/</code>, <code>hooks/</code>, <code>specs/</code> และ <code>settings/mcp.json</code></li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">ลองทำ</span>
+      ติดตั้ง IDE, เปิดโปรเจกต์เล็ก ๆ, นำเข้าการตั้งค่า VS Code แล้วสั่ง "Generate Steering Docs" อ่านไฟล์ทั้งสามที่มันสร้าง — นั่นคือมุมมองแรกว่า Kiro เข้าใจโปรเจกต์คุณอย่างไร
+    </div>
+  </article>
+
+  <!-- ================= MODULE 2 ================= -->
+  <article id="m2">
+    <span class="module-tag">บทที่ 2</span>
+    <h1>โหมด Vibe / Chat</h1>
+
+    <h2>agent เริ่มต้น</h2>
+    <p>เมื่อเปิด chat panel คุณกำลังคุยกับ <strong>Default agent</strong> — โหมด "vibe" เป็นแบบอิสระ: อธิบายสิ่งที่ต้องการเป็นภาษาธรรมชาติ แล้ว Kiro ตอบด้วยการแก้ไฟล์ คำอธิบาย หรือคำสั่ง ไม่มีโครงสร้างบังคับและไม่มีเอกสารที่ถูกสร้างขึ้น ใช้กับ:</p>
+    <ul>
+      <li>คำถามเกี่ยวกับ codebase ("เรา validate JWT ตรงไหน?")</li>
+      <li>debug ปัญหาเฉพาะจุด</li>
+      <li>การแก้เล็ก ๆ เฉพาะที่</li>
+      <li>ลองแนวทางก่อนตัดสินใจทำเป็น spec</li>
+    </ul>
+
+    <h2>Vibe vs Spec — และโหมดที่อยู่ระหว่างกลาง</h2>
+    <table>
+      <tr><th>โหมด</th><th>ผลลัพธ์</th><th>ใช้เมื่อ</th></tr>
+      <tr><td><strong>Vibe</strong> (Default)</td><td>แก้ไข / ตอบตรง ๆ ไม่มีเอกสาร</td><td>คำถาม, debug, งานสำรวจ</td></tr>
+      <tr><td><strong>Spec</strong></td><td><code>requirements.md</code> + <code>design.md</code> + <code>tasks.md</code></td><td>งานฟีเจอร์ที่ต้องรีวิว หรือแตะหลายไฟล์</td></tr>
+      <tr><td><strong>Plan</strong></td><td>แผนอย่างเดียว — ไม่แก้โค้ด</td><td>อยากได้แนวทางเป็นลายลักษณ์อักษรก่อนขยับ</td></tr>
+      <tr><td><strong>Bug Fix</strong></td><td>วิเคราะห์ bug → แก้</td><td>บั๊กที่ทำซ้ำได้ ต้องการกันการถอยหลัง (regression)</td></tr>
+      <tr><td><strong>Quick Spec</strong></td><td>ถามสั้น ๆ แล้วสร้าง spec ให้อัตโนมัติ</td><td>ฟีเจอร์เล็ก ไว้ใจให้ agent เติมช่องว่าง</td></tr>
+    </table>
+
+    <h2>Autopilot vs Supervised</h2>
+    <p>แยกจากโหมด คุณเลือกได้ว่าจะให้ agent อิสระแค่ไหน:</p>
+    <ul>
+      <li><strong>Supervised</strong> — คุณอนุมัติทุกการเปลี่ยนไฟล์ก่อนบันทึกจริง ช้ากว่า ปลอดภัย และเป็นค่าเริ่มต้นที่เหมาะระหว่างเรียนรู้ workflow</li>
+      <li><strong>Autopilot</strong> — agent ลงมือแก้เองแล้วคุณรีวิวผลลัพธ์ เหมาะกับงานแคบ ๆ ที่ scope ชัด และเคยเห็นมันทำได้ดี</li>
+    </ul>
+    <div class="callout">
+      <span class="label">หลักคิด</span>
+      อยู่ Supervised จนกว่าจะเห็น agent ทำ <em>งานประเภทนี้</em> ถูกต้องหลายครั้ง แล้วค่อยย้ายเฉพาะงานประเภทนั้นไป Autopilot — ไม่ใช่ย้ายทุกอย่างพร้อมกัน
+    </div>
+
+    <h2>Context providers — เมนู <code>#</code></h2>
+    <p>Kiro รู้แค่สิ่งที่อยู่ใน context ของมัน คำนำหน้า <code>#</code> คือวิธีดึงสิ่งเฉพาะเข้ามา:</p>
+    <table>
+      <tr><th>Provider</th><th>เพิ่มอะไร</th></tr>
+      <tr><td><code>#codebase</code></td><td>Kiro ค้น repo แล้วดึงไฟล์ที่มันคิดว่าเกี่ยวข้องเข้ามา</td></tr>
+      <tr><td><code>#file</code> / <code>#folder</code></td><td>ไฟล์หรือไดเรกทอรีที่คุณระบุ</td></tr>
+      <tr><td><code>#git diff</code></td><td>การเปลี่ยนแปลงที่ยังไม่ commit</td></tr>
+      <tr><td><code>#terminal</code></td><td>ผลลัพธ์คำสั่งและประวัติล่าสุด</td></tr>
+      <tr><td><code>#problems</code></td><td>diagnostics / error ของไฟล์</td></tr>
+      <tr><td><code>#url</code> · <code>#docs</code> · <code>#repository</code> · <code>#code</code> · <code>#mcp</code></td><td>หน้าเว็บภายนอก, เอกสาร, repo อื่น, code snippet หรือ resource จาก MCP</td></tr>
+    </table>
+    <p>ผสมกันในข้อความเดียวได้: <code>Fix the failing test in #problems using the pattern from #file:src/auth/session.ts</code></p>
+    <p>วาง <strong>รูปภาพ</strong> (สกรีนช็อต, mockup, กล่อง error) ลงในแชตเป็น context ได้โดยตรงด้วย</p>
+
+    <h2>session ยาว: checkpoints และ compaction</h2>
+    <ul>
+      <li><strong>Checkpoints / rewind</strong> — Kiro บันทึก snapshot ระหว่างทำงาน ให้คุณย้อนกลับไปจุดที่ดีอยู่แล้วได้ แทนการไล่แก้ทีละอย่าง</li>
+      <li><strong>Compaction</strong> — เมื่อ session ยาวขึ้น Kiro สรุป context เก่าเพื่ออยู่ในลิมิตของโมเดลโดยไม่หลุดประเด็น</li>
+    </ul>
+
+    <div class="key-takeaways">
+      <span class="label">สรุปประเด็นสำคัญ</span>
+      <ul>
+        <li>Vibe = อิสระ ไม่มีเอกสาร; Spec = เอกสารมีโครงสร้าง; Plan / Bug Fix / Quick Spec อยู่ตรงกลาง</li>
+        <li>Supervised vs Autopilot เป็นการเลือกแยกต่างหาก — เริ่มที่ Supervised แล้วเลื่อนทีละประเภทงาน</li>
+        <li><code>#</code> providers คือวิธีป้อนข้อมูลให้ agent: <code>#codebase</code>, <code>#file</code>, <code>#git diff</code>, <code>#terminal</code>, <code>#problems</code> ฯลฯ ผสมได้อิสระ</li>
+        <li>Checkpoints ให้ย้อนกลับได้; compaction ทำให้ session ยาว ๆ ยังต่อเนื่อง</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">ลองทำ</span>
+      ในโหมด vibe ลองถาม: <code>Explain how #file:&lt;จุดเริ่มของแอป&gt; wires up the app, then list the top 3 risks in #git diff</code> สังเกตว่าคุณภาพคำตอบขึ้นกับสิ่งที่คุณใส่ใน context เป๊ะ ๆ
+    </div>
+  </article>
+
+  <!-- ================= MODULE 3 ================= -->
+  <article id="m3">
+    <span class="module-tag">บทที่ 3</span>
+    <h1>Specs</h1>
+
+    <h2>spec คืออะไร</h2>
+    <p><strong>spec</strong> คือชุดเอกสารที่มีโครงสร้าง ทำให้กระบวนการสร้างฟีเจอร์หรือแก้บั๊กเป็นทางการ แทนที่จะเป็นแชตยาว ๆ คุณได้สามไฟล์ใน <code>.kiro/specs/&lt;name&gt;/</code> โดยแต่ละขั้นมีการอนุมัติของคุณเป็นด่าน:</p>
+    <table>
+      <tr><th>ไฟล์</th><th>เนื้อหา</th></tr>
+      <tr><td><code>requirements.md</code> <span class="text-faint">(หรือ <code>bugfix.md</code>)</span></td><td>user story + acceptance criteria (ฟีเจอร์) หรือ current / expected / unchanged behaviour (บั๊ก)</td></tr>
+      <tr><td><code>design.md</code></td><td>สถาปัตยกรรม, การแบ่ง component, sequence diagram, data flow, การจัดการ error, กลยุทธ์การทดสอบ</td></tr>
+      <tr><td><code>tasks.md</code></td><td>task การพัฒนาที่แยกย่อยและติดตามได้ทีละอัน พร้อมสถานะแบบ real-time</td></tr>
+    </table>
+
+    <h2>workflow สามเฟส</h2>
+    <ol>
+      <li><strong>Requirements</strong> — Kiro ร่าง user story และ acceptance criteria จากคำอธิบายของคุณ คุณแก้และอนุมัติก่อนจะทำอย่างอื่น</li>
+      <li><strong>Design</strong> — Kiro แปลง requirements ที่อนุมัติแล้วเป็น technical design รีวิวตรงนี้ เพราะเป็นจุดที่ถูกที่สุดในการจับแนวทางที่ผิด</li>
+      <li><strong>Tasks</strong> — Kiro แตก design เป็นรายการ task ตามลำดับ แล้วลงมือทำทีละ task พร้อมอัปเดตสถานะ</li>
+    </ol>
+    <div class="callout">
+      <span class="label">ทำไมด่านอนุมัติจึงสำคัญ</span>
+      แก้ความเข้าใจผิดใน <code>requirements.md</code> ราคาแค่หนึ่งประโยค แต่แก้หลังจาก agent เขียนไป 12 ไฟล์ราคาทั้งบ่าย ด่านอนุมัติมีไว้บังคับให้คุยเรื่องถูก ๆ ก่อน
+    </div>
+
+    <h2>EARS notation สำหรับ requirements</h2>
+    <p>Kiro เขียน acceptance criteria แบบ <strong>EARS</strong> (Easy Approach to Requirements Syntax) — ชุดเทมเพลตประโยคเล็ก ๆ ที่ทำให้ requirement ทดสอบได้และไม่กำกวม:</p>
+    <pre><code>WHEN &lt;trigger&gt; THE SYSTEM SHALL &lt;response&gt;
+WHILE &lt;state&gt; THE SYSTEM SHALL &lt;response&gt;
+WHERE &lt;feature is included&gt; THE SYSTEM SHALL &lt;response&gt;
+IF &lt;condition&gt; THEN THE SYSTEM SHALL &lt;response&gt;</code></pre>
+    <p>ตัวอย่าง: <em>WHEN a user submits the checkout form with an expired card THE SYSTEM SHALL reject the payment and display "Your card has expired".</em> แต่ละบรรทัดกลายเป็น test ได้</p>
+
+    <h2>การรัน task แบบ waves</h2>
+    <p>Kiro วิเคราะห์ dependency ระหว่าง task แล้วสร้าง dependency graph จากนั้นรันเป็น <strong>waves</strong>:</p>
+    <ul>
+      <li><strong>Wave 1</strong> — task ที่ไม่มี dependency รันพร้อมกัน</li>
+      <li><strong>Wave 2+</strong> — task ที่ dependency ครบแล้ว รันพร้อมกัน</li>
+      <li>waves รันเรียงลำดับ; task ภายใน wave เดียวกันรันขนานกัน</li>
+    </ul>
+    <p>คุณไม่ต้องตั้งค่าเอง — เป็นอัตโนมัติ และเป็นเหตุผลที่ spec มักเสร็จเร็วกว่าสั่ง task เดียวกันทีละอันในแชต</p>
+
+    <h2>ประเภทของ spec</h2>
+    <table>
+      <tr><th>ประเภท</th><th>รูปแบบ</th><th>หมายเหตุ</th></tr>
+      <tr><td><strong>Feature Spec</strong></td><td>Requirements-First, Design-First หรือ Quick Spec (สร้างอัตโนมัติ ไม่มีด่านอนุมัติ)</td><td>ความสามารถใหม่</td></tr>
+      <tr><td><strong>Bugfix Spec</strong></td><td>วิเคราะห์ current vs expected vs unchanged behaviour แล้วแก้</td><td>แม่นยำเฉพาะจุด สร้างมาเพื่อกัน regression</td></tr>
+    </table>
+
+    <div class="key-takeaways">
+      <span class="label">สรุปประเด็นสำคัญ</span>
+      <ul>
+        <li>spec = <code>requirements.md</code> → <code>design.md</code> → <code>tasks.md</code> แต่ละอันมีด่านอนุมัติ</li>
+        <li>requirements ใช้เทมเพลต EARS เพื่อให้ทุกเกณฑ์ทดสอบได้</li>
+        <li>task รันเป็น <em>waves</em> ตาม dependency พร้อมความขนานภายในแต่ละ wave — อัตโนมัติ</li>
+        <li>ใช้ Bugfix Spec กับบั๊ก: มันบันทึกชัดเจนว่าอะไรต้อง <em>ไม่</em> เปลี่ยน</li>
+        <li>ทำ spec ให้เล็ก หนึ่งฟีเจอร์ที่กลมกล่อมต่อหนึ่ง spec ดีกว่า spec ยักษ์อันเดียว</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">ลองทำ</span>
+      เลือกฟีเจอร์เล็ก ๆ ที่ต้องใช้จริง เริ่ม Feature Spec แล้ว <em>หยุดที่เฟส requirements</em> อ่านเกณฑ์ EARS, กระชับสองข้อ แล้วอนุมัติให้มันออกแบบต่อ
+    </div>
+  </article>
+
+  <!-- ================= MODULE 4 ================= -->
+  <article id="m4">
+    <span class="module-tag">บทที่ 4</span>
+    <h1>Agent Steering</h1>
+
+    <h2>ความรู้ถาวรของโปรเจกต์</h2>
+    <p><strong>Steering</strong> ให้ Kiro มีบริบทถาวรของโปรเจกต์ผ่านไฟล์ markdown เพื่อให้คุณเลิกอธิบาย convention เดิม ๆ ซ้ำทุกบทสนทนา ไฟล์ steering อยู่ใน <code>.kiro/steering/</code> และเป็น markdown ธรรมดา</p>
+
+    <h2>ไฟล์พื้นฐานสามไฟล์</h2>
+    <p>"Generate Steering Docs" สร้างไฟล์เหล่านี้ และ <strong>ถูกรวมในทุกบทสนทนาโดยอัตโนมัติ</strong>:</p>
+    <table>
+      <tr><th>ไฟล์</th><th>บันทึกอะไร</th></tr>
+      <tr><td><code>product.md</code></td><td>จุดประสงค์ของผลิตภัณฑ์, กลุ่มผู้ใช้, ฟีเจอร์หลัก, เป้าหมายธุรกิจ — "ทำไม" เบื้องหลังการตัดสินใจทางเทคนิค</td></tr>
+      <tr><td><code>tech.md</code></td><td>framework, library, เครื่องมือ, ข้อจำกัด — เพื่อให้ Kiro เลือก stack ของคุณก่อนตัวเลือกอื่น</td></tr>
+      <tr><td><code>structure.md</code></td><td>การจัดระเบียบไฟล์, convention การตั้งชื่อ, รูปแบบ import, การตัดสินใจเชิงสถาปัตยกรรม</td></tr>
+    </table>
+
+    <h2>ขอบเขต (Scopes)</h2>
+    <table>
+      <tr><th>ขอบเขต</th><th>ตำแหน่ง</th><th>มีผลกับ</th></tr>
+      <tr><td>Workspace</td><td><code>.kiro/steering/</code></td><td>เฉพาะ repo นี้ (ชนะเมื่อขัดกัน)</td></tr>
+      <tr><td>Global</td><td><code>~/.kiro/steering/</code></td><td>ทุก workspace ของคุณ</td></tr>
+      <tr><td>Team</td><td>Global กระจายผ่าน MDM / Group Policy / repo</td><td>ทุกคนในองค์กร</td></tr>
+    </table>
+
+    <h2>Inclusion modes (YAML front-matter)</h2>
+    <p>บล็อก front-matter ที่หัวไฟล์ steering ควบคุมว่าจะโหลดเมื่อไร:</p>
+    <pre><code>---
+inclusion: always          # ค่าเริ่มต้น — ทุกบทสนทนา
+---</code></pre>
+    <pre><code>---
+inclusion: fileMatch
+fileMatchPattern: ["**/*.tsx", "src/components/**/*"]
+---
+# โหลดเฉพาะตอนทำงานกับไฟล์ที่ match</code></pre>
+    <pre><code>---
+inclusion: manual          # โหลดเมื่อเรียกด้วย #file-name ในแชต หรือผ่าน /
+---</code></pre>
+    <pre><code>---
+inclusion: auto
+name: api-design
+description: REST API design patterns. Use when creating API endpoints.
+---
+# โหลดเมื่อคำขอของคุณ match กับ description</code></pre>
+
+    <h2>อ้างอิงไฟล์จริง</h2>
+    <p>ชี้ไฟล์ steering ไปที่ไฟล์จริงใน repo เพื่อให้คำแนะนำ sync กับ source:</p>
+    <pre><code>Follow the schema in #[[file:api/openapi.yaml]]
+Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
+
+    <h2>AGENTS.md และ custom agents</h2>
+    <ul>
+      <li>Kiro อ่านมาตรฐานข้ามเครื่องมือ <strong><code>AGENTS.md</code></strong> ด้วย — วางไว้ที่ root ของ workspace หรือใน <code>~/.kiro/steering/</code> ไม่มี inclusion modes; รวมเสมอ</li>
+      <li><strong>custom agents ไม่ได้รับ steering อัตโนมัติ</strong> ต้องเพิ่มเอง: <code>"resources": ["file://.kiro/steering/**/*.md"]</code></li>
+    </ul>
+
+    <h2>แนวปฏิบัติที่ดี</h2>
+    <ul>
+      <li>หนึ่งเรื่องต่อหนึ่งไฟล์ — <code>api-rest-conventions.md</code>, <code>testing-unit-patterns.md</code>, <code>security-guidelines.md</code></li>
+      <li>อธิบาย <em>เหตุผล</em> ไม่ใช่แค่กฎ ใส่ตัวอย่างโค้ด before/after</li>
+      <li>ห้ามใส่ secret, key หรือ password ในไฟล์ steering</li>
+      <li>รีวิวการแก้ steering เหมือนรีวิวโค้ด — มันเปลี่ยนพฤติกรรม agent ของทั้งทีม</li>
+    </ul>
+
+    <div class="key-takeaways">
+      <span class="label">สรุปประเด็นสำคัญ</span>
+      <ul>
+        <li>Steering = markdown ใน <code>.kiro/steering/</code> ที่ให้บริบทถาวรของโปรเจกต์แก่ Kiro</li>
+        <li><code>product.md</code> / <code>tech.md</code> / <code>structure.md</code> โหลดทุกบทสนทนา</li>
+        <li>front-matter <code>inclusion</code> คุมการโหลด: <code>always</code>, <code>fileMatch</code>, <code>manual</code>, <code>auto</code></li>
+        <li><code>#[[file:path]]</code> ผูกคำแนะนำเข้ากับ source จริง; <code>AGENTS.md</code> รวมเสมอ</li>
+        <li>commit steering เข้า repo และรีวิวการแก้ — เป็นพฤติกรรมที่ทีมใช้ร่วมกัน</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">ลองทำ</span>
+      เพิ่ม <code>.kiro/steering/code-style.md</code> ด้วยกฎจริง 5 ข้อของทีม (การตั้งชื่อ, การจัดการ error, import) และตัวอย่าง before/after หนึ่งอัน สั่ง agent เขียนฟังก์ชันเล็ก ๆ แล้วเช็กว่าทำตามครบทั้งห้าข้อ
+    </div>
+  </article>
+
+  <!-- ================= MODULE 5 ================= -->
+  <article id="m5">
+    <span class="module-tag">บทที่ 5</span>
+    <h1>Agent Hooks</h1>
+
+    <h2>automation ตาม event</h2>
+    <p><strong>hook</strong> รันคำสั่ง shell หรือ prompt ให้ agent โดยอัตโนมัติเมื่อมีบางอย่างเกิดใน session ของคุณ hook เป็นไฟล์ JSON ใน <code>.kiro/hooks/</code> และเริ่มทำงานเมื่อ session เริ่ม — ไม่ต้อง register เอง</p>
+
+    <h2>ประเภทของ trigger</h2>
+    <table>
+      <tr><th>กลุ่ม</th><th>Triggers</th></tr>
+      <tr><td>ไฟล์ (IDE)</td><td><code>PostFileCreate</code>, <code>PostFileSave</code>, <code>PostFileDelete</code></td></tr>
+      <tr><td>การรัน</td><td><code>PreToolUse</code> / <code>PostToolUse</code> (Pre บล็อกได้), <code>PromptSubmit</code> (บล็อกได้)</td></tr>
+      <tr><td>Lifecycle</td><td><code>SessionStart</code> (IDE), <code>AgentSpawn</code> (CLI), <code>AgentStop</code></td></tr>
+      <tr><td>Task (IDE)</td><td><code>PreTaskExecution</code> / <code>PostTaskExecution</code> — รอบ ๆ task ของ spec</td></tr>
+    </table>
+    <div class="callout warn">
+      <span class="label">สำคัญ</span>
+      trigger ประเภทไฟล์ทำงานเฉพาะกับการเปลี่ยนที่ <em>agent เป็นคนทำ</em> — ไม่ใช่ตอนที่คุณแก้และเซฟไฟล์เองใน editor
+    </div>
+
+    <h2>รูปแบบไฟล์ hook</h2>
+    <pre><code>{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Lint on save",
+      "trigger": "PostFileSave",
+      "matcher": "\\.(ts|tsx)$",
+      "action": { "type": "command", "command": "npx eslint --fix" },
+      "timeout": 60
+    }
+  ]
+}</code></pre>
+    <table>
+      <tr><th>ฟิลด์</th><th>ความหมาย</th></tr>
+      <tr><td><code>trigger</code></td><td>ประเภท event, PascalCase</td></tr>
+      <tr><td><code>matcher</code></td><td>regex ทางเลือกเพื่อกรองว่า event ไหนจะจุด hook</td></tr>
+      <tr><td><code>action.type</code></td><td><code>"command"</code> (รันคำสั่ง shell) หรือ <code>"agent"</code> (แทรก prompt)</td></tr>
+      <tr><td><code>timeout</code></td><td>วินาทีก่อน hook ถูกฆ่า (ค่าเริ่มต้น 60)</td></tr>
+    </table>
+
+    <h2>กรณีใช้งานที่พบบ่อย</h2>
+    <ul>
+      <li>รัน linter, formatter หรือ type check หลัง agent แก้ไฟล์</li>
+      <li>สร้าง test, docs หรือคำแปลอัตโนมัติเมื่อมีไฟล์ source ใหม่</li>
+      <li>บล็อก tool ด้วย <code>PreToolUse</code> จนกว่าจะครบเงื่อนไข</li>
+      <li>รันการตรวจคุณภาพก่อน agent จะปิดงาน</li>
+    </ul>
+
+    <h2>การสร้าง hook</h2>
+    <p>ใน IDE: ปุ่ม <strong>+</strong> ใน Agent Hooks panel → "Ask Kiro to create a hook" → อธิบาย automation เป็นภาษาคน แล้ว Kiro เขียน JSON ให้ ใช้ชื่อไฟล์แบบ kebab-case (<code>lint-on-save.json</code>); hook ที่เกี่ยวข้องกันใส่ไฟล์เดียวกันได้</p>
+
+    <div class="key-takeaways">
+      <span class="label">สรุปประเด็นสำคัญ</span>
+      <ul>
+        <li>Hooks = JSON ใน <code>.kiro/hooks/</code>; รันคำสั่งหรือ prompt ให้ agent ตาม event</li>
+        <li>trigger ครอบคลุมการเปลี่ยนไฟล์, การใช้ tool, lifecycle ของ session และ task ของ spec</li>
+        <li>trigger ไฟล์ตอบสนองต่อการแก้ของ agent เท่านั้น ไม่ใช่การเซฟเองของคุณ</li>
+        <li><code>PreToolUse</code> และ <code>PromptSubmit</code> <em>บล็อก</em> ได้ — ทรงพลัง จึงต้องค่อย ๆ นำมาใช้</li>
+        <li>ใช้ regex ใน <code>matcher</code> เพื่อให้ hook เจาะจงแคบ ๆ</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">ลองทำ</span>
+      สร้าง hook <code>PostFileSave</code> ที่รัน formatter บน <code>\\.(ts|js)$</code> สั่ง agent เพิ่มฟังก์ชัน แล้วยืนยันว่าไฟล์กลับมาถูก format โดยที่คุณไม่ได้แตะ
+    </div>
+  </article>
+
+  <!-- ================= MODULE 6 ================= -->
+  <article id="m6">
+    <span class="module-tag">บทที่ 6</span>
+    <h1>MCP — Model Context Protocol</h1>
+
+    <h2>MCP ทำอะไร</h2>
+    <p><strong>MCP</strong> คือโปรโตคอลที่ให้ Kiro คุยกับ server ภายนอกเพื่อใช้ <em>tools</em>, <em>prompts</em> และ <em>resources</em> เฉพาะทางที่ไม่ได้ฝังอยู่ในโมเดล — knowledge base ภายใน, ระบบ ticket, cloud API, การค้นเอกสาร ฯลฯ</p>
+
+    <h2>config อยู่ที่ไหน</h2>
+    <table>
+      <tr><th>ระดับ</th><th>เปิดยังไง</th><th>ขอบเขต</th></tr>
+      <tr><td>Workspace</td><td>Command palette → "Kiro: Open workspace MCP config (JSON)"</td><td>repo นี้ (commit เพื่อแชร์กับทีม)</td></tr>
+      <tr><td>User</td><td>Command palette → user MCP config</td><td>ทุกโปรเจกต์ของคุณ</td></tr>
+      <tr><td>Agent</td><td><code>mcpServers</code> ใน custom agent พร้อม <code>includeMcpJson</code> ว่าจะสืบทอดหรือไม่</td><td>เฉพาะ agent นั้น</td></tr>
+    </table>
+
+    <h2>ประเภท server</h2>
+    <table>
+      <tr><th>ประเภท</th><th>IDE</th><th>CLI</th><th>Web</th><th>Mobile</th></tr>
+      <tr><td>Local (stdio)</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+      <tr><td>Remote (HTTP / SSE)</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+    </table>
+
+    <h2>ตัวอย่าง config</h2>
+    <pre><code>{
+  "mcpServers": {
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "disabled": false
+    },
+    "aws-docs": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@latest"],
+      "disabled": false,
+      "autoApprove": ["search_documentation"]
+    }
+  }
+}</code></pre>
+    <table>
+      <tr><th>ฟิลด์</th><th>ความหมาย</th></tr>
+      <tr><td><code>command</code> / <code>args</code></td><td>วิธี launch server แบบ stdio</td></tr>
+      <tr><td><code>disabled</code></td><td>ปิด server โดยไม่ลบ entry</td></tr>
+      <tr><td><code>autoApprove</code></td><td>ชื่อ tool ที่รันได้โดยไม่ถามทุกครั้ง — ควรมีแค่ tool แบบอ่านอย่างเดียว</td></tr>
+      <tr><td><code>env</code></td><td>environment variable (เช่น API key) — อ้างอิง secret อย่า hard-code</td></tr>
+    </table>
+    <p><strong>AWS Documentation MCP server</strong> เป็น server แรกที่นิยม: ให้ agent เข้าถึงการค้นเอกสาร AWS โดยตรงและได้คำแนะนำที่อ้างอิงได้และเป็นปัจจุบัน แทนการเดาจากข้อมูล training</p>
+
+    <h2>การจัดการและแก้ปัญหา</h2>
+    <ul>
+      <li>ดูสถานะการเชื่อมต่อในแท็บ <strong>MCP Servers</strong>; อ่าน log ในแท็บ <strong>Output</strong></li>
+      <li>Kiro แสดงกล่องยืนยันก่อนใช้ install link โดยแสดงคำสั่งและ <em>ชื่อ</em> env var (ซ่อนค่า)</li>
+      <li>ชื่อ tool ต้อง match <code>^[a-zA-Z][a-zA-Z0-9_]*$</code> และสั้นกว่า 64 อักขระ ไม่งั้นจะเจอ validation error</li>
+    </ul>
+    <div class="callout warn">
+      <span class="label">ความปลอดภัย</span>
+      ติดตั้ง MCP server จากแหล่งที่ไว้ใจได้เท่านั้น — server รันโค้ดบนเครื่องคุณและเห็น context ที่ agent ส่งให้ได้ ตรวจแพ็กเกจ, pin เวอร์ชัน และอย่า commit secret
+    </div>
+
+    <div class="key-takeaways">
+      <span class="label">สรุปประเด็นสำคัญ</span>
+      <ul>
+        <li>MCP เชื่อม Kiro กับเครื่องมือ / ข้อมูลภายนอกผ่าน <code>mcp.json</code> ระดับ workspace, user หรือ agent</li>
+        <li>server แบบ Local (stdio) และ remote (HTTP/SSE) ใช้ได้ทุกที่ยกเว้น Mobile</li>
+        <li><code>disabled</code> ปิด server; <code>autoApprove</code> ควรมีแค่ tool แบบอ่านอย่างเดียว</li>
+        <li>commit <code>mcp.json</code> ระดับ workspace ที่ตรวจแล้ว เพื่อให้ทีมใช้ server ชุดเดียวกัน</li>
+        <li>มอง MCP server เป็นความเสี่ยง supply-chain: แหล่งที่ไว้ใจ, pin เวอร์ชัน, secret ผ่าน env</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">ลองทำ</span>
+      เพิ่ม AWS Documentation MCP server ลงใน <code>mcp.json</code> ระดับ workspace ถาม agent คำถามที่ต้องใช้เอกสาร AWS ปัจจุบัน แล้วดูมันเรียก tool แทนการเดา
+    </div>
+  </article>
+
+  <!-- ================= MODULE 7 ================= -->
+  <article id="m7">
+    <span class="module-tag">บทที่ 7</span>
+    <h1>Kiro Powers</h1>
+
+    <h2>Power คืออะไร</h2>
+    <p><strong>Power</strong> คือแพ็กเกจที่ติดตั้งได้ ซึ่งรวมทุกอย่างที่ agent ต้องใช้เพื่อทำงานกับเครื่องมือหรือ framework เฉพาะได้ดี:</p>
+    <table>
+      <tr><th>ส่วน</th><th>ให้อะไร</th></tr>
+      <tr><td><code>plugin.json</code></td><td>manifest + keyword ที่จุดการเปิดใช้อัตโนมัติ</td></tr>
+      <tr><td><code>skills/</code></td><td>Agent Skills — คำสั่งเฉพาะงานและเอกสารอ้างอิง</td></tr>
+      <tr><td><code>mcp.json</code></td><td>MCP server (ทางเลือก) สำหรับเข้าถึง tool</td></tr>
+      <tr><td><code>dev.kiro/</code></td><td>ส่วนขยายเฉพาะ Kiro เช่นไฟล์ steering</td></tr>
+    </table>
+    <p>Powers สร้างบน <strong>Agent Plugins specification</strong> — มาตรฐานเปิดที่ไม่ผูกกับเจ้าใดเจ้าหนึ่ง หนุนโดย Amazon, Cursor, Microsoft, OpenAI และ Vercel — Power จึงไม่ล็อกกับ Kiro</p>
+
+    <h2>สองปัญหาที่ Powers แก้</h2>
+    <ul>
+      <li><strong>ความเชี่ยวชาญกระจัดกระจายในเอกสาร</strong> การทำให้ agent เข้าใจ pattern ของ framework จริง ๆ ต้องอ่านเอกสารและปรับ prompt แบบลองผิดลองถูก ซ้ำทุกเครื่องมือใหม่ Power ส่งความเชี่ยวชาญนั้นให้ล่วงหน้า — และมาจากผู้สร้างเครื่องมือเอง ไม่ใช่การตีความของบุคคลที่สาม</li>
+      <li><strong>context ท่วมท้น</strong> การต่อ MCP server มากขึ้นไม่ได้ช่วยอัตโนมัติ; context ไม่มีโครงสร้างมากไปทำให้ agent ช้าและคุณภาพตก Powers แก้ด้วย <em>intelligent loading</em></li>
+    </ul>
+
+    <h2>Intelligent loading</h2>
+    <p>แทนที่จะโหลด context ของทุก Power ที่ติดตั้งไว้ตั้งแต่ต้น (ซึ่งอาจเกิน 50,000 tokens) Kiro จับคู่ <em>คำอธิบายงาน</em> ของคุณกับ Power ที่ติดตั้งไว้ แล้วโหลดเฉพาะตัวที่เกี่ยว พูดถึง "payment" แล้ว Stripe Power เปิดใช้; เปลี่ยนไปทำงานฐานข้อมูลแล้ว Supabase โหลดแทน คุณไม่ต้องสลับ Power เอง</p>
+
+    <h2>การติดตั้งและจัดการ</h2>
+    <ul>
+      <li>ติดตั้งคลิกเดียวจาก IDE / CLI หรือ registry ที่คัดสรรแล้วที่ <a href="https://kiro.dev/powers" target="_blank" rel="noopener">kiro.dev/powers</a></li>
+      <li>นำเข้า Power ของชุมชนด้วยการวาง URL ของ GitHub repo</li>
+      <li>Power ที่ sync กับ cloud แสดงใน <strong>Settings → Powers</strong> ใน Kiro Web และ sync ไป IDE เวอร์ชันใหม่ ๆ</li>
+    </ul>
+
+    <h2>Power จาก launch partner</h2>
+    <p>Datadog · Dynatrace · Figma · Neon · Netlify · Postman · Supabase · Stripe · AWS Aurora — แต่ละตัวสร้างโดยบริษัทเจ้าของเครื่องมือ ตัวอย่าง:</p>
+    <ul>
+      <li><strong>Figma</strong> — ดึง design spec, ใช้ Code Connect แมป design เข้ากับ component ที่มีอยู่, ใช้ design token แทนค่า hard-code, ตรวจว่างานที่สร้างตรงกับ design</li>
+      <li><strong>Supabase</strong> — บังคับ Row Level Security ทุกตาราง, สร้าง TypeScript type จาก schema, ใช้ pattern การ auth ที่ถูกต้อง, รีวิว migration หาปัญหาความปลอดภัย</li>
+    </ul>
+
+    <h2>Powers vs Skills vs Steering</h2>
+    <table>
+      <tr><th>กลไก</th><th>คือ</th></tr>
+      <tr><td><strong>Steering</strong></td><td>การกำหนดพฤติกรรมเฉพาะ Kiro ผ่าน markdown ที่คุณเขียน</td></tr>
+      <tr><td><strong>Skills</strong></td><td>แพ็กเกจคำสั่งแบบ standalone</td></tr>
+      <tr><td><strong>Powers</strong></td><td>แพ็กเกจที่ติดตั้งได้และรู้บริบท รวม tool + ความรู้ + คำแนะนำ</td></tr>
+    </table>
+
+    <div class="key-takeaways">
+      <span class="label">สรุปประเด็นสำคัญ</span>
+      <ul>
+        <li>Power รวม <code>skills/</code> + <code>mcp.json</code> (ทางเลือก) + steering ใน <code>dev.kiro/</code> อธิบายด้วย <code>plugin.json</code></li>
+        <li>สร้างบน Agent Plugins spec แบบเปิด — ย้ายข้ามเจ้าได้</li>
+        <li>intelligent loading ดึงเฉพาะ Power ที่เกี่ยวกับงานปัจจุบัน</li>
+        <li>ติดตั้งจาก <code>kiro.dev/powers</code>, IDE หรือ URL GitHub ของชุมชน</li>
+        <li>แพ็กมาตรฐานของทีม + MCP ภายในเป็น Power ส่วนตัวได้</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">ลองทำ</span>
+      ติดตั้ง Power ที่เกี่ยวกับ stack ของคุณ (เช่น Supabase หรือ AWS Aurora) เริ่มงานที่พูดถึงเรื่องของมัน แล้วยืนยันว่า Power เปิดใช้เอง — ดูตัวบ่งชี้ Powers ใน editor
+    </div>
+  </article>
+
+  <!-- ================= MODULE 8 ================= -->
+  <article id="m8">
+    <span class="module-tag">บทที่ 8</span>
+    <h1>แผนนำไปใช้ในทีม</h1>
+    <p>นี่คือแผน <strong>ของเรา</strong> — ทีมเล็ก (2–5 คน) บน GitHub ที่ส่งงาน TypeScript/Node/React, Python และ JVM/.NET/Go บน AWS ไม่ใช่เอกสาร Kiro ปรับแก้เมื่อเราเรียนรู้เพิ่ม</p>
+
+    <h2>สัปดาห์ที่ 1 — ทุกคนเข้าร่วม</h2>
+    <ul>
+      <li>ทั้งทีมคือ pilot เราเล็กพอที่การมีเฟส "เริ่มบางคนก่อน" จะเพิ่มแต่ค่า coordination</li>
+      <li>ทุกคนติดตั้ง IDE, ลงชื่อเข้าใช้, นำเข้าการตั้งค่า VS Code</li>
+      <li>เลือก <strong>repo ที่ใช้งานจริงหนึ่งอัน</strong> สั่ง "Generate Steering Docs" แล้วแก้ <code>product.md</code> / <code>tech.md</code> / <code>structure.md</code> <em>ใน PR</em> จนกว่าจะตรงความจริง แล้ว merge — steering เข้าผ่านการรีวิวตั้งแต่วันแรก</li>
+    </ul>
+
+    <h2>steering สำหรับทีมหลายภาษา</h2>
+    <p>จัดโครงสร้าง steering ให้กฎของแต่ละภาษาโหลดเฉพาะเมื่อเกี่ยวข้อง:</p>
+    <table>
+      <tr><th>ไฟล์</th><th>โหมด</th><th>เนื้อหา</th></tr>
+      <tr><td><code>security.md</code>, <code>structure.md</code>, <code>code-review.md</code></td><td><code>always</code></td><td>กฎข้ามทีม ทำให้สั้น — กิน token ทุกเทิร์น</td></tr>
+      <tr><td><code>code-style-ts.md</code></td><td><code>fileMatch</code> <code>**/*.{ts,tsx}</code></td><td>การตั้งชื่อ, การจัดการ error, React patterns</td></tr>
+      <tr><td><code>code-style-python.md</code></td><td><code>fileMatch</code> <code>**/*.py</code></td><td>typing, packaging, กฎ lint</td></tr>
+      <tr><td><code>code-style-jvm.md</code></td><td><code>fileMatch</code> <code>**/*.{java,kt,cs,go}</code></td><td>convention แยกตามภาษา</td></tr>
+      <tr><td><code>infra-aws.md</code></td><td><code>fileMatch</code> <code>infra/**</code>, <code>**/*.tf</code></td><td>tagging, IAM least-privilege, กฎ region</td></tr>
+    </table>
+    <p>แต่ละไฟล์เก็บกฎที่เราเถียงกันในรีวิวอยู่แล้ว พร้อมตัวอย่าง before/after หนึ่งอันและ <em>เหตุผล</em> ของกฎ</p>
+
+    <h2>เมื่อไรควรใช้ spec — ตาม ticket</h2>
+    <div class="callout">
+      <span class="label">หลักคิดของเรา</span>
+      ถ้ามี ticket ก็มีโฟลเดอร์ spec ตั้งชื่อตาม ticket: <code>.kiro/specs/PROJ-1234-checkout-retry/</code> ไม่มี ticket และงานเล็กจิ๋ว? vibe ได้
+    </div>
+    <ul>
+      <li><strong>ticket ฟีเจอร์ → Feature Spec</strong> อ่านและกระชับ <code>requirements.md</code> ก่อนอนุมัติ design</li>
+      <li><strong>ticket บั๊ก → Bugfix Spec</strong> บันทึกว่าอะไรต้อง <em>ไม่</em> เปลี่ยน — การกัน regression ที่ผู้รีวิวต้องการ</li>
+      <li>commit โฟลเดอร์ spec ใน PR เดียวกับโค้ด เพื่อให้เหตุผลไปพร้อมกับการเปลี่ยน</li>
+    </ul>
+
+    <h2>วินัยด้านต้นทุน</h2>
+    <ul>
+      <li>ทำ steering โหมด <code>always</code> ให้สั้น; ผลักที่เหลือไป <code>fileMatch</code> / <code>manual</code></li>
+      <li>ปล่อยให้ <strong>compaction</strong> จัดการ session ยาว ๆ แทนการเริ่มใหม่</li>
+      <li><strong>Supervised เป็นค่าเริ่มต้น</strong> การรัน Autopilot ที่พลาดเผาทั้ง run บวกเวลารีวิวของคุณ ย้ายงานประเภทหนึ่งไป Autopilot เฉพาะเมื่อมันน่าเบื่อเพราะเชื่อถือได้แล้ว</li>
+      <li>ใช้ Quick Spec เท่าที่จำเป็น — ด่านอนุมัติคือสิ่งที่กันการเขียนใหม่ราคาแพง</li>
+    </ul>
+
+    <h2>guardrails — โค้ดที่อ่อนไหว</h2>
+    <ul>
+      <li><code>.kiroignore</code> ตั้งแต่วันแรก: secret, <code>.env*</code>, fixture ข้อมูลลูกค้า, อะไรก็ตามที่อยู่ในขอบเขต compliance, โฟลเดอร์ generate ขนาดใหญ่</li>
+      <li><strong>Permissions</strong> — จำกัดสิ่งที่ agent อ่านและรันได้; default-deny นอก repo ที่ทำงานอยู่</li>
+      <li>MCP: เฉพาะ server ที่รีวิวแล้ว, pin เวอร์ชัน, ใน <code>mcp.json</code> ระดับ workspace ที่ commit อันเดียว <code>autoApprove</code> เฉพาะ tool อ่านอย่างเดียว — ห้ามตัวที่เขียนหรือเรียกออกนอก</li>
+      <li>ระวัง <strong>การส่งต่อไป Web / Mobile</strong> — มันส่ง context ออกนอกเครื่อง เก็บงานอ่อนไหวไว้ใน IDE</li>
+      <li>Hooks: ไม่บล็อกเท่านั้นจนกว่าจะไว้ใจ ยังไม่ใช้ <code>PreToolUse</code> / <code>PromptSubmit</code> แบบบล็อกในช่วงแรก</li>
+    </ul>
+
+    <h2>MCP &amp; Powers ที่จะเริ่มด้วย</h2>
+    <ul>
+      <li><strong>AWS Documentation MCP server</strong> ใน <code>mcp.json</code> ที่ใช้ร่วมกัน — จุดร่วมของทุก stack ของเรา</li>
+      <li>ติดตั้ง Power <strong>AWS Aurora</strong> และ partner Power อื่นที่ตรงกับบริการที่เราพึ่งพา</li>
+      <li>เมื่อ steering นิ่งแล้ว แพ็ก convention ของเรา + MCP ภายในเป็น <strong>Power ส่วนตัว</strong> เพื่อให้ agent ของคนใหม่มีประโยชน์ตั้งแต่วันแรก</li>
+    </ul>
+
+    <h2>checklist การ rollout</h2>
+    <table>
+      <tr><th>ขั้น</th><th>ผู้รับผิดชอบ</th><th>เสร็จเมื่อ</th></tr>
+      <tr><td>ทุกคนติดตั้ง + ลงชื่อเข้าใช้</td><td>ทุกคน</td><td>—</td></tr>
+      <tr><td>steering พื้นฐาน merge แล้วและแม่นยำ</td><td>ทุกคน</td><td>PR merge แล้ว</td></tr>
+      <tr><td>steering <code>fileMatch</code> แยกภาษา</td><td>คนที่ดูแล stack นั้น</td><td>PR merge แล้ว</td></tr>
+      <tr><td><code>.kiroignore</code> + Permissions ผ่านการรีวิว</td><td>Lead</td><td>PR merge แล้ว</td></tr>
+      <tr><td><code>mcp.json</code> ระดับ workspace (AWS docs, ตรวจแล้วเท่านั้น)</td><td>Lead</td><td>PR merge แล้ว</td></tr>
+      <tr><td>ticket แรกส่งผ่าน spec</td><td>คู่</td><td>มีโฟลเดอร์ spec + PR merge</td></tr>
+      <tr><td>retro 2 สัปดาห์: ทำต่อ / ปรับ / หยุด</td><td>ทุกคน</td><td>แชร์บันทึกแล้ว</td></tr>
+    </table>
+
+    <div class="key-takeaways">
+      <span class="label">สรุปประเด็นสำคัญ</span>
+      <ul>
+        <li>ทีมเล็ก: ทุกคน pilot พร้อมกัน บน repo ที่ใช้งานจริงหนึ่งอัน</li>
+        <li>steering: ชุด <code>always</code> เล็ก ๆ บวกไฟล์ <code>fileMatch</code> แยกภาษา ทั้งหมดผ่าน PR</li>
+        <li>ทุก ticket มีโฟลเดอร์ spec ตั้งชื่อตามมัน; spec ไปพร้อม PR ของโค้ด</li>
+        <li>โค้ดอ่อนไหว: <code>.kiroignore</code> + Permissions + Supervised + MCP อ่านอย่างเดียวที่ตรวจแล้ว; เก็บงานอ่อนไหวออกจาก Web/Mobile</li>
+        <li>ต้นทุน: steering <code>always</code> สั้น, พึ่ง compaction, อย่าปล่อย Autopilot รันโดยไม่ดู</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- ================= CHEAT SHEET ================= -->
+  <article id="cheatsheet">
+    <span class="module-tag">อ้างอิง</span>
+    <h1>สรุป <code>.kiro/</code></h1>
+    <table>
+      <tr><th>อยากจะ…</th><th>ทำแบบนี้</th></tr>
+      <tr><td>ให้บริบทถาวรของโปรเจกต์แก่ Kiro</td><td><code>.kiro/steering/*.md</code> — ไฟล์พื้นฐานโหลดเสมอ; ที่เหลือใช้ front-matter <code>inclusion</code></td></tr>
+      <tr><td>โหลดไฟล์ steering เฉพาะบางไฟล์</td><td><code>inclusion: fileMatch</code> + <code>fileMatchPattern</code></td></tr>
+      <tr><td>โหลดไฟล์ steering ตามคำขอ</td><td><code>inclusion: manual</code> แล้วพิมพ์ <code>#file-name</code> ในแชต</td></tr>
+      <tr><td>งานฟีเจอร์ที่มีโครงสร้าง</td><td>เริ่ม Spec → <code>requirements.md</code> → <code>design.md</code> → <code>tasks.md</code></td></tr>
+      <tr><td>แก้บั๊กพร้อมกัน regression</td><td>เริ่ม Bugfix Spec</td></tr>
+      <tr><td>รันคำสั่งหลัง agent แก้ไฟล์</td><td>Hook ใน <code>.kiro/hooks/*.json</code> trigger <code>PostFileSave</code></td></tr>
+      <tr><td>เชื่อมเครื่องมือ / API / KB ภายนอก</td><td>เพิ่มลงใน <code>mcp.json</code> (workspace หรือ user)</td></tr>
+      <tr><td>ให้ agent มีความรู้ผู้เชี่ยวชาญของ framework</td><td>ติดตั้ง Power จาก <code>kiro.dev/powers</code></td></tr>
+      <tr><td>ป้อน context เฉพาะเข้าแชต</td><td><code>#codebase</code>, <code>#file</code>, <code>#folder</code>, <code>#git diff</code>, <code>#terminal</code>, <code>#problems</code>, <code>#docs</code>, <code>#mcp</code></td></tr>
+      <tr><td>ซ่อนไฟล์จาก agent</td><td><code>.kiroignore</code></td></tr>
+      <tr><td>ย้อนการรันที่พลาด</td><td>rewind ไปที่ checkpoint</td></tr>
+    </table>
+
+    <div class="pager">
+      <a href="index.html">← กลับไปภาพรวม</a>
+      <a href="slides/training-th.html">สไลด์ →</a>
+    </div>
+  </article>
+
+  </main>
+</div>
+
+<footer class="site">
+  เอกสารอบรมภายใน · จัดทำเพื่อทีม · ไม่ได้มีส่วนเกี่ยวข้องกับ AWS อย่างเป็นทางการ ·
+  อ้างอิงจาก <a href="https://kiro.dev/docs/" target="_blank" rel="noopener">kiro.dev/docs</a>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

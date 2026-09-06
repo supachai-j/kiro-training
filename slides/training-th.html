@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>พัฒนางานด้วย AWS Kiro — สไลด์ (ไทย)</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600&display=swap" />
+
+<style>
+  :root { --accent: #a78bfa; --accent2: #5d8aa8; --muted: #9aa0a6; }
+  .reveal { font-family: "Noto Sans Thai","Inter","Segoe UI",system-ui,sans-serif; font-size: 28px; }
+  .reveal p, .reveal li { line-height: 1.5; }
+  .reveal h1, .reveal h2, .reveal h3 { font-weight: 600; text-transform: none; letter-spacing: -0.01em; line-height: 1.25; }
+  .reveal h1 { color: var(--accent); font-size: 2.2em; }
+  .reveal h2 { color: var(--accent); font-size: 1.35em; margin-bottom: 0.35em; }
+  .reveal h3 { color: var(--accent2); font-size: 1.05em; }
+  .reveal section { text-align: left; }
+  .reveal .center { text-align: center; }
+  .reveal pre { font-size: 0.46em; box-shadow: none; border-left: 3px solid var(--accent); margin: 0.4em auto; line-height: 1.4; max-width: 100%; }
+  .reveal pre code { padding: 0.6em 0.8em; font-family: "Inter",ui-monospace,monospace; }
+  .reveal code { background: rgba(167,139,250,0.14); padding: 0 4px; border-radius: 3px; font-size: 0.95em; }
+  .reveal table { font-size: 0.6em; border-collapse: collapse; margin: 0.4em auto; line-height: 1.4; }
+  .reveal th, .reveal td { padding: 5px 10px; border-bottom: 1px solid #444; vertical-align: top; }
+  .reveal th { color: var(--accent); font-weight: 600; }
+  .reveal .muted { color: var(--muted); font-size: 0.78em; line-height: 1.5; }
+  .reveal .pill { display: inline-block; padding: 2px 10px; border-radius: 999px;
+    background: rgba(167,139,250,0.2); color: var(--accent); font-size: 0.6em; margin-right: 6px; }
+  .reveal .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9em; }
+  .reveal .card { background: rgba(255,255,255,0.04); border-left: 3px solid var(--accent2);
+    padding: 0.7em 0.9em; border-radius: 6px; font-size: 0.78em; line-height: 1.5; }
+  .reveal .card h3 { margin: 0 0 0.3em; font-size: 1em; }
+  .reveal .quote { border-left: 3px solid var(--accent);
+    padding-left: 0.8em; color: #ddd; font-size: 0.85em; margin: 0.5em 0; }
+  .reveal ul, .reveal ol { padding-left: 1.2em; }
+  .reveal ul li, .reveal ol li { margin: 0.2em 0; }
+  .reveal .big { font-size: 1.15em; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- TITLE -->
+<section class="center">
+  <h1>พัฒนางานด้วย AWS Kiro</h1>
+  <h3 style="color: #ddd">อบรมภายในทีม</h3>
+  <p class="muted">v1 · 2026 · เดินเรื่องประมาณ 90 นาที</p>
+  <p><span class="pill">ไทย</span><span class="pill">also in English</span></p>
+  <aside class="notes">
+    สวัสดีครับ Kiro คือสภาพแวดล้อมพัฒนาแบบ AI ของ AWS วันนี้เราจะดูว่ามันคืออะไร,
+    spec-driven development เปลี่ยน workflow ยังไง และสี่ส่วนควบคุมที่เราจะตั้งค่าจริงใน
+    repo: steering, hooks, MCP และ Powers จบคอร์สคุณควรรันฟีเจอร์ผ่าน spec บนโปรเจกต์ตัวเองได้
+  </aside>
+</section>
+
+<!-- AGENDA -->
+<section>
+  <h2>สิ่งที่เราจะครอบคลุม</h2>
+  <ol>
+    <li>Kiro คืออะไร และทำไม</li>
+    <li>โหมด Vibe / Chat</li>
+    <li>Specs — spec-driven development</li>
+    <li>Agent Steering</li>
+    <li>Agent Hooks</li>
+    <li>MCP — เครื่องมือและข้อมูลภายนอก</li>
+  </ol>
+  <p class="muted">…แล้วต่อด้วย Kiro Powers และแผนนำไปใช้ในทีมของเรา</p>
+  <aside class="notes">
+    แปดบท สามบทแรกว่าด้วยการขับ Kiro ในแต่ละวัน บทสี่ถึงหกคือไฟล์ที่เรา commit ลง
+    dot-kiro เพื่อให้ agent ทำงานสม่ำเสมอสำหรับทุกคน แล้วต่อด้วย Powers ที่รวมชิ้นส่วนพวกนั้น
+    และปิดท้ายด้วยแผนลงมือจริงบนโปรเจกต์ pilot หนึ่งอัน
+  </aside>
+</section>
+
+<!-- M1 -->
+<section>
+  <h2>1 · Kiro คืออะไร</h2>
+  <p class="big">AI agent ตัวเดียว เปิดผ่าน IDE, CLI, Web และ Mobile — ขับเคลื่อนด้วยโฟลเดอร์ <code>.kiro/</code> ร่วมกันใน repo</p>
+  <ul>
+    <li>แนวคิดหลัก: <strong>spec-driven development</strong> — requirements &amp; design เป็นไฟล์ที่รีวิวได้ ก่อนเขียนโค้ด</li>
+    <li>ยังมีโหมด "vibe" แบบอิสระสำหรับสำรวจไอเดียและ debug</li>
+    <li>config ติดไปกับ repository — ตั้งครั้งเดียว มีผลทุกที่</li>
+  </ul>
+  <aside class="notes">
+    สิ่งที่ต้องจำ: Kiro ไม่ใช่แค่ editor แต่เป็น agent ตัวเดียวหลังหลายประตู และ config
+    อยู่ใน repo ในชื่อ dot-kiro ฟีเจอร์เด่นคือเอกสารการวางแผน — requirements และ design —
+    กลายเป็นไฟล์จริงที่รีวิวได้ แทนที่จะหายไปในประวัติแชต
+  </aside>
+</section>
+
+<section>
+  <h2>1 · agent เดียว ทุกช่องทาง</h2>
+  <table>
+    <tr><th>ช่องทาง</th><th>ไว้</th></tr>
+    <tr><td>IDE (เดสก์ท็อป)</td><td>ประสบการณ์หลัก: editor, chat, specs, steering, UI ของ hooks</td></tr>
+    <tr><td>CLI</td><td>agent ตัวเดียวกันจาก terminal / script CI</td></tr>
+    <tr><td>Web</td><td>agent บนเบราว์เซอร์; งานที่ใช้เวลานาน</td></tr>
+    <tr><td>Mobile</td><td>ตามงาน (ไม่รองรับ MCP)</td></tr>
+  </table>
+  <p class="muted">config <code>.kiro/</code> ใช้ร่วมกันทุกช่องทาง</p>
+  <aside class="notes">
+    agent เดียวกัน คนละทางเข้า คุณอาจเริ่มงานใน IDE, เช็กจากมือถือตอนเดินทาง แล้วให้ CI
+    รัน CLI กับ steering ชุดเดียวกัน ความสม่ำเสมอมาจากการที่ dot-kiro อยู่ใน version
+    control ข้าง ๆ โค้ด
+  </aside>
+</section>
+
+<section>
+  <h2>1 · โฟลเดอร์ <code>.kiro/</code></h2>
+<pre><code class="language-text">.kiro/
+├── steering/          # ความรู้ถาวรของโปรเจกต์
+│   ├── product.md  ·  tech.md  ·  structure.md
+├── hooks/            # automation ตาม event (JSON)
+├── specs/            # หนึ่งโฟลเดอร์ต่อ feature / bugfix
+│   └── &lt;name&gt;/ requirements.md · design.md · tasks.md
+└── settings/
+    └── mcp.json      # การเชื่อมต่อเครื่องมือภายนอก</code></pre>
+  <p class="muted">commit เหมือน source อื่น รีวิวการแก้เหมือนโค้ด</p>
+  <aside class="notes">
+    นี่คือพื้นที่ทั้งหมด steering เป็น context แบบ markdown hooks เป็น automation แบบ
+    JSON specs เป็นโฟลเดอร์ต่อฟีเจอร์ที่มีเอกสารสามไฟล์ และ mcp.json ต่อเครื่องมือภายนอก
+    ทุกอย่างในนี้รีวิวใน pull request เพราะมันเปลี่ยนพฤติกรรม agent ของทั้งทีม
+  </aside>
+</section>
+
+<!-- M2 -->
+<section>
+  <h2>2 · Vibe vs Spec</h2>
+  <table>
+    <tr><th>โหมด</th><th>ผลลัพธ์</th><th>ใช้เมื่อ</th></tr>
+    <tr><td>Vibe (ค่าเริ่มต้น)</td><td>แก้ไข / ตอบตรง ๆ</td><td>คำถาม, debug, สำรวจ</td></tr>
+    <tr><td>Spec</td><td>requirements + design + tasks</td><td>งานฟีเจอร์ที่ต้องรีวิว</td></tr>
+    <tr><td>Plan</td><td>แผนอย่างเดียว ไม่แก้</td><td>เขียนแนวทางไว้ก่อน</td></tr>
+    <tr><td>Bug Fix</td><td>วิเคราะห์ → แก้</td><td>บั๊กที่ทำซ้ำได้</td></tr>
+    <tr><td>Quick Spec</td><td>สร้าง spec อัตโนมัติ</td><td>ฟีเจอร์เล็ก ไว้ใจ agent</td></tr>
+  </table>
+  <aside class="notes">
+    Vibe คือ agent เริ่มต้น — คุยกับ codebase อิสระ ไม่มีเอกสาร Spec คือเส้นทางมีโครงสร้าง
+    Plan, Bug Fix, Quick Spec อยู่ตรงกลาง หลักคิด: ถ้ามีคนจะรีวิวหรือถามทีหลัง ใช้ spec
+    นอกนั้น vibe ได้
+  </aside>
+</section>
+
+<section>
+  <h2>2 · Autopilot vs Supervised</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>Supervised</h3>
+      <ul><li>อนุมัติทุกการเปลี่ยน</li><li>ค่าเริ่มต้นที่ปลอดภัยระหว่างเรียนรู้</li><li>ช้ากว่า</li></ul>
+    </div>
+    <div class="card">
+      <h3>Autopilot</h3>
+      <ul><li>agent ลงมือ คุณรีวิวผล</li><li>สำหรับงานแคบ ๆ ที่พิสูจน์แล้ว</li></ul>
+    </div>
+  </div>
+  <p class="quote">อยู่ Supervised จนกว่าจะเห็น agent ทำ <em>งานประเภทนี้</em> ถูกต้องหลายครั้ง — แล้วค่อยเลื่อนงานประเภทนั้น</p>
+  <aside class="notes">
+    นี่เป็นสวิตช์แยกจากโหมด เริ่มที่ Supervised กับทุกอย่าง เมื่อเห็น agent จัดการงาน
+    ประเภทหนึ่งได้เรียบร้อยหลายครั้ง — เช่นเพิ่มไฟล์ test — ค่อยย้ายเฉพาะประเภทนั้นไป
+    Autopilot อย่าเปลี่ยนทุกอย่างพร้อมกัน
+  </aside>
+</section>
+
+<section>
+  <h2>2 · Context providers — <code>#</code></h2>
+  <table>
+    <tr><th>Provider</th><th>เพิ่ม</th></tr>
+    <tr><td><code>#codebase</code></td><td>Kiro หาไฟล์ที่เกี่ยวข้อง</td></tr>
+    <tr><td><code>#file</code> / <code>#folder</code></td><td>path ที่คุณระบุ</td></tr>
+    <tr><td><code>#git diff</code></td><td>การเปลี่ยนที่ยังไม่ commit</td></tr>
+    <tr><td><code>#terminal</code></td><td>ผลลัพธ์คำสั่งล่าสุด</td></tr>
+    <tr><td><code>#problems</code></td><td>diagnostics ของไฟล์</td></tr>
+    <tr><td><code>#docs</code> · <code>#url</code> · <code>#mcp</code></td><td>เอกสารภายนอก, หน้าเว็บ, resource จาก MCP</td></tr>
+  </table>
+  <p class="muted">ผสมกันในข้อความเดียวได้ วางรูปภาพก็ได้</p>
+  <aside class="notes">
+    Kiro รู้แค่สิ่งที่อยู่ใน context เมนู hash คือวิธีโหลดเข้ามา ผสมได้อิสระ: fix the
+    failing test in hash-problems using the pattern from hash-file คุณภาพคำตอบขึ้นกับ
+    คุณภาพ context เกือบเป๊ะ ๆ จึงต้องตั้งใจเลือกสิ่งที่ดึงเข้ามา
+  </aside>
+</section>
+
+<!-- M3 -->
+<section>
+  <h2>3 · spec คืออะไร</h2>
+  <p class="big">สามไฟล์ที่รีวิวได้ใน <code>.kiro/specs/&lt;name&gt;/</code> แต่ละอันมีด่านอนุมัติของคุณ:</p>
+  <table>
+    <tr><th>ไฟล์</th><th>เนื้อหา</th></tr>
+    <tr><td><code>requirements.md</code></td><td>user story + acceptance criteria (EARS)</td></tr>
+    <tr><td><code>design.md</code></td><td>สถาปัตยกรรม, diagram, การจัดการ error, กลยุทธ์ test</td></tr>
+    <tr><td><code>tasks.md</code></td><td>task ย่อยพร้อมสถานะ real-time</td></tr>
+  </table>
+  <aside class="notes">
+    spec แทนแชตยาว ๆ ด้วยเอกสารสามอัน คุณอนุมัติ requirements ก่อน design ถูกเขียน และ
+    design ก่อน tasks ถูกรัน แต่ละด่านคือ checkpoint ที่การแก้ความเข้าใจผิดยังราคาถูก
+  </aside>
+</section>
+
+<section>
+  <h2>3 · สามเฟส สามด่าน</h2>
+  <ol>
+    <li><strong>Requirements</strong> — แก้และอนุมัติ user story</li>
+    <li><strong>Design</strong> — รีวิวแนวทาง; จุดถูกที่สุดในการจับทางที่ผิด</li>
+    <li><strong>Tasks</strong> — agent ทำทีละ task พร้อมอัปเดตสถานะ</li>
+  </ol>
+  <p class="quote">ความเข้าใจผิดที่แก้ใน requirements.md ราคาหนึ่งประโยค ถ้าแก้หลัง 12 ไฟล์ ราคาทั้งบ่าย</p>
+  <aside class="notes">
+    ด่านคือหัวใจ มันเย้ายวนให้อ่าน requirements ผ่าน ๆ แล้วปล่อยรัน อย่าทำ สองนาทีที่
+    กระชับ acceptance criteria ประหยัดการเขียนใหม่ การรีวิว design คือจุดที่ถูกรองลงมา
+    ในการเปลี่ยนทิศงาน
+  </aside>
+</section>
+
+<section>
+  <h2>3 · EARS notation</h2>
+<pre><code class="language-text">WHEN  &lt;trigger&gt;              THE SYSTEM SHALL &lt;response&gt;
+WHILE &lt;state&gt;                THE SYSTEM SHALL &lt;response&gt;
+WHERE &lt;feature included&gt;     THE SYSTEM SHALL &lt;response&gt;
+IF    &lt;condition&gt; THEN       THE SYSTEM SHALL &lt;response&gt;
+
+// ตัวอย่าง
+WHEN a user submits checkout with an expired card
+THE SYSTEM SHALL reject the payment and show "Your card has expired"</code></pre>
+  <p class="muted">แต่ละบรรทัดกลายเป็น test</p>
+  <aside class="notes">
+    EARS เป็นแค่เทมเพลตประโยคไม่กี่แบบ คุณค่าคือทุกเกณฑ์ไม่กำกวมและทดสอบได้ตรง ๆ ตอน
+    รีวิว requirements ให้เขียนบรรทัดที่คลุมเครือใหม่ให้เป็นหนึ่งในรูปแบบเหล่านี้
+  </aside>
+</section>
+
+<section>
+  <h2>3 · task รันเป็น waves</h2>
+  <ul>
+    <li>Kiro สร้าง dependency graph จากรายการ task</li>
+    <li><strong>Wave 1</strong> — task ไม่มี dependency รันพร้อมกัน</li>
+    <li><strong>Wave 2+</strong> — task ที่ dependency ครบแล้ว รันพร้อมกัน</li>
+    <li>waves เรียงลำดับ; task ใน wave เดียวกันขนานกัน</li>
+    <li>อัตโนมัติ — ไม่ต้องตั้งค่า</li>
+  </ul>
+  <p class="muted">เหตุผลที่ spec มักเสร็จเร็วกว่าพิมพ์ task ทีละอัน</p>
+  <aside class="notes">
+    คุณไม่ต้องตั้งค่า Kiro หาว่า task ไหนเป็นอิสระต่อกันแล้วรันพร้อมกัน จากนั้น wave ถัดไป
+    เรื่อย ๆ เป็นข้อได้เปรียบด้านความเร็วจริง ๆ เทียบกับสั่งทีละคำสั่งในแชต
+  </aside>
+</section>
+
+<!-- M4 -->
+<section>
+  <h2>4 · Agent Steering</h2>
+  <p class="big">markdown ใน <code>.kiro/steering/</code> ที่ให้ความรู้ถาวรของโปรเจกต์แก่ Kiro</p>
+  <table>
+    <tr><th>ไฟล์พื้นฐาน</th><th>บันทึก</th></tr>
+    <tr><td><code>product.md</code></td><td>จุดประสงค์, ผู้ใช้, เป้าหมาย — "ทำไม"</td></tr>
+    <tr><td><code>tech.md</code></td><td>stack, เครื่องมือ, ข้อจำกัด</td></tr>
+    <tr><td><code>structure.md</code></td><td>การจัดวางไฟล์, การตั้งชื่อ, convention</td></tr>
+  </table>
+  <p class="muted">สร้างโดย "Generate Steering Docs" · โหลดทุกบทสนทนา</p>
+  <aside class="notes">
+    steering คือวิธีเลิกอธิบายโปรเจกต์ซ้ำทุกบทสนทนา สร้างไฟล์พื้นฐานสามไฟล์ แล้วแก้ด้วยมือ
+    จนตรงความจริง — ตัว generate ให้แค่ร่าง ไม่ใช่คัมภีร์ ทั้งสามไฟล์นี้โหลดเข้าทุก
+    interaction
+  </aside>
+</section>
+
+<section>
+  <h2>4 · Inclusion modes</h2>
+<pre><code class="language-yaml">---
+inclusion: always            # ค่าเริ่มต้น — ทุก interaction
+---
+---
+inclusion: fileMatch
+fileMatchPattern: ["**/*.tsx", "src/components/**/*"]
+---
+---
+inclusion: manual            # โหลดด้วย #file-name ในแชต
+---
+---
+inclusion: auto
+name: api-design
+description: REST API patterns. Use when creating endpoints.
+---</code></pre>
+  <aside class="notes">
+    front-matter ที่หัวไฟล์ steering คุมว่าจะโหลดเมื่อไร always สำหรับกฎสากล fileMatch
+    เพื่อจำกัดคำแนะนำให้กับพื้นที่หนึ่งของ codebase manual เมื่ออยากเรียกด้วยชื่อ auto
+    เมื่อ description ควรจุดให้โหลด ทำไฟล์ always ให้เล็ก เพราะกิน token ทุกเทิร์น
+  </aside>
+</section>
+
+<section>
+  <h2>4 · การอ้างอิง, AGENTS.md, แนวปฏิบัติ</h2>
+  <ul>
+    <li>ผูกไฟล์จริง: <code>#[[file:api/openapi.yaml]]</code></li>
+    <li><code>AGENTS.md</code> (root ของ repo หรือ <code>~/.kiro/steering/</code>) — รวมเสมอ ไม่มีโหมด</li>
+    <li>custom agents ต้องมี <code>"resources": ["file://.kiro/steering/**/*.md"]</code></li>
+    <li>หนึ่งเรื่องต่อไฟล์ · อธิบาย <em>เหตุผล</em> · ห้าม secret · รีวิวเหมือนโค้ด</li>
+  </ul>
+  <aside class="notes">
+    ชี้ steering ไปที่ไฟล์จริงเพื่อไม่ให้หลุดจาก source Kiro อ่านมาตรฐานข้ามเครื่องมือ
+    AGENTS.md ด้วย และจำไว้ว่า custom agents ไม่สืบทอด steering อัตโนมัติ — ต้องเพิ่มใน
+    รายการ resources มองการแก้ steering ทุกครั้งเป็น pull request
+  </aside>
+</section>
+
+<!-- M5 -->
+<section>
+  <h2>5 · Agent Hooks</h2>
+  <p class="big">JSON ใน <code>.kiro/hooks/</code> — รันคำสั่งหรือ prompt ให้ agent อัตโนมัติเมื่อมี event</p>
+  <table>
+    <tr><th>กลุ่ม</th><th>Triggers</th></tr>
+    <tr><td>ไฟล์ (IDE)</td><td><code>PostFileCreate/Save/Delete</code></td></tr>
+    <tr><td>การรัน</td><td><code>PreToolUse/PostToolUse</code>, <code>PromptSubmit</code> (บล็อกได้)</td></tr>
+    <tr><td>Lifecycle</td><td><code>SessionStart</code>, <code>AgentSpawn</code>, <code>AgentStop</code></td></tr>
+    <tr><td>Task (IDE)</td><td><code>PreTaskExecution/PostTaskExecution</code></td></tr>
+  </table>
+  <aside class="notes">
+    hook ทำงานตาม event ระหว่าง session และเปิดใช้อัตโนมัติเมื่อ session เริ่ม ตัวที่
+    บล็อกได้ — PreToolUse และ PromptSubmit — ทรงพลังแต่ให้นำมาใช้ทีหลังสุด เมื่อทีมไว้ใจ
+    ตัวที่ไม่บล็อกแล้ว
+  </aside>
+</section>
+
+<section>
+  <h2>5 · รูปแบบไฟล์ hook</h2>
+<pre><code class="language-json">{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Lint on save",
+      "trigger": "PostFileSave",
+      "matcher": "\\.(ts|tsx)$",
+      "action": { "type": "command", "command": "npx eslint --fix" },
+      "timeout": 60
+    }
+  ]
+}</code></pre>
+  <p class="muted"><code>action.type</code>: <code>"command"</code> (shell) หรือ <code>"agent"</code> (แทรก prompt) · trigger ไฟล์ทำงานกับการแก้ของ <em>agent</em> เท่านั้น</p>
+  <aside class="notes">
+    matcher เป็น regex ที่จำกัดว่า event ไหนจุด hook action เป็นคำสั่ง shell หรือ prompt
+    ที่ส่งให้ agent จุดพลาดที่ต้องย้ำ: trigger ไฟล์ตอบสนองต่อการแก้ของ agent ไม่ใช่ตอน
+    คุณเซฟไฟล์เองใน editor
+  </aside>
+</section>
+
+<section>
+  <h2>5 · hook ไว้ทำอะไร</h2>
+  <ul>
+    <li>รัน linter / formatter / type check หลัง agent แก้</li>
+    <li>สร้าง test, docs หรือคำแปลอัตโนมัติสำหรับไฟล์ source ใหม่</li>
+    <li>บล็อก tool ด้วย <code>PreToolUse</code> จนกว่าเงื่อนไขจะครบ</li>
+    <li>ตรวจคุณภาพก่อน agent ปิดงาน</li>
+  </ul>
+  <p class="muted">สร้างใน IDE: <strong>+</strong> ใน Agent Hooks → "Ask Kiro to create a hook" → อธิบาย</p>
+  <aside class="notes">
+    เริ่มด้วย hook เสี่ยงต่ำสองอัน: format ตอนเซฟ และสร้างโครง test เมื่อมีไฟล์ source ใหม่
+    คุณอธิบายสิ่งที่ต้องการเป็นภาษาคน แล้ว Kiro เขียน JSON ให้ จากนั้นรีวิว JSON นั้นใน
+    pull request เหมือนโค้ด
+  </aside>
+</section>
+
+<!-- M6 -->
+<section>
+  <h2>6 · MCP — Model Context Protocol</h2>
+  <p class="big">ให้ Kiro ใช้ tools, prompts และ resources จาก server ภายนอก</p>
+  <table>
+    <tr><th>ระดับ</th><th>ขอบเขต</th></tr>
+    <tr><td>Workspace <code>mcp.json</code></td><td>repo นี้ — commit เพื่อแชร์</td></tr>
+    <tr><td>User <code>mcp.json</code></td><td>ทุกโปรเจกต์ของคุณ</td></tr>
+    <tr><td>Agent <code>mcpServers</code></td><td>เฉพาะ agent นั้น</td></tr>
+  </table>
+  <p class="muted">Local (stdio) &amp; remote (HTTP/SSE) — ทุกที่ยกเว้น Mobile</p>
+  <aside class="notes">
+    MCP คือปลั๊กสำหรับอะไรก็ตามที่โมเดลไม่รู้เอง — wiki ภายใน, ระบบ ticket, cloud API,
+    การค้นเอกสาร config อยู่สามระดับ ตัวที่ทีมสนใจคือ workspace mcp.json ที่ commit ไว้
+    เพื่อให้ทุกคนรัน server ที่ตรวจแล้วชุดเดียวกัน
+  </aside>
+</section>
+
+<section>
+  <h2>6 · ตัวอย่าง mcp.json</h2>
+<pre><code class="language-json">{
+  "mcpServers": {
+    "aws-docs": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@latest"],
+      "disabled": false,
+      "autoApprove": ["search_documentation"]
+    }
+  }
+}</code></pre>
+  <p class="muted"><code>disabled</code> ปิดโดยไม่ลบ · <code>autoApprove</code> = tool อ่านอย่างเดียวเท่านั้น · secret ผ่าน <code>env</code> ห้าม commit</p>
+  <aside class="notes">
+    AWS Documentation server เป็นตัวแรกที่ดี — agent ค้นเอกสาร AWS จริงแทนการเดาจากข้อมูล
+    training ให้ autoApprove เฉพาะ tool อ่านอย่างเดียว เพื่อให้อะไรที่เปลี่ยน state ยังถาม
+    คุณอยู่
+  </aside>
+</section>
+
+<section>
+  <h2>6 · มอง server เป็น supply chain</h2>
+  <p class="quote">ติดตั้ง MCP server จากแหล่งที่ไว้ใจได้เท่านั้น — server รันโค้ดบนเครื่องคุณและเห็น context ที่ agent ส่งให้</p>
+  <ul>
+    <li>ตรวจแพ็กเกจ · pin เวอร์ชัน · secret ผ่าน env</li>
+    <li>Kiro ยืนยัน install link โดยแสดง <em>ชื่อ</em> env var (ซ่อนค่า)</li>
+    <li>ชื่อ tool: <code>^[a-zA-Z][a-zA-Z0-9_]*$</code>, &lt; 64 อักขระ</li>
+  </ul>
+  <aside class="notes">
+    นี่คือสไลด์ความปลอดภัยหนึ่งเดียวของ MCP MCP server คือโค้ดที่รันได้และมองเห็น context
+    ของคุณ เราตรวจทุก server ก่อนใส่ใน mcp.json ที่ใช้ร่วมกัน pin เวอร์ชัน และเก็บ
+    credential ใน environment variable ที่ไม่เคย commit
+  </aside>
+</section>
+
+<!-- M7 -->
+<section>
+  <h2>7 · Kiro Powers</h2>
+  <p class="big">แพ็กเกจติดตั้งได้ที่ทำให้ agent เก่งกับเครื่องมือหรือ framework เฉพาะ</p>
+  <table>
+    <tr><th>ส่วน</th><th>ให้</th></tr>
+    <tr><td><code>plugin.json</code></td><td>manifest + keyword การเปิดใช้</td></tr>
+    <tr><td><code>skills/</code></td><td>คำสั่งเฉพาะงาน</td></tr>
+    <tr><td><code>mcp.json</code></td><td>การเข้าถึง tool (ทางเลือก)</td></tr>
+    <tr><td><code>dev.kiro/</code></td><td>steering &amp; ส่วนขยาย Kiro</td></tr>
+  </table>
+  <p class="muted">สร้างบน spec <strong>Agent Plugins</strong> แบบเปิด (Amazon, Cursor, Microsoft, OpenAI, Vercel)</p>
+  <aside class="notes">
+    Power คือ steering บวก skills บวก MCP ทางเลือก แพ็กให้ติดตั้งคลิกเดียว เพราะสร้างบน
+    มาตรฐาน Agent Plugins ที่ไม่ผูกเจ้า Power เดียวกันใช้นอก Kiro ได้ มองเป็นความเชี่ยวชาญ
+    ของ framework ที่ส่งมาโดยคนที่สร้าง framework นั้น
+  </aside>
+</section>
+
+<section>
+  <h2>7 · สองปัญหา หนึ่งกลไก</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>ปัญหา</h3>
+      <ul><li>ความเชี่ยวชาญกระจัดกระจายในเอกสาร</li><li>context ท่วมท้นจาก MCP server มากไป</li></ul>
+    </div>
+    <div class="card">
+      <h3>Intelligent loading</h3>
+      <ul><li>Kiro จับคู่งานของคุณกับ Power ที่ติดตั้ง</li><li>โหลดเฉพาะตัวที่เกี่ยว — ไม่ใช่ 50k+ tokens ตั้งแต่ต้น</li></ul>
+    </div>
+  </div>
+  <p class="muted">พูดว่า "payment" → Stripe เปิด เปลี่ยนไปทำงาน DB → Supabase โหลดแทน</p>
+  <aside class="notes">
+    ต่อ server มากขึ้นไม่ได้ช่วยอัตโนมัติ — มันฝัง agent ไว้ใน context Powers แก้ด้วยการ
+    โหลด on demand คุณไม่ต้องสลับ; คำอธิบายงานเป็นตัวตัดสินว่าความรู้ของ Power ตัวไหนเข้ามา
+    ใน context
+  </aside>
+</section>
+
+<section>
+  <h2>7 · การติดตั้ง &amp; partner</h2>
+  <ul>
+    <li>คลิกเดียวจาก IDE / CLI หรือ registry ที่ <code>kiro.dev/powers</code></li>
+    <li>นำเข้า Power ของชุมชนด้วย URL GitHub</li>
+    <li>Power ที่ sync cloud อยู่ใน <strong>Settings → Powers</strong></li>
+  </ul>
+  <p class="muted">Launch partner: Datadog · Dynatrace · Figma · Neon · Netlify · Postman · Supabase · Stripe · AWS Aurora</p>
+  <aside class="notes">
+    Power ของแต่ละ partner สร้างโดยบริษัทเจ้าของเครื่องมือ — คำแนะนำ design-to-code ของ
+    Figma เอง, pattern Row Level Security ของ Supabase เอง คุณแพ็ก convention ของทีม
+    บวก MCP ภายในเป็น Power ส่วนตัวได้เมื่อ steering นิ่งแล้ว
+  </aside>
+</section>
+
+<section>
+  <h2>7 · Powers vs Skills vs Steering</h2>
+  <table>
+    <tr><th>กลไก</th><th>คือ</th></tr>
+    <tr><td>Steering</td><td>กำหนดพฤติกรรมเฉพาะ Kiro — markdown ที่คุณเขียน</td></tr>
+    <tr><td>Skills</td><td>แพ็กเกจคำสั่งแบบ standalone</td></tr>
+    <tr><td>Powers</td><td>ติดตั้งได้ รู้บริบท — tool + ความรู้ + คำแนะนำ</td></tr>
+  </table>
+  <aside class="notes">
+    แยกให้ชัดเร็ว ๆ steering เป็นของคุณ เขียนเอง เฉพาะ Kiro Skill คือชุดคำสั่งพกพาได้
+    Power ห่อ skills กับ MCP กับ steering เข้าด้วยกันเป็นสิ่งที่ติดตั้งได้และโหลดแบบ
+    ฉลาด Powers คือรูปแบบการกระจาย
+  </aside>
+</section>
+
+<!-- M8 -->
+<section>
+  <h2>8 · นำไปใช้ — สัปดาห์ที่ 1</h2>
+  <ul>
+    <li>ทีมเล็ก (2–5 คน, GitHub) → <strong>ทุกคน</strong> pilot พร้อมกัน บน repo ที่ใช้งานจริงหนึ่งอัน</li>
+    <li>ทุกคน: ติดตั้ง IDE, ลงชื่อเข้าใช้, นำเข้าการตั้งค่า VS Code</li>
+    <li>"Generate Steering Docs" → แก้ <em>ใน PR</em> จนตรงความจริง → merge</li>
+    <li>steering หลายภาษา: ชุด <code>always</code> เล็ก + ไฟล์ <code>fileMatch</code> แยกภาษา (<code>code-style-ts.md</code>, <code>-python.md</code>, <code>infra-aws.md</code>)</li>
+  </ul>
+  <aside class="notes">
+    เราเป็นทีมเล็ก จึงไม่มีเฟสเริ่มบางคนก่อน — ทุกคนเริ่มบน repo จริงอันเดียว ผลงานชิ้นแรก
+    คือ steering พื้นฐานที่แม่นยำจริง เพราะเราส่งงานหลายภาษา แยกกฎ style เป็นไฟล์ fileMatch
+    ให้แต่ละไฟล์โหลดเฉพาะตอนแตะภาษานั้น
+  </aside>
+</section>
+
+<section>
+  <h2>8 · spec ตาม ticket, วินัยต้นทุน</h2>
+  <p class="quote">ถ้ามี ticket ก็มีโฟลเดอร์ spec ตั้งชื่อตาม ticket ไม่มี ticket และงานเล็กจิ๋ว? vibe ได้</p>
+  <ul>
+    <li>ticket ฟีเจอร์ → Feature Spec · ticket บั๊ก → Bugfix Spec</li>
+    <li>commit โฟลเดอร์ spec ใน PR เดียวกับโค้ด</li>
+    <li>ต้นทุน: steering <code>always</code> สั้น, พึ่ง compaction, Supervised เป็นค่าเริ่มต้น</li>
+  </ul>
+  <aside class="notes">
+    ทุก ticket มีโฟลเดอร์ spec ของตัวเอง ตั้งชื่อตาม id ของ ticket commit ไปกับโค้ดเพื่อให้
+    เหตุผลเดินทางไปกับการเปลี่ยน เรื่องต้นทุน: การรัน Autopilot ที่พลาดเผาทั้ง run บวกเวลา
+    รีวิว เราจึงอยู่ Supervised จนกว่างานประเภทนั้นจะน่าเบื่อเพราะเชื่อถือได้
+  </aside>
+</section>
+
+<section>
+  <h2>8 · guardrails — โค้ดอ่อนไหว</h2>
+  <ul>
+    <li><code>.kiroignore</code> วันแรก: secret, <code>.env*</code>, ข้อมูลลูกค้า, โฟลเดอร์ในขอบเขต compliance</li>
+    <li><strong>Permissions</strong> default-deny นอก repo ที่ทำงานอยู่</li>
+    <li>MCP: รีวิว + pin แล้วเท่านั้น; <code>autoApprove</code> tool อ่านอย่างเดียว</li>
+    <li>เก็บงานอ่อนไหวไว้ใน IDE — Web / Mobile ส่ง context ออกนอกเครื่อง</li>
+    <li>เริ่มด้วย AWS Docs MCP + AWS Aurora Power</li>
+  </ul>
+  <aside class="notes">
+    เพราะโค้ดบางส่วนของเราอ่อนไหว kiroignore และ Permissions ใส่ตั้งแต่วันแรก และเราไม่
+    auto-approve tool ที่เขียนหรือเรียกออกนอกเด็ดขาด ช่องทาง Web และ Mobile ส่ง context
+    ออกนอกเครื่อง งานอ่อนไหวจึงอยู่ใน IDE AWS Docs MCP กับ Aurora Power คือจุดเริ่มร่วมกัน
+  </aside>
+</section>
+
+<section>
+  <h2>8 · checklist การ rollout</h2>
+  <table>
+    <tr><th>ขั้น</th><th>เสร็จเมื่อ</th></tr>
+    <tr><td>ทุกคนติดตั้ง + ลงชื่อเข้าใช้</td><td>—</td></tr>
+    <tr><td>steering พื้นฐาน merge แล้วและแม่นยำ</td><td>PR merge</td></tr>
+    <tr><td>steering <code>fileMatch</code> แยกภาษา</td><td>PR merge</td></tr>
+    <tr><td><code>.kiroignore</code> + Permissions ผ่านรีวิว</td><td>PR merge</td></tr>
+    <tr><td><code>mcp.json</code> ระดับ workspace ตรวจแล้ว</td><td>PR merge</td></tr>
+    <tr><td>ticket แรกผ่าน spec</td><td>มีโฟลเดอร์ spec + PR merge</td></tr>
+    <tr><td>retro 2 สัปดาห์: ทำต่อ / ปรับ / หยุด</td><td>แชร์บันทึกแล้ว</td></tr>
+  </table>
+  <aside class="notes">
+    เจ็ด checkpoint ข้อสุดท้ายคือจุดตัดสินใจจริง — หลังสองสัปดาห์เราดู retro แล้วตัดสินใจ
+    ว่าจะทำต่อ ปรับ หรือหยุด นี่เป็นการทดลองที่มีขอบเขต ไม่ใช่คำสั่งให้รับทุกอย่างมาใช้
+  </aside>
+</section>
+
+<section>
+  <h2>สรุป cheat sheet</h2>
+  <table>
+    <tr><th>อยากจะ…</th><th>ทำ</th></tr>
+    <tr><td>บริบทถาวรของโปรเจกต์</td><td><code>.kiro/steering/*.md</code></td></tr>
+    <tr><td>ฟีเจอร์มีโครงสร้าง</td><td>Spec → requirements → design → tasks</td></tr>
+    <tr><td>บั๊ก + กัน regression</td><td>Bugfix Spec</td></tr>
+    <tr><td>คำสั่งหลัง agent แก้</td><td>Hook, <code>PostFileSave</code></td></tr>
+    <tr><td>เครื่องมือ / API / KB ภายนอก</td><td><code>mcp.json</code></td></tr>
+    <tr><td>ความเชี่ยวชาญ framework</td><td>ติดตั้ง Power</td></tr>
+    <tr><td>ย้อนการรันที่พลาด</td><td>rewind ไป checkpoint</td></tr>
+  </table>
+  <aside class="notes">
+    สกรีนช็อตอันนี้ไว้ มันแมปเจตนาที่พบบ่อยกับกลไก เวอร์ชันเต็มพร้อม context providers
+    และ kiroignore อยู่ในหน้าคอร์ส
+  </aside>
+</section>
+
+<!-- CLOSE -->
+<section class="center">
+  <h1>คำถาม?</h1>
+  <p class="muted">คอร์ส + สไลด์ · ภายใน · อ้างอิงจาก kiro.dev/docs</p>
+  <p><span class="pill">course-en.html</span><span class="pill">course-th.html</span></p>
+  <aside class="notes">
+    นั่นคือทัวร์ทั้งหมด คอร์สเรียนด้วยตัวเองลงลึกทุกบทพร้อม config คัดลอกไปใช้ได้และแบบฝึก
+    "ลองทำ" ทุกบท ขั้นถัดไป: ทุกคนติดตั้ง IDE และ generate steering บน repo จริงก่อน
+    session หน้า มีคำถามอะไรครับ
+  </aside>
+</section>
+
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true, slideNumber: 'c/t', transition: 'slide',
+    width: 1280, height: 800, margin: 0.06,
+    minScale: 0.2, maxScale: 1.8,
+    plugins: [ RevealHighlight, RevealNotes ]
+  });
+</script>
+
+<!-- ===================== NARRATION UI ===================== -->
+<style>
+  .narration-bar { position: fixed; bottom: 10px; right: 10px; z-index: 1001;
+    display: flex; align-items: center; gap: 10px; padding: 6px 10px;
+    background: rgba(20,20,20,0.88); border-radius: 8px; backdrop-filter: blur(6px);
+    font-family: "Noto Sans Thai","Inter",sans-serif; font-size: 12px; color: #ddd;
+    transition: bottom 0.25s ease; }
+  .narration-bar audio { height: 28px; width: 240px; }
+  .narration-bar audio::-webkit-media-controls-panel { background: transparent; }
+  .narration-bar label { display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
+  .narration-bar input[type="checkbox"] { accent-color: #a78bfa; }
+  body.transcript-open .narration-bar { bottom: calc(35vh + 10px); }
+
+  .transcript-drawer { position: fixed; left: 0; right: 0; bottom: 0;
+    height: 35vh; z-index: 1000;
+    background: rgba(15,15,15,0.97); color: #e8ecf2;
+    border-top: 2px solid #a78bfa;
+    padding: 22px 32px; overflow-y: auto;
+    font-family: "Noto Sans Thai","Inter",sans-serif;
+    font-size: 19px; line-height: 1.75;
+    transform: translateY(100%); transition: transform 0.25s ease; }
+  body.transcript-open .transcript-drawer { transform: translateY(0); }
+  .transcript-drawer .label { font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.12em; color: #888; margin-bottom: 8px; }
+  body.transcript-open .reveal-viewport,
+  body.transcript-open .reveal { height: 65vh !important; }
+
+  .captions { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    max-width: 78vw; z-index: 999; pointer-events: none;
+    background: rgba(0,0,0,0.86); color: #fff;
+    padding: 14px 24px; border-radius: 10px; text-align: center;
+    font-family: "Noto Sans Thai","Inter",sans-serif;
+    font-size: 22px; line-height: 1.55; font-weight: 500;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    opacity: 0; transition: opacity 0.2s ease, bottom 0.25s ease;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+  body.captions-on .captions:not(:empty) { opacity: 1; }
+  body.transcript-open .captions { bottom: calc(35vh + 80px); }
+
+  @media print { .narration-bar, .transcript-drawer, .captions { display: none; } }
+</style>
+
+<div class="narration-bar">
+  <audio id="slide-audio" controls preload="metadata"></audio>
+  <label><input type="checkbox" id="auto-advance" checked /> เล่นต่อเอง</label>
+  <label><input type="checkbox" id="show-captions" /> คำบรรยาย</label>
+  <label><input type="checkbox" id="show-transcript" /> สคริปต์</label>
+</div>
+<div class="captions" id="captions" aria-live="polite"></div>
+<div class="transcript-drawer" id="transcript-drawer" aria-live="polite">
+  <div class="label">สคริปต์ — สไลด์นี้</div>
+  <div id="transcript-content"></div>
+</div>
+
+<script>
+(function () {
+  var LANG = "th";
+  var audio = document.getElementById("slide-audio");
+  var autoCb = document.getElementById("auto-advance");
+  var trCb = document.getElementById("show-transcript");
+  var capCb = document.getElementById("show-captions");
+  var trContent = document.getElementById("transcript-content");
+  var capBox = document.getElementById("captions");
+  var userPaused = false;
+  var timeline = [];
+
+  function pad2(n) { return n < 10 ? "0" + n : "" + n; }
+  function slideNum() { return Reveal.getIndices().h + 1; }
+
+  function loadAndPlay() {
+    var n = slideNum();
+    var src = "../audio/" + LANG + "/s" + pad2(n) + ".mp3";
+    if (audio.src.indexOf(src) === -1) {
+      audio.src = src;
+      userPaused = false; timeline = []; capBox.textContent = "";
+      var p = audio.play();
+      if (p && p.catch) p.catch(function () {});
+    }
+  }
+  function getCurrentNote() {
+    return document.querySelector(".present aside.notes")
+        || document.querySelector(".reveal section.present aside.notes");
+  }
+  function updateTranscript() {
+    var note = getCurrentNote();
+    trContent.textContent = note ? note.textContent.trim() : "(ไม่มีสคริปต์สำหรับสไลด์นี้)";
+    trContent.scrollTop = 0;
+  }
+  function buildTimeline() {
+    var note = getCurrentNote();
+    if (!note || !audio.duration || isNaN(audio.duration)) { timeline = []; return; }
+    var text = note.textContent.trim();
+    var sentences = text.split(/(?<=[.!?ๆ])\s+/).map(function (s) { return s.trim(); }).filter(Boolean);
+    if (sentences.length < 2) {
+      // Thai has no sentence spaces — fall back to whitespace chunks of ~8 words
+      var words = text.split(/\s+/), chunk = [];
+      sentences = [];
+      words.forEach(function (w, i) {
+        chunk.push(w);
+        if (chunk.length >= 8 || i === words.length - 1) { sentences.push(chunk.join(" ")); chunk = []; }
+      });
+    }
+    var totalChars = sentences.reduce(function (n, s) { return n + s.length; }, 0);
+    if (totalChars === 0) { timeline = []; return; }
+    var cum = 0;
+    timeline = sentences.map(function (s) {
+      var start = (cum / totalChars) * audio.duration;
+      cum += s.length;
+      return { text: s, start: start };
+    });
+  }
+  function updateCaption() {
+    if (!timeline.length) return;
+    var t = audio.currentTime, cur = timeline[0].text;
+    for (var i = timeline.length - 1; i >= 0; i--) {
+      if (t >= timeline[i].start) { cur = timeline[i].text; break; }
+    }
+    if (capBox.textContent !== cur) capBox.textContent = cur;
+  }
+  audio.addEventListener("loadedmetadata", buildTimeline);
+  audio.addEventListener("timeupdate", updateCaption);
+  audio.addEventListener("pause", function () { if (!audio.ended) userPaused = true; });
+  audio.addEventListener("play", function () { userPaused = false; });
+  audio.addEventListener("ended", function () {
+    capBox.textContent = "";
+    if (autoCb.checked && !userPaused) Reveal.next();
+  });
+  trCb.addEventListener("change", function () {
+    document.body.classList.toggle("transcript-open", trCb.checked);
+    if (trCb.checked) updateTranscript();
+    setTimeout(function () { if (window.Reveal) Reveal.layout(); }, 60);
+  });
+  capCb.addEventListener("change", function () {
+    document.body.classList.toggle("captions-on", capCb.checked);
+    if (capCb.checked && !timeline.length) buildTimeline();
+  });
+  Reveal.on("ready", function () { loadAndPlay(); updateTranscript(); });
+  Reveal.on("slidechanged", function () { loadAndPlay(); updateTranscript(); });
+})();
+</script>
+</body>
+</html>

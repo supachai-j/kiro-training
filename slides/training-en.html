@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Building with AWS Kiro — Slides (EN)</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css" />
+
+<style>
+  :root { --accent: #a78bfa; --accent2: #5d8aa8; --muted: #9aa0a6; }
+  .reveal { font-family: "Inter","Segoe UI",system-ui,sans-serif; font-size: 30px; }
+  .reveal h1, .reveal h2, .reveal h3 { font-weight: 600; text-transform: none; letter-spacing: -0.01em; line-height: 1.2; }
+  .reveal h1 { color: var(--accent); font-size: 2.2em; }
+  .reveal h2 { color: var(--accent); font-size: 1.35em; margin-bottom: 0.35em; }
+  .reveal h3 { color: var(--accent2); font-size: 1.05em; }
+  .reveal section { text-align: left; }
+  .reveal .center { text-align: center; }
+  .reveal pre { font-size: 0.46em; box-shadow: none; border-left: 3px solid var(--accent); margin: 0.4em auto; line-height: 1.35; max-width: 100%; }
+  .reveal pre code { padding: 0.6em 0.8em; }
+  .reveal code { background: rgba(167,139,250,0.14); padding: 0 4px; border-radius: 3px; font-size: 0.95em; }
+  .reveal table { font-size: 0.6em; border-collapse: collapse; margin: 0.4em auto; line-height: 1.35; }
+  .reveal th, .reveal td { padding: 5px 10px; border-bottom: 1px solid #444; vertical-align: top; }
+  .reveal th { color: var(--accent); font-weight: 600; }
+  .reveal .muted { color: var(--muted); font-size: 0.78em; line-height: 1.45; }
+  .reveal .pill { display: inline-block; padding: 2px 10px; border-radius: 999px;
+    background: rgba(167,139,250,0.2); color: var(--accent); font-size: 0.6em; margin-right: 6px; }
+  .reveal .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9em; }
+  .reveal .card { background: rgba(255,255,255,0.04); border-left: 3px solid var(--accent2);
+    padding: 0.7em 0.9em; border-radius: 6px; font-size: 0.78em; line-height: 1.45; }
+  .reveal .card h3 { margin: 0 0 0.3em; font-size: 1em; }
+  .reveal .quote { font-style: italic; border-left: 3px solid var(--accent);
+    padding-left: 0.8em; color: #ddd; font-size: 0.85em; margin: 0.5em 0; }
+  .reveal ul, .reveal ol { padding-left: 1.2em; }
+  .reveal ul li, .reveal ol li { margin: 0.18em 0; line-height: 1.4; }
+  .reveal .big { font-size: 1.15em; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- TITLE -->
+<section class="center">
+  <h1>Building with AWS Kiro</h1>
+  <h3 style="color: #ddd">Internal team enablement</h3>
+  <p class="muted">v1 · 2026 · ~90 min walkthrough</p>
+  <p><span class="pill">EN</span><span class="pill">also in ภาษาไทย</span></p>
+  <aside class="notes">
+    Welcome. Kiro is AWS's AI development environment, and today we're covering
+    what it is, how spec-driven development changes the workflow, and the four
+    control surfaces we'll actually configure in our repo: steering, hooks, MCP,
+    and Powers. By the end you should be able to run a feature through a spec on
+    your own project.
+  </aside>
+</section>
+
+<!-- AGENDA -->
+<section>
+  <h2>What we'll cover</h2>
+  <ol>
+    <li>What is Kiro &amp; why</li>
+    <li>Vibe / Chat mode</li>
+    <li>Specs — spec-driven development</li>
+    <li>Agent Steering</li>
+    <li>Agent Hooks</li>
+    <li>MCP — external tools &amp; data</li>
+  </ol>
+  <p class="muted">…then Kiro Powers, and our team adoption plan.</p>
+  <aside class="notes">
+    Eight modules. The first three are about how you drive Kiro day to day.
+    Modules four to six are the files we commit into dot-kiro to make the agent
+    behave consistently for everyone. Then Powers, which bundle those pieces,
+    and finally the concrete plan for rolling this out on one pilot project.
+  </aside>
+</section>
+
+<!-- M1 -->
+<section>
+  <h2>1 · What is Kiro</h2>
+  <p class="big">One AI agent, exposed through IDE, CLI, Web, and Mobile — driven by a shared <code>.kiro/</code> folder in your repo.</p>
+  <ul>
+    <li>Core idea: <strong>spec-driven development</strong> — requirements &amp; design as reviewable files, before code</li>
+    <li>Free-form "vibe" mode still available for exploration &amp; debugging</li>
+    <li>Config travels with the repository — set up once, applies everywhere</li>
+  </ul>
+  <aside class="notes">
+    The thing to hold onto: Kiro is not just an editor. It's one agent behind
+    several front doors, and its configuration lives in your repo as dot-kiro.
+    The headline feature is that planning artifacts — requirements and design —
+    become real files you review, instead of disappearing into chat history.
+  </aside>
+</section>
+
+<section>
+  <h2>1 · One agent, every surface</h2>
+  <table>
+    <tr><th>Surface</th><th>For</th></tr>
+    <tr><td>IDE (desktop)</td><td>Main experience: editor, chat, specs, steering, hooks UI</td></tr>
+    <tr><td>CLI</td><td>Same agent from terminal / CI scripts</td></tr>
+    <tr><td>Web</td><td>Browser agent; long-running tasks</td></tr>
+    <tr><td>Mobile</td><td>Check on tasks (no MCP)</td></tr>
+  </table>
+  <p class="muted">Your <code>.kiro/</code> config is shared across all of them.</p>
+  <aside class="notes">
+    Same agent, different entry points. You might start a task in the IDE, check
+    it from your phone on the commute, and have CI run the CLI against the same
+    steering rules. The consistency comes from dot-kiro being version-controlled
+    alongside the code.
+  </aside>
+</section>
+
+<section>
+  <h2>1 · The <code>.kiro/</code> directory</h2>
+<pre><code class="language-text">.kiro/
+├── steering/          # persistent project knowledge
+│   ├── product.md  ·  tech.md  ·  structure.md
+├── hooks/            # event-driven automation (JSON)
+├── specs/            # one folder per feature / bugfix
+│   └── &lt;name&gt;/ requirements.md · design.md · tasks.md
+└── settings/
+    └── mcp.json      # external tool connections</code></pre>
+  <p class="muted">Commit it like any other source. Review changes like code.</p>
+  <aside class="notes">
+    This is the whole surface area. Steering is markdown context. Hooks are JSON
+    automation. Specs are per-feature folders with three documents. And mcp.json
+    wires in external tools. Everything in here is reviewed in pull requests
+    because it changes how the agent behaves for the whole team.
+  </aside>
+</section>
+
+<!-- M2 -->
+<section>
+  <h2>2 · Vibe vs Spec</h2>
+  <table>
+    <tr><th>Mode</th><th>Output</th><th>Use when</th></tr>
+    <tr><td>Vibe (default)</td><td>Direct edits / answers</td><td>Questions, debugging, exploring</td></tr>
+    <tr><td>Spec</td><td>requirements + design + tasks</td><td>Reviewable feature work</td></tr>
+    <tr><td>Plan</td><td>Plan only, no changes</td><td>Write the approach down first</td></tr>
+    <tr><td>Bug Fix</td><td>Analysis → fix</td><td>Reproducible defect</td></tr>
+    <tr><td>Quick Spec</td><td>Auto-generated spec</td><td>Small feature, trust the agent</td></tr>
+  </table>
+  <aside class="notes">
+    Vibe is the default agent — free conversation with your codebase, no
+    documents. Spec is the structured path. Plan, Bug Fix, and Quick Spec are
+    points in between. The rule of thumb: if someone will review it or ask why
+    later, use a spec. Otherwise vibe it.
+  </aside>
+</section>
+
+<section>
+  <h2>2 · Autopilot vs Supervised</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>Supervised</h3>
+      <ul><li>Approve every change</li><li>Safe default while learning</li><li>Slower</li></ul>
+    </div>
+    <div class="card">
+      <h3>Autopilot</h3>
+      <ul><li>Agent executes, you review the result</li><li>For narrow, proven task types</li></ul>
+    </div>
+  </div>
+  <p class="quote">Stay Supervised until you've watched the agent do <em>this kind of task</em> right a few times — then graduate that one task type.</p>
+  <aside class="notes">
+    This is a separate switch from the mode. Start Supervised on everything.
+    When you've seen the agent handle a specific kind of task cleanly several
+    times — say, adding a test file — move just that task type to Autopilot.
+    Don't flip everything at once.
+  </aside>
+</section>
+
+<section>
+  <h2>2 · Context providers — <code>#</code></h2>
+  <table>
+    <tr><th>Provider</th><th>Adds</th></tr>
+    <tr><td><code>#codebase</code></td><td>Kiro finds relevant files</td></tr>
+    <tr><td><code>#file</code> / <code>#folder</code></td><td>A path you name</td></tr>
+    <tr><td><code>#git diff</code></td><td>Uncommitted changes</td></tr>
+    <tr><td><code>#terminal</code></td><td>Recent command output</td></tr>
+    <tr><td><code>#problems</code></td><td>Diagnostics for a file</td></tr>
+    <tr><td><code>#docs</code> · <code>#url</code> · <code>#mcp</code></td><td>External docs, a page, an MCP resource</td></tr>
+  </table>
+  <p class="muted">Combine them in one message. You can paste images too.</p>
+  <aside class="notes">
+    Kiro only knows what's in context. The hash menu is how you load it.
+    Combine freely: fix the failing test in hash-problems using the pattern from
+    hash-file colon this path. Answer quality tracks context quality almost
+    exactly, so be deliberate about what you pull in.
+  </aside>
+</section>
+
+<!-- M3 -->
+<section>
+  <h2>3 · What a spec is</h2>
+  <p class="big">Three reviewable files in <code>.kiro/specs/&lt;name&gt;/</code>, each behind your approval:</p>
+  <table>
+    <tr><th>File</th><th>Contents</th></tr>
+    <tr><td><code>requirements.md</code></td><td>User stories + acceptance criteria (EARS)</td></tr>
+    <tr><td><code>design.md</code></td><td>Architecture, diagrams, error handling, test strategy</td></tr>
+    <tr><td><code>tasks.md</code></td><td>Discrete tasks with live status</td></tr>
+  </table>
+  <aside class="notes">
+    A spec replaces one long chat with three documents. You approve requirements
+    before design gets written, and design before tasks get executed. Each gate
+    is a checkpoint where fixing a misunderstanding is still cheap.
+  </aside>
+</section>
+
+<section>
+  <h2>3 · Three phases, three gates</h2>
+  <ol>
+    <li><strong>Requirements</strong> — edit &amp; approve the user stories</li>
+    <li><strong>Design</strong> — review the approach; cheapest place to catch a wrong turn</li>
+    <li><strong>Tasks</strong> — agent implements task by task, updating status</li>
+  </ol>
+  <p class="quote">A misunderstanding fixed in requirements.md costs a sentence. Fixed after 12 files, it costs an afternoon.</p>
+  <aside class="notes">
+    The gates are the whole point. It's tempting to skim requirements and let it
+    run. Don't. Two minutes tightening acceptance criteria saves you a rewrite.
+    Design review is the second-cheapest place to redirect the work.
+  </aside>
+</section>
+
+<section>
+  <h2>3 · EARS notation</h2>
+<pre><code class="language-text">WHEN  &lt;trigger&gt;              THE SYSTEM SHALL &lt;response&gt;
+WHILE &lt;state&gt;                THE SYSTEM SHALL &lt;response&gt;
+WHERE &lt;feature included&gt;     THE SYSTEM SHALL &lt;response&gt;
+IF    &lt;condition&gt; THEN       THE SYSTEM SHALL &lt;response&gt;
+
+// Example
+WHEN a user submits checkout with an expired card
+THE SYSTEM SHALL reject the payment and show "Your card has expired"</code></pre>
+  <p class="muted">Each line becomes a test.</p>
+  <aside class="notes">
+    EARS is just a handful of sentence templates. The value is that every
+    criterion is unambiguous and directly testable. When you review
+    requirements, rewrite any vague line into one of these shapes.
+  </aside>
+</section>
+
+<section>
+  <h2>3 · Tasks run in waves</h2>
+  <ul>
+    <li>Kiro builds a dependency graph from the task list</li>
+    <li><strong>Wave 1</strong> — no-dependency tasks, run concurrently</li>
+    <li><strong>Wave 2+</strong> — tasks whose deps are now met, concurrently</li>
+    <li>Waves are sequential; tasks inside a wave are parallel</li>
+    <li>Automatic — no configuration</li>
+  </ul>
+  <p class="muted">Why a spec often finishes faster than the same tasks typed one-by-one.</p>
+  <aside class="notes">
+    You don't set this up. Kiro works out which tasks are independent and runs
+    those together, then the next wave, and so on. It's a real speed advantage
+    over issuing instructions serially in chat.
+  </aside>
+</section>
+
+<!-- M4 -->
+<section>
+  <h2>4 · Agent Steering</h2>
+  <p class="big">Markdown in <code>.kiro/steering/</code> that gives Kiro persistent project knowledge.</p>
+  <table>
+    <tr><th>Foundation file</th><th>Captures</th></tr>
+    <tr><td><code>product.md</code></td><td>Purpose, users, goals — the "why"</td></tr>
+    <tr><td><code>tech.md</code></td><td>Stack, tools, constraints</td></tr>
+    <tr><td><code>structure.md</code></td><td>File layout, naming, conventions</td></tr>
+  </table>
+  <p class="muted">Generated by "Generate Steering Docs" · loaded on every interaction.</p>
+  <aside class="notes">
+    Steering is how you stop re-explaining your project every conversation.
+    Generate the three foundation files, then hand-edit them until they're
+    actually true — the generator gives you a draft, not gospel. These three
+    load into every single interaction.
+  </aside>
+</section>
+
+<section>
+  <h2>4 · Inclusion modes</h2>
+<pre><code class="language-yaml">---
+inclusion: always            # default — every interaction
+---
+---
+inclusion: fileMatch
+fileMatchPattern: ["**/*.tsx", "src/components/**/*"]
+---
+---
+inclusion: manual            # load with #file-name in chat
+---
+---
+inclusion: auto
+name: api-design
+description: REST API patterns. Use when creating endpoints.
+---</code></pre>
+  <aside class="notes">
+    Front-matter at the top of a steering file controls when it loads. Always
+    for universal rules. fileMatch to scope guidance to an area of the codebase.
+    Manual when you want to pull it in by name. Auto when a description should
+    trigger it. Keep always-files small — they cost tokens every turn.
+  </aside>
+</section>
+
+<section>
+  <h2>4 · References, AGENTS.md, practice</h2>
+  <ul>
+    <li>Link live files: <code>#[[file:api/openapi.yaml]]</code></li>
+    <li><code>AGENTS.md</code> (repo root or <code>~/.kiro/steering/</code>) — always included, no modes</li>
+    <li>Custom agents need <code>"resources": ["file://.kiro/steering/**/*.md"]</code></li>
+    <li>One domain per file · explain the <em>why</em> · no secrets · review like code</li>
+  </ul>
+  <aside class="notes">
+    Point steering at real files so it can't drift from source. Kiro also reads
+    the cross-tool AGENTS.md standard. And remember custom agents don't inherit
+    steering automatically — you add it in their resources list. Treat every
+    steering change as a pull request.
+  </aside>
+</section>
+
+<!-- M5 -->
+<section>
+  <h2>5 · Agent Hooks</h2>
+  <p class="big">JSON in <code>.kiro/hooks/</code> — run a command or agent prompt automatically on an event.</p>
+  <table>
+    <tr><th>Category</th><th>Triggers</th></tr>
+    <tr><td>File (IDE)</td><td><code>PostFileCreate/Save/Delete</code></td></tr>
+    <tr><td>Execution</td><td><code>PreToolUse/PostToolUse</code>, <code>PromptSubmit</code> (can block)</td></tr>
+    <tr><td>Lifecycle</td><td><code>SessionStart</code>, <code>AgentSpawn</code>, <code>AgentStop</code></td></tr>
+    <tr><td>Task (IDE)</td><td><code>PreTaskExecution/PostTaskExecution</code></td></tr>
+  </table>
+  <aside class="notes">
+    Hooks fire on events during a session and activate automatically at session
+    start. The blocking ones — PreToolUse and PromptSubmit — are powerful but
+    introduce them last, once the team trusts the non-blocking ones.
+  </aside>
+</section>
+
+<section>
+  <h2>5 · Hook file format</h2>
+<pre><code class="language-json">{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Lint on save",
+      "trigger": "PostFileSave",
+      "matcher": "\\.(ts|tsx)$",
+      "action": { "type": "command", "command": "npx eslint --fix" },
+      "timeout": 60
+    }
+  ]
+}</code></pre>
+  <p class="muted"><code>action.type</code>: <code>"command"</code> (shell) or <code>"agent"</code> (inject a prompt). File triggers fire on <em>agent</em> edits only.</p>
+  <aside class="notes">
+    The matcher is a regex that narrows which events fire the hook. The action
+    is either a shell command or a prompt handed to the agent. The gotcha worth
+    repeating: file triggers respond to the agent's edits, not to you saving a
+    file yourself in the editor.
+  </aside>
+</section>
+
+<section>
+  <h2>5 · What hooks are for</h2>
+  <ul>
+    <li>Run linters / formatters / type checks after agent edits</li>
+    <li>Auto-create tests, docs, or translations for new source files</li>
+    <li>Block a tool with <code>PreToolUse</code> until a precondition holds</li>
+    <li>Quality check before the agent finalises</li>
+  </ul>
+  <p class="muted">Create in IDE: <strong>+</strong> in Agent Hooks → "Ask Kiro to create a hook" → describe it.</p>
+  <aside class="notes">
+    Start with two low-risk hooks: format on save, and scaffold a test when a
+    new source file appears. You describe what you want in plain language and
+    Kiro writes the JSON. Then review that JSON in a pull request like any code.
+  </aside>
+</section>
+
+<!-- M6 -->
+<section>
+  <h2>6 · MCP — Model Context Protocol</h2>
+  <p class="big">Lets Kiro use tools, prompts, and resources from external servers.</p>
+  <table>
+    <tr><th>Level</th><th>Scope</th></tr>
+    <tr><td>Workspace <code>mcp.json</code></td><td>This repo — commit to share</td></tr>
+    <tr><td>User <code>mcp.json</code></td><td>All your projects</td></tr>
+    <tr><td>Agent <code>mcpServers</code></td><td>That agent only</td></tr>
+  </table>
+  <p class="muted">Local (stdio) &amp; remote (HTTP/SSE) — everywhere except Mobile.</p>
+  <aside class="notes">
+    MCP is the plug for anything the model doesn't know natively — internal
+    wikis, ticketing, cloud APIs, docs search. Config lives at three levels. The
+    one we care about for the team is a committed workspace mcp.json so everyone
+    runs the same vetted servers.
+  </aside>
+</section>
+
+<section>
+  <h2>6 · mcp.json example</h2>
+<pre><code class="language-json">{
+  "mcpServers": {
+    "aws-docs": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@latest"],
+      "disabled": false,
+      "autoApprove": ["search_documentation"]
+    }
+  }
+}</code></pre>
+  <p class="muted"><code>disabled</code> toggles without deleting · <code>autoApprove</code> = read-only tools only · secrets via <code>env</code>, never committed.</p>
+  <aside class="notes">
+    The AWS Documentation server is a great first one — the agent searches real
+    AWS docs instead of guessing from training data. Keep autoApprove to
+    read-only tools so anything that changes state still prompts you.
+  </aside>
+</section>
+
+<section>
+  <h2>6 · Treat servers as supply chain</h2>
+  <p class="quote">Only install MCP servers from sources you trust — a server runs code on your machine and sees the context the agent sends it.</p>
+  <ul>
+    <li>Vet the package · pin versions · secrets via env</li>
+    <li>Kiro confirms install links, showing env var <em>names</em> (values hidden)</li>
+    <li>Tool names: <code>^[a-zA-Z][a-zA-Z0-9_]*$</code>, &lt; 64 chars</li>
+  </ul>
+  <aside class="notes">
+    This is the one security slide for MCP. An MCP server is executable code
+    with visibility into your context. We vet every server before it goes in the
+    shared mcp.json, pin the version, and keep credentials in environment
+    variables that are never committed.
+  </aside>
+</section>
+
+<!-- M7 -->
+<section>
+  <h2>7 · Kiro Powers</h2>
+  <p class="big">Installable packages that make the agent good at a specific tool or framework.</p>
+  <table>
+    <tr><th>Part</th><th>Provides</th></tr>
+    <tr><td><code>plugin.json</code></td><td>Manifest + activation keywords</td></tr>
+    <tr><td><code>skills/</code></td><td>Task-specific instructions</td></tr>
+    <tr><td><code>mcp.json</code></td><td>Optional tool access</td></tr>
+    <tr><td><code>dev.kiro/</code></td><td>Steering &amp; Kiro extensions</td></tr>
+  </table>
+  <p class="muted">Built on the open <strong>Agent Plugins</strong> spec (Amazon, Cursor, Microsoft, OpenAI, Vercel).</p>
+  <aside class="notes">
+    A Power is steering plus skills plus optional MCP, packaged so you install it
+    in one click. Because it's built on the vendor-neutral Agent Plugins
+    standard, the same Power works beyond Kiro. Think of it as expertise for a
+    framework, shipped by the people who built that framework.
+  </aside>
+</section>
+
+<section>
+  <h2>7 · Two problems, one mechanism</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>Problem</h3>
+      <ul><li>Expertise scattered across docs</li><li>Context overload from too many MCP servers</li></ul>
+    </div>
+    <div class="card">
+      <h3>Intelligent loading</h3>
+      <ul><li>Kiro matches your task to installed Powers</li><li>Loads only the relevant ones — not 50k+ tokens upfront</li></ul>
+    </div>
+  </div>
+  <p class="muted">Say "payment" → Stripe activates. Switch to DB work → Supabase loads instead.</p>
+  <aside class="notes">
+    Connecting more servers doesn't automatically help — it can bury the agent
+    in context. Powers fix that by loading on demand. You never toggle them; the
+    task description decides which Power's knowledge comes into context.
+  </aside>
+</section>
+
+<section>
+  <h2>7 · Install &amp; partners</h2>
+  <ul>
+    <li>One-click from IDE / CLI or the registry at <code>kiro.dev/powers</code></li>
+    <li>Import a community Power by GitHub URL</li>
+    <li>Cloud-synced Powers in <strong>Settings → Powers</strong></li>
+  </ul>
+  <p class="muted">Launch partners: Datadog · Dynatrace · Figma · Neon · Netlify · Postman · Supabase · Stripe · AWS Aurora</p>
+  <aside class="notes">
+    Each partner Power is built by the company behind the tool — Figma's own
+    design-to-code guidance, Supabase's own Row Level Security patterns. You can
+    also package your team's conventions plus internal MCP as a private Power
+    once your steering has stabilised.
+  </aside>
+</section>
+
+<section>
+  <h2>7 · Powers vs Skills vs Steering</h2>
+  <table>
+    <tr><th>Mechanism</th><th>Is</th></tr>
+    <tr><td>Steering</td><td>Kiro-specific behaviour shaping — markdown you write</td></tr>
+    <tr><td>Skills</td><td>Standalone instruction packages</td></tr>
+    <tr><td>Powers</td><td>Installable, context-aware — tools + knowledge + guidance</td></tr>
+  </table>
+  <aside class="notes">
+    Quick disambiguation. Steering is yours, hand-written, Kiro-only. A Skill is
+    a portable instruction bundle. A Power wraps skills and MCP and steering
+    together into something installable that loads intelligently. Powers are the
+    distribution format.
+  </aside>
+</section>
+
+<!-- M8 -->
+<section>
+  <h2>8 · Adoption — week 1</h2>
+  <ul>
+    <li>Small team (2–5, GitHub) → <strong>everyone</strong> pilots at once, on one active repo</li>
+    <li>Everyone: install IDE, sign in, import VS Code settings</li>
+    <li>"Generate Steering Docs" → hand-edit <em>in a PR</em> until true → merge</li>
+    <li>Polyglot steering: tiny <code>always</code> set + per-language <code>fileMatch</code> files (<code>code-style-ts.md</code>, <code>-python.md</code>, <code>infra-aws.md</code>)</li>
+  </ul>
+  <aside class="notes">
+    We're a small team, so there's no subset-first phase — everyone starts on one
+    real repo. The first deliverable is foundation steering that's actually
+    accurate. Because we ship in several languages, split the style rules into
+    fileMatch files so each only loads when you touch that language.
+  </aside>
+</section>
+
+<section>
+  <h2>8 · Ticket-driven specs, cost discipline</h2>
+  <p class="quote">If it has a ticket, it gets a spec folder named after the ticket. No ticket and trivial? Vibe it.</p>
+  <ul>
+    <li>Feature ticket → Feature Spec · bug ticket → Bugfix Spec</li>
+    <li>Commit the spec folder in the same PR as the code</li>
+    <li>Cost: short <code>always</code> steering, lean on compaction, Supervised by default</li>
+  </ul>
+  <aside class="notes">
+    Every ticket gets its own spec folder, named after the ticket id, committed
+    with the code so the reasoning travels with the change. On cost: a wrong
+    Autopilot run burns the whole run plus your review time, so we stay
+    Supervised until a task type is boringly reliable.
+  </aside>
+</section>
+
+<section>
+  <h2>8 · Guardrails — sensitive code</h2>
+  <ul>
+    <li><code>.kiroignore</code> day one: secrets, <code>.env*</code>, customer data, compliance-scoped dirs</li>
+    <li><strong>Permissions</strong> default-deny outside the working repo</li>
+    <li>MCP: reviewed + pinned only; <code>autoApprove</code> read-only tools</li>
+    <li>Keep sensitive work in the IDE — Web / Mobile send context off your machine</li>
+    <li>Start with AWS Docs MCP + AWS Aurora Power</li>
+  </ul>
+  <aside class="notes">
+    Because some of our code is sensitive, kiroignore and Permissions go in from
+    day one, and we never auto-approve a tool that writes or calls out. The Web
+    and Mobile surfaces send context off the machine, so sensitive work stays in
+    the IDE. AWS Docs MCP and the Aurora Power are the shared starting point.
+  </aside>
+</section>
+
+<section>
+  <h2>8 · Rollout checklist</h2>
+  <table>
+    <tr><th>Step</th><th>Done when</th></tr>
+    <tr><td>Everyone installed + signed in</td><td>—</td></tr>
+    <tr><td>Foundation steering merged &amp; accurate</td><td>Merged PR</td></tr>
+    <tr><td>Per-language <code>fileMatch</code> steering</td><td>Merged PR</td></tr>
+    <tr><td><code>.kiroignore</code> + Permissions reviewed</td><td>Merged PR</td></tr>
+    <tr><td>Workspace <code>mcp.json</code> vetted</td><td>Merged PR</td></tr>
+    <tr><td>First ticket via a spec</td><td>Spec folder + PR merged</td></tr>
+    <tr><td>2-week retro: keep / adjust / stop</td><td>Notes shared</td></tr>
+  </table>
+  <aside class="notes">
+    Seven checkpoints. The last one is a real decision point — after two weeks we
+    look at the retro and decide whether to keep going, adjust, or stop. This is
+    a scoped experiment, not a mandate to adopt everything.
+  </aside>
+</section>
+
+<section>
+  <h2>Cheat sheet</h2>
+  <table>
+    <tr><th>Want to…</th><th>Do</th></tr>
+    <tr><td>Permanent project context</td><td><code>.kiro/steering/*.md</code></td></tr>
+    <tr><td>Structured feature</td><td>Spec → requirements → design → tasks</td></tr>
+    <tr><td>Bug + regression safety</td><td>Bugfix Spec</td></tr>
+    <tr><td>Command after agent edits</td><td>Hook, <code>PostFileSave</code></td></tr>
+    <tr><td>External tool / API / KB</td><td><code>mcp.json</code></td></tr>
+    <tr><td>Framework expertise</td><td>Install a Power</td></tr>
+    <tr><td>Undo a bad run</td><td>Rewind to checkpoint</td></tr>
+  </table>
+  <aside class="notes">
+    Screenshot this one. It maps the common intentions to the mechanism. The
+    full version with context providers and kiroignore is in the course page.
+  </aside>
+</section>
+
+<!-- CLOSE -->
+<section class="center">
+  <h1>Questions?</h1>
+  <p class="muted">Course + slides · internal · sourced from kiro.dev/docs</p>
+  <p><span class="pill">course-en.html</span><span class="pill">course-th.html</span></p>
+  <aside class="notes">
+    That's the tour. The self-paced course goes deeper on every module with
+    copy-paste config and a "try it" task each. Next step: everyone installs the
+    IDE and generates steering on a real repo before our next session. What
+    questions do you have?
+  </aside>
+</section>
+
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true, slideNumber: 'c/t', transition: 'slide',
+    width: 1280, height: 800, margin: 0.06,
+    minScale: 0.2, maxScale: 1.8,
+    plugins: [ RevealHighlight, RevealNotes ]
+  });
+</script>
+
+<!-- ===================== NARRATION UI ===================== -->
+<style>
+  .narration-bar { position: fixed; bottom: 10px; right: 10px; z-index: 1001;
+    display: flex; align-items: center; gap: 10px; padding: 6px 10px;
+    background: rgba(20,20,20,0.88); border-radius: 8px; backdrop-filter: blur(6px);
+    font-family: "Inter","Segoe UI",system-ui,sans-serif; font-size: 12px; color: #ddd;
+    transition: bottom 0.25s ease; }
+  .narration-bar audio { height: 28px; width: 240px; }
+  .narration-bar audio::-webkit-media-controls-panel { background: transparent; }
+  .narration-bar label { display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
+  .narration-bar input[type="checkbox"] { accent-color: #a78bfa; }
+  body.transcript-open .narration-bar { bottom: calc(35vh + 10px); }
+
+  .transcript-drawer { position: fixed; left: 0; right: 0; bottom: 0;
+    height: 35vh; z-index: 1000;
+    background: rgba(15,15,15,0.97); color: #e8ecf2;
+    border-top: 2px solid #a78bfa;
+    padding: 22px 32px; overflow-y: auto;
+    font-family: "Inter","Segoe UI",system-ui,sans-serif;
+    font-size: 19px; line-height: 1.65;
+    transform: translateY(100%); transition: transform 0.25s ease; }
+  body.transcript-open .transcript-drawer { transform: translateY(0); }
+  .transcript-drawer .label { font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.12em; color: #888; margin-bottom: 8px; }
+  body.transcript-open .reveal-viewport,
+  body.transcript-open .reveal { height: 65vh !important; }
+
+  .captions { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    max-width: 78vw; z-index: 999; pointer-events: none;
+    background: rgba(0,0,0,0.86); color: #fff;
+    padding: 14px 24px; border-radius: 10px; text-align: center;
+    font-family: "Inter","Segoe UI",system-ui,sans-serif;
+    font-size: 22px; line-height: 1.4; font-weight: 500;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    opacity: 0; transition: opacity 0.2s ease, bottom 0.25s ease;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+  body.captions-on .captions:not(:empty) { opacity: 1; }
+  body.transcript-open .captions { bottom: calc(35vh + 80px); }
+
+  @media print { .narration-bar, .transcript-drawer, .captions { display: none; } }
+</style>
+
+<div class="narration-bar">
+  <audio id="slide-audio" controls preload="metadata"></audio>
+  <label><input type="checkbox" id="auto-advance" checked /> auto-advance</label>
+  <label><input type="checkbox" id="show-captions" /> captions</label>
+  <label><input type="checkbox" id="show-transcript" /> transcript</label>
+</div>
+<div class="captions" id="captions" aria-live="polite"></div>
+<div class="transcript-drawer" id="transcript-drawer" aria-live="polite">
+  <div class="label">Transcript — current slide</div>
+  <div id="transcript-content"></div>
+</div>
+
+<script>
+(function () {
+  var LANG = "en";
+  var audio = document.getElementById("slide-audio");
+  var autoCb = document.getElementById("auto-advance");
+  var trCb = document.getElementById("show-transcript");
+  var capCb = document.getElementById("show-captions");
+  var trContent = document.getElementById("transcript-content");
+  var capBox = document.getElementById("captions");
+  var userPaused = false;
+  var timeline = [];
+
+  function pad2(n) { return n < 10 ? "0" + n : "" + n; }
+  function slideNum() { return Reveal.getIndices().h + 1; }
+
+  function loadAndPlay() {
+    var n = slideNum();
+    var src = "../audio/" + LANG + "/s" + pad2(n) + ".mp3";
+    if (audio.src.indexOf(src) === -1) {
+      audio.src = src;
+      userPaused = false; timeline = []; capBox.textContent = "";
+      var p = audio.play();
+      if (p && p.catch) p.catch(function () {});
+    }
+  }
+  function getCurrentNote() {
+    return document.querySelector(".present aside.notes")
+        || document.querySelector(".reveal section.present aside.notes");
+  }
+  function updateTranscript() {
+    var note = getCurrentNote();
+    trContent.textContent = note ? note.textContent.trim() : "(no transcript for this slide)";
+    trContent.scrollTop = 0;
+  }
+  function buildTimeline() {
+    var note = getCurrentNote();
+    if (!note || !audio.duration || isNaN(audio.duration)) { timeline = []; return; }
+    var text = note.textContent.trim();
+    var sentences = text.split(/(?<=[.!?])\s+/).map(function (s) { return s.trim(); }).filter(Boolean);
+    var totalChars = sentences.reduce(function (n, s) { return n + s.length; }, 0);
+    if (totalChars === 0) { timeline = []; return; }
+    var cum = 0;
+    timeline = sentences.map(function (s) {
+      var start = (cum / totalChars) * audio.duration;
+      cum += s.length;
+      return { text: s, start: start };
+    });
+  }
+  function updateCaption() {
+    if (!timeline.length) return;
+    var t = audio.currentTime, cur = timeline[0].text;
+    for (var i = timeline.length - 1; i >= 0; i--) {
+      if (t >= timeline[i].start) { cur = timeline[i].text; break; }
+    }
+    if (capBox.textContent !== cur) capBox.textContent = cur;
+  }
+  audio.addEventListener("loadedmetadata", buildTimeline);
+  audio.addEventListener("timeupdate", updateCaption);
+  audio.addEventListener("pause", function () { if (!audio.ended) userPaused = true; });
+  audio.addEventListener("play", function () { userPaused = false; });
+  audio.addEventListener("ended", function () {
+    capBox.textContent = "";
+    if (autoCb.checked && !userPaused) Reveal.next();
+  });
+  trCb.addEventListener("change", function () {
+    document.body.classList.toggle("transcript-open", trCb.checked);
+    if (trCb.checked) updateTranscript();
+    setTimeout(function () { if (window.Reveal) Reveal.layout(); }, 60);
+  });
+  capCb.addEventListener("change", function () {
+    document.body.classList.toggle("captions-on", capCb.checked);
+    if (capCb.checked && !timeline.length) buildTimeline();
+  });
+  Reveal.on("ready", function () { loadAndPlay(); updateTranscript(); });
+  Reveal.on("slidechanged", function () { loadAndPlay(); updateTranscript(); });
+})();
+</script>
+</body>
+</html>

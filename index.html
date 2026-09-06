@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiro Training — Internal Course</title>
+<meta name="description" content="Internal training on AWS Kiro: spec-driven development, steering, hooks, MCP, and Powers.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%91%BB%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="lang-en">
+
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="ghost">👻</span> Kiro Training</a>
+  <span class="spacer"></span>
+  <nav>
+    <a href="#modules" lang="en">Modules</a><a href="#modules" lang="th">บทเรียน</a>
+    <a href="#how" lang="en">How to use</a><a href="#how" lang="th">วิธีใช้</a>
+    <a href="course-en.html" lang="en">Open course →</a><a href="course-th.html" lang="th">เปิดคอร์ส →</a>
+  </nav>
+  <span class="lang-toggle">
+    <button class="btn" data-lang-btn="en">EN</button><button class="btn" data-lang-btn="th">ไทย</button>
+  </span>
+  <button class="btn" onclick="toggleTheme()" aria-label="Toggle theme"><span id="theme-label">☾</span></button>
+</header>
+
+<section class="hero">
+  <span class="eyebrow" lang="en">Internal enablement</span>
+  <span class="eyebrow" lang="th">อบรมภายในทีม</span>
+  <h1 lang="en">Building with AWS Kiro</h1>
+  <h1 lang="th">พัฒนางานด้วย AWS Kiro</h1>
+  <p class="lead" lang="en">A self-paced course for our team: what Kiro is, how spec-driven development works, and how to use Steering, Hooks, MCP, and Powers in real projects.</p>
+  <p class="lead" lang="th">คอร์สเรียนด้วยตัวเองสำหรับทีมเรา: Kiro คืออะไร, spec-driven development ทำงานยังไง และการใช้ Steering, Hooks, MCP และ Powers ในโปรเจกต์จริง</p>
+  <div class="cta-row">
+    <a class="btn btn-primary" href="course-en.html" lang="en">Start the course</a>
+    <a class="btn btn-primary" href="course-th.html" lang="th">เริ่มเรียน</a>
+    <a class="btn" href="slides/training-en.html" lang="en">Slides (EN)</a>
+    <a class="btn" href="slides/training-th.html" lang="th">สไลด์ (ไทย)</a>
+  </div>
+</section>
+
+<section class="section" id="modules">
+  <div class="wrap">
+    <h2 lang="en">Course modules</h2>
+    <h2 lang="th">บทเรียนในคอร์ส</h2>
+    <p lang="en">Eight modules, roughly 15–20 minutes each. Read in order — later modules build on the mental model from Module 1.</p>
+    <p lang="th">8 บทเรียน บทละประมาณ 15–20 นาที ควรอ่านตามลำดับ เพราะบทหลัง ๆ ต่อยอดจากแนวคิดในบทที่ 1</p>
+
+    <div class="grid" style="margin-top:1.6rem">
+      <a class="card" href="course-en.html#m1" data-href-th="course-th.html#m1">
+        <span class="num">01</span>
+        <h3 lang="en">What is Kiro & why</h3><h3 lang="th">Kiro คืออะไร และทำไม</h3>
+        <p lang="en">One agent across IDE, CLI, Web, Mobile — all driven by a shared <code>.kiro/</code> config.</p>
+        <p lang="th">agent เดียวใช้ได้ทั้ง IDE, CLI, Web, Mobile ขับเคลื่อนด้วย config <code>.kiro/</code> ร่วมกัน</p>
+      </a>
+      <a class="card" href="course-en.html#m2" data-href-th="course-th.html#m2">
+        <span class="num">02</span>
+        <h3 lang="en">Vibe / Chat mode</h3><h3 lang="th">โหมด Vibe / Chat</h3>
+        <p lang="en">Free-flow coding, autopilot vs supervised, and the <code>#</code> context providers.</p>
+        <p lang="th">เขียนโค้ดแบบอิสระ, autopilot vs supervised และ context provider ที่ขึ้นต้นด้วย <code>#</code></p>
+      </a>
+      <a class="card" href="course-en.html#m3" data-href-th="course-th.html#m3">
+        <span class="num">03</span>
+        <h3 lang="en">Specs</h3><h3 lang="th">Specs</h3>
+        <p lang="en">Spec-driven development: <code>requirements → design → tasks</code>, EARS, task waves, bugfix specs.</p>
+        <p lang="th">spec-driven development: <code>requirements → design → tasks</code>, EARS, task waves, bugfix specs</p>
+      </a>
+      <a class="card" href="course-en.html#m4" data-href-th="course-th.html#m4">
+        <span class="num">04</span>
+        <h3 lang="en">Agent Steering</h3><h3 lang="th">Agent Steering</h3>
+        <p lang="en"><code>product/tech/structure.md</code>, inclusion modes, front-matter, file references, AGENTS.md.</p>
+        <p lang="th"><code>product/tech/structure.md</code>, inclusion modes, front-matter, การอ้างอิงไฟล์, AGENTS.md</p>
+      </a>
+      <a class="card" href="course-en.html#m5" data-href-th="course-th.html#m5">
+        <span class="num">05</span>
+        <h3 lang="en">Agent Hooks</h3><h3 lang="th">Agent Hooks</h3>
+        <p lang="en">Run commands or agent prompts automatically on file save, task completion, and more.</p>
+        <p lang="th">รันคำสั่งหรือ prompt ให้ agent อัตโนมัติเมื่อบันทึกไฟล์ ทำ task เสร็จ ฯลฯ</p>
+      </a>
+      <a class="card" href="course-en.html#m6" data-href-th="course-th.html#m6">
+        <span class="num">06</span>
+        <h3 lang="en">MCP</h3><h3 lang="th">MCP</h3>
+        <p lang="en">Connect external tools and data via <code>mcp.json</code> — stdio and HTTP servers, safely.</p>
+        <p lang="th">เชื่อมต่อเครื่องมือและข้อมูลภายนอกผ่าน <code>mcp.json</code> — server แบบ stdio และ HTTP อย่างปลอดภัย</p>
+      </a>
+      <a class="card" href="course-en.html#m7" data-href-th="course-th.html#m7">
+        <span class="num">07</span>
+        <h3 lang="en">Kiro Powers</h3><h3 lang="th">Kiro Powers</h3>
+        <p lang="en">Installable packages that bundle MCP + skills + steering, loaded on-demand by task.</p>
+        <p lang="th">แพ็กเกจติดตั้งได้ที่รวม MCP + skills + steering โหลดตามงานที่ทำแบบ on-demand</p>
+      </a>
+      <a class="card" href="course-en.html#m8" data-href-th="course-th.html#m8">
+        <span class="num">08</span>
+        <h3 lang="en">Team adoption playbook</h3><h3 lang="th">แผนนำไปใช้ในทีม</h3>
+        <p lang="en">How we roll Kiro out: shared steering, reviewed hooks, a starter Power, and guardrails.</p>
+        <p lang="th">วิธีที่ทีมเราจะเริ่มใช้ Kiro: steering ร่วม, hook ที่ผ่านรีวิว, Power เริ่มต้น และ guardrail</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="how" style="background:var(--bg-soft)">
+  <div class="wrap">
+    <h2 lang="en">How to use this material</h2>
+    <h2 lang="th">วิธีใช้เอกสารชุดนี้</h2>
+    <div class="grid">
+      <div class="card">
+        <h3 lang="en">Self-paced</h3><h3 lang="th">เรียนด้วยตัวเอง</h3>
+        <p lang="en">Open the course, read modules 1–8 in order. Each ends with key takeaways and a short "try it" task.</p>
+        <p lang="th">เปิดคอร์ส อ่านบท 1–8 ตามลำดับ แต่ละบทจบด้วยสรุปประเด็นสำคัญและแบบฝึก "ลองทำ" สั้น ๆ</p>
+      </div>
+      <div class="card">
+        <h3 lang="en">Live session</h3><h3 lang="th">อบรมสด</h3>
+        <p lang="en">Use the slide deck for a ~90-minute internal walkthrough. Speaker notes are in the deck.</p>
+        <p lang="th">ใช้สไลด์สำหรับเดินเรื่องภายในทีมประมาณ 90 นาที มี speaker notes อยู่ในสไลด์</p>
+      </div>
+      <div class="card">
+        <h3 lang="en">Reference</h3><h3 lang="th">ใช้อ้างอิง</h3>
+        <p lang="en">Every config example is copy-pasteable. Modules 3–7 double as a quick reference for <code>.kiro/</code> files.</p>
+        <p lang="th">ตัวอย่าง config ทุกอันคัดลอกไปใช้ได้เลย บท 3–7 ใช้เป็น quick reference ของไฟล์ <code>.kiro/</code> ได้</p>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:1.6rem">
+      <span class="label" lang="en">Source</span><span class="label" lang="th">แหล่งข้อมูล</span>
+      <span lang="en">Content is distilled from the official docs at <a href="https://kiro.dev/docs/">kiro.dev/docs</a> (specs, chat, steering, hooks, mcp, powers) plus our internal study notes. Verify against the live docs before relying on exact flags.</span>
+      <span lang="th">เนื้อหาสรุปจากเอกสารทางการที่ <a href="https://kiro.dev/docs/">kiro.dev/docs</a> (specs, chat, steering, hooks, mcp, powers) และโน้ตที่ทีมเราศึกษาไว้ ควรตรวจกับเอกสารจริงอีกครั้งก่อนอ้างอิง flag แบบเป๊ะ ๆ</span>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <span lang="en">Internal training material · Built for the team · Not affiliated with AWS</span>
+  <span lang="th">เอกสารอบรมภายใน · จัดทำเพื่อทีม · ไม่ได้มีส่วนเกี่ยวข้องกับ AWS อย่างเป็นทางการ</span>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+/* rewrite module card links when Thai is active */
+(function () {
+  function fix() {
+    var th = document.body.classList.contains('lang-th');
+    document.querySelectorAll('.card[data-href-th]').forEach(function (a) {
+      if (!a.dataset.hrefEn) a.dataset.hrefEn = a.getAttribute('href');
+      a.setAttribute('href', th ? a.dataset.hrefTh : a.dataset.hrefEn);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    fix();
+    document.querySelectorAll('[data-lang-btn]').forEach(function (b) {
+      b.addEventListener('click', function () { setTimeout(fix, 0); });
+    });
+  });
+})();
+</script>
+</body>
+</html>
