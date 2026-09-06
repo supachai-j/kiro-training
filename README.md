@@ -2,6 +2,8 @@
 
 Bilingual (EN / TH) self-paced course + slide decks on **AWS Kiro**, for internal team enablement.
 
+**Live:** <https://supachai-j.github.io/kiro-training/>
+
 ## Contents
 
 | File | What |
