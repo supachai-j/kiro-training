@@ -79,12 +79,22 @@
 
     <h2>แนวคิดหลัก ในรูปของ loop เดียว</h2>
     <p>ทุกเฟสของ AI-DLC รันวงจรเดียวกัน:</p>
-    <pre><code>AI ร่างแผนละเอียด
-      → AI ถามคำถามเพื่อความชัดเจน
-        → มนุษย์ตรวจและตัดสินใจ
-          → AI ลงมือทำตามแผนที่อนุมัติ
-            → ทีมรีวิวผลลัพธ์
-              → วนซ้ำ</code></pre>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  A["AI ร่างแผนละเอียด"] --> B["AI ถามคำถามเพื่อความชัดเจน"]
+  B --> C{"มนุษย์ตรวจ
+และตัดสินใจ"}
+  C -->|"ต้องแก้"| A
+  C -->|"อนุมัติ"| D["AI ลงมือทำตามแผน"]
+  D --> E["ทีมรีวิวผลลัพธ์"]
+  E --> A
+  D -.->|"เขียนแผน requirements
+design ลง repo"| R[("repo ของโปรเจกต์
+= ความจำของ AI")]
+</pre>
+      <figcaption>loop ของ AI-DLC จุดตัดสินใจของมนุษย์คือขั้นที่ไม่เคยข้าม</figcaption>
+    </figure>
     <p>ส่วนที่ต่อรองไม่ได้คือจุดตัดสินใจของมนุษย์ AWS: <em>"AI สร้างแผนงานละเอียดอย่างเป็นระบบ ขอความชัดเจนและคำแนะนำอย่างจริงจัง และเลื่อนการตัดสินใจสำคัญให้มนุษย์ … มีแต่มนุษย์เท่านั้นที่มีความเข้าใจบริบทและความรู้เรื่อง business requirements ที่จำเป็นต่อการตัดสินใจอย่างมีข้อมูล"</em> AI เก็บความจำของตัวเองด้วยการเขียนแผน, requirements และ design artifacts ลงใน repository เพื่อให้งานเดินต่อได้อย่างต่อเนื่องข้าม session</p>
 
     <h2>สามเฟส</h2>
@@ -94,6 +104,30 @@
       <tr><td><strong>Construction</strong></td><td>สถาปัตยกรรม, domain model, โค้ด, test</td><td><strong>Mob Construction</strong> — กลุ่มเดิมช่วยกันเคลียร์การตัดสินใจทางเทคนิคเมื่อมันโผล่ขึ้นมา</td></tr>
       <tr><td><strong>Operations</strong></td><td>infrastructure as code, การตั้งค่า deploy และ monitoring</td><td>ทีมรีวิวผลลัพธ์และคงการกำกับดูแลตลอดการส่งมอบ</td></tr>
     </table>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart LR
+  BI["business intent"] --> INC
+  subgraph INC["INCEPTION · Mob Elaboration"]
+    direction TB
+    i1["requirements
+user stories
+units of work"]
+  end
+  subgraph CON["CONSTRUCTION · Mob Construction"]
+    direction TB
+    c1["สถาปัตยกรรม + domain model
+โค้ด + test"]
+  end
+  subgraph OPS["OPERATIONS · ทีมกำกับดูแล"]
+    direction TB
+    o1["infra as code
+deploy + monitor"]
+  end
+  INC -->|"ส่ง context ต่อ"| CON -->|"ส่ง context ต่อ"| OPS
+</pre>
+      <figcaption>แต่ละเฟสเขียน context ที่ทำให้ข้อเสนอของ AI ในเฟสถัดไปคมขึ้น</figcaption>
+    </figure>
     <p>แต่ละเฟสเขียน context ที่ทำให้ข้อเสนอของ AI ในเฟสถัดไปคมขึ้น</p>
 
     <h2>คำศัพท์ใหม่</h2>
@@ -120,6 +154,15 @@
       ตัวเลขเหล่านี้มาจากงานนำเสนอของ vendor ไม่ใช่ benchmark ที่ตรวจสอบโดยอิสระ — ให้มองเป็นสัญญาณเชิงทิศทาง ไม่ใช่หลักฐาน บทเรียนที่นำไปใช้ได้คือรูปทรง: ทีมเล็ก, loop ที่แน่นมาก และภาษาที่ feedback ของมัน AI เอาไปทำต่อได้
     </div>
 
+    <h2>ในทางปฏิบัติ — ฟีเจอร์เล็ก ๆ หนึ่งอันผ่าน loop</h2>
+    <div class="example">
+      <span class="label">โจทย์: "เพิ่มปุ่ม export CSV ในหน้า Reports"</span>
+      <p><strong>Inception</strong> คุณให้ intent บรรทัดเดียวกับ agent มันกลับมาพร้อมคำถามที่มนุษย์ต้องตอบ: <em>คอลัมน์ไหนบ้าง? เคารพ filter ปัจจุบัน หรือ export ทั้งหมด? คอลัมน์วันที่ใช้ time zone ไหน? ใครมีสิทธิ์ export — ทุก role หรือแค่ admin?</em> ไม่มีใครเดา — ทีมตอบใน mob 15 นาที ผลลัพธ์: <code>requirements.md</code> ที่มีบรรทัด EARS เช่น <em>"WHEN an admin clicks Export THE SYSTEM SHALL download a CSV of the currently filtered rows, dates in the workspace time zone."</em></p>
+      <p><strong>Construction</strong> agent เสนอ: ใช้ <code>ReportQuery</code> เดิมซ้ำ, stream CSV เพื่อไม่ให้ export 200k แถวกินหน่วยความจำ, เพิ่มการเช็คสิทธิ์ <code>reports:export</code> มีการตัดสินใจจริงหนึ่งเรื่อง — stream vs สร้างไฟล์ในหน่วยความจำ — ทีมเลือก stream ใน 2 นาที agent เขียน endpoint, ปุ่ม และ test ใน bolt เดียว</p>
+      <p><strong>Operations</strong> agent เพิ่ม metric ใน CloudWatch สำหรับจำนวนและเวลา export และโน้ตใน runbook ทีมรีวิวการเปลี่ยน dashboard แล้ว merge</p>
+      <p><strong>ประเด็น:</strong> คำถามที่ทำให้ต้องแก้งานซ้ำ ("แค่ admin?") ถูกถามใน Inception ตอนที่คำตอบราคาแค่หนึ่งประโยค — ไม่ใช่ตอน code review ที่จะราคาเท่ากับเขียน endpoint และปุ่มใหม่</p>
+    </div>
+
     <h2>ข้อควรระวังอย่างตรงไปตรงมา</h2>
     <ul>
       <li>AI-DLC ยังใหม่ (กลางปี 2025) และยังขยับอยู่ AWS blog กับ whitepaper คือคำอธิบายมาตรฐาน; เครื่องมือและ case study ยังตามมา</li>
@@ -141,6 +184,19 @@
     <div class="callout tip">
       <span class="label">ลองทำ</span>
       อ่านผ่าน ๆ AWS blog ก่อตั้ง (ลิงก์ด้านล่าง) แล้วดูฟีเจอร์ล่าสุดที่คุณทำ ส่วนไหนคือ "Inception" (ตัดสินว่าจะสร้างอะไร) และส่วนไหนคือ "Construction"? การตัดสินใจที่ขาดหายไปตรงไหนทำให้คุณต้องแก้งานซ้ำ? ช่องว่างนั้นคือสิ่งที่เฟส Inception มีไว้เพื่อปิด
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 0 — แมป PR จริงลงบน AI-DLC</span>
+      <p class="goal">เป้าหมาย: รู้สึกว่าเส้นแบ่ง Inception / Construction อยู่ตรงไหนในงานของคุณเอง และหาหนึ่งการตัดสินใจที่หลุดไปโผล่ตอน code review</p>
+      <ol>
+        <li>เปิด pull request ที่ไม่เล็กจิ๋วอันล่าสุดที่คุณรีวิวหรือเขียน อ่านคำอธิบายและ diff</li>
+        <li>บนกระดาษ (หรือไฟล์ scratch) ทำสามคอลัมน์: <strong>Inception</strong>, <strong>Construction</strong>, <strong>Operations</strong></li>
+        <li>ใส่การตัดสินใจหรือการเปลี่ยนทุกอย่างจาก PR ลงในเฟสที่มัน <em>ควร</em> ถูกตกลง เช่น "export ให้แค่ admin" → Inception; "stream CSV" → Construction; "เพิ่ม metric export" → Operations</li>
+        <li>วงกลมอันที่จริง ๆ แล้วถูกตัดสินใจ <em>ระหว่าง</em> code review หรือหลัง merge สำหรับแต่ละอัน เขียนหนึ่งประโยคที่จะปิดเรื่องนั้นได้ใน Inception</li>
+        <li>นับดู: comment รีวิวกี่อันจริง ๆ แล้วคือ "Inception ที่ขาด" ไม่ใช่ "คุณภาพโค้ดที่ขาด"</li>
+      </ol>
+      <p class="check"><strong>เสร็จเมื่อ</strong> คุณมีอย่างน้อยหนึ่งการตัดสินใจที่วงไว้ พร้อมประโยค Inception หนึ่งประโยคของมัน ประโยคนั้นคือรูปทรงของ acceptance criteria แบบ EARS — คุณจะเขียนของจริงในบทที่ 3</p>
     </div>
 
     <h2>แหล่งอ้างอิง</h2>
@@ -208,6 +264,53 @@
       <li><strong>นำเข้าการตั้งค่า VS Code</strong> เมื่อระบบถาม — keybinding, theme และ extension จะย้ายตามมา ทำให้ IDE คุ้นมือตั้งแต่วันแรก</li>
       <li><strong>เปิด repo จริง</strong> แล้วสั่ง "Generate Steering Docs" (บทที่ 4) เพื่อให้ agent มีบริบทของโปรเจกต์ก่อนที่คุณจะถามอะไร</li>
     </ol>
+
+    <h2>ชิ้นส่วนเชื่อมกันยังไง</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  subgraph SURF["ช่องทาง — agent เดียวกันหลังแต่ละอัน"]
+    IDE["IDE"]
+    CLI["CLI / CI"]
+    WEB["Web"]
+    MOB["Mobile"]
+  end
+  AGENT(["Kiro agent harness"])
+  IDE --> AGENT
+  CLI --> AGENT
+  WEB --> AGENT
+  MOB --> AGENT
+  AGENT --> KIRO
+  subgraph KIRO[".kiro/ — commit ลง repo"]
+    ST["steering/*.md"]
+    HK["hooks/*.json"]
+    SP["specs/&lt;name&gt;/"]
+    MC["settings/mcp.json"]
+  end
+</pre>
+      <figcaption>ทุกช่องทางขับ agent ตัวเดียวกัน; พฤติกรรมของ agent มาจาก <code>.kiro/</code> ที่ติดไปกับ repository</figcaption>
+    </figure>
+
+    <h2>ในทางปฏิบัติ — เริ่มใน IDE จบใน CI</h2>
+    <div class="example">
+      <span class="label">โจทย์: แก้บั๊กที่ CI เป็นคนตรวจ</span>
+      <p>นักพัฒนาเปิด repo ใน <strong>IDE</strong> อธิบายบั๊ก agent เสนอ Bugfix Spec เขาอนุมัติแล้วให้ agent ลงมือแก้ — โหมด Supervised จึงมองทุกการเปลี่ยน</p>
+      <p>เขา push branch ใน <strong>CI</strong> มี pipeline step รัน <code>kiro</code> จาก <strong>CLI</strong> กับ repo เดียวกัน: มันอ่าน <code>.kiro/steering/security.md</code> ที่ commit ไว้ แล้วรัน prompt "รีวิว diff นี้เทียบกฎความปลอดภัยของเรา" agent ตัวเดียวกัน กฎเดียวกัน ไม่ต้องตั้งค่าเพิ่ม — เพราะ <code>.kiro/</code> อยู่ใน repo ที่ CI checkout</p>
+      <p>ผู้รีวิวเหลือบดูการเปลี่ยนจากแอป <strong>Mobile</strong> ตอนขากลับบ้าน แล้วทิ้ง comment ไว้ agent เดียว สี่ช่องทาง แหล่งความจริงเดียว</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 1 — สัมผัสแรก</span>
+      <p class="goal">เป้าหมาย: ติดตั้ง Kiro และดูว่ามันอ่านโปรเจกต์คุณยังไง</p>
+      <ol>
+        <li>ติดตั้ง Kiro IDE และลงชื่อเข้าใช้ เมื่อระบบถาม ให้ import การตั้งค่า VS Code</li>
+        <li>เปิดโปรเจกต์จริงเล็ก ๆ ที่คุณรู้จักดี (ไม่ใช่โฟลเดอร์เปล่าใหม่)</li>
+        <li>สั่ง <strong>Generate Steering Docs</strong> เปิด <code>.kiro/steering/product.md</code>, <code>tech.md</code> และ <code>structure.md</code> ที่สร้างใหม่</li>
+        <li>อ่านทั้งสามไฟล์ ในแต่ละไฟล์ ทำเครื่องหมายหนึ่งข้อความที่ <em>ผิดหรือคลุมเครือ</em> เกี่ยวกับโปรเจกต์คุณ</li>
+        <li>ในแชต (โหมด vibe) ถาม: <code>Summarise what this project does and its main entry points.</code> เทียบคำตอบกับความจริง</li>
+      </ol>
+      <p class="check"><strong>เสร็จเมื่อ</strong> มีไฟล์สามไฟล์บนดิสก์ และรายการอย่างน้อยสามอย่างที่ต้องแก้ในนั้น คุณจะแก้มันใน Lab 4</p>
+    </div>
 
     <div class="key-takeaways">
       <span class="label">สรุปประเด็นสำคัญ</span>
@@ -279,6 +382,51 @@
       <li><strong>Compaction</strong> — เมื่อ session ยาวขึ้น Kiro สรุป context เก่าเพื่ออยู่ในลิมิตของโมเดลโดยไม่หลุดประเด็น</li>
     </ul>
 
+    <h2>เลือกโหมด</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  Q1{"รู้หรือยังว่าจะสร้างอะไร?"}
+  Q1 -->|"ยัง — ยังสำรวจอยู่"| VIBE["Vibe: ถาม สร้าง prototype ทิ้ง"]
+  Q1 -->|"รู้แล้ว"| Q2{"จะมีคนรีวิว
+หรือแตะ &gt; 2 ไฟล์?"}
+  Q2 -->|"ไม่"| VIBE
+  Q2 -->|"ใช่"| Q3{"เป็นบั๊กที่ทำซ้ำได้?"}
+  Q3 -->|"ใช่"| BUG["Bug Fix spec"]
+  Q3 -->|"ไม่"| Q4{"อยากได้แนวทางเขียนไว้
+ก่อนมีโค้ด?"}
+  Q4 -->|"ใช่"| PLAN["Plan mode → แล้วต่อ Spec"]
+  Q4 -->|"ไม่ เล็กและเข้าใจดี"| QUICK["Quick Spec"]
+  Q4 -->|"ไม่ ฟีเจอร์ปกติ"| SPEC["Feature Spec"]
+</pre>
+      <figcaption>Vibe เป็นค่าเริ่มต้น; เมื่องานเริ่มต้องรีวิว ให้เลื่อนขึ้นไป spec</figcaption>
+    </figure>
+
+    <h2>ในทางปฏิบัติ — session debug</h2>
+    <div class="example">
+      <span class="label">โจทย์: 500 เป็นครั้งคราวที่ checkout</span>
+      <p>คุณอยู่โหมด <strong>vibe</strong> — นี่คือการสืบสวน ไม่ใช่ฟีเจอร์ ข้อความแรก:</p>
+      <pre><code>The checkout endpoint 500s about 1 in 20 times.
+Here's the failing request and stack: #terminal
+Relevant code: #file:src/checkout/handler.ts #file:src/db/pool.ts
+Recent changes: #git diff</code></pre>
+      <p>ด้วย context นั้น agent จับได้ว่า <code>#git diff</code> ลดขนาด pool ของ DB ขณะที่ <code>handler.ts</code> เปิด connection สองอันต่อ request — ตอนโหลดเยอะ pool จึงหมด คุณสั่งให้มัน <em>อธิบายวิธีแก้ อย่าเพิ่งลงมือ</em> มันทำ คุณตัดสินว่าวิธีแก้จริงคือการเปลี่ยน design เลยปิด session vibe แล้วเปิด <strong>Bug Fix spec</strong> เพื่อให้การเปลี่ยนถูกรีวิวและ regression ถูกบันทึก</p>
+      <p><strong>ประเด็น:</strong> vibe หาสาเหตุได้เร็วเพราะคุณป้อนสามอย่างที่สำคัญให้; วิธีแก้เลื่อนขึ้นไปเป็น spec เพราะมันจะถูกรีวิว</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 2 — context คือทุกอย่าง</span>
+      <p class="goal">เป้าหมาย: เห็นแบบวัดได้ว่าคุณภาพคำตอบขึ้นกับ context ที่คุณให้</p>
+      <ol>
+        <li>เลือกไฟล์จริงในโปรเจกต์ที่เชื่อมโยงสิ่งต่าง ๆ เข้าด้วยกัน (จุดเริ่มของแอป, router, DI container)</li>
+        <li>ถามในโหมด vibe โดย <em>ไม่มี</em> context provider: <code>What are the top 3 risks in this codebase's startup path?</code></li>
+        <li>ถามใหม่ คำถามเดิม เพิ่ม: <code>#file:&lt;ไฟล์นั้น&gt; #folder:&lt;ไดเรกทอรีของมัน&gt; #git diff</code></li>
+        <li>ถามครั้งที่สาม เพิ่ม <code>#problems</code> และ <code>#terminal</code> (รัน test suite ก่อนเพื่อให้มี output)</li>
+        <li>สังเกตว่าแต่ละคำตอบเจาะจงและถูกต้องแค่ไหน เก็บ prompt ที่ดีที่สุดไว้เป็น template</li>
+      </ol>
+      <p class="check"><strong>เสร็จเมื่อ</strong> คุณชี้ได้ว่าข้อความจริงข้อหนึ่งในคำตอบที่ 3 ที่คำตอบที่ 1 ตอบผิดหรือพลาดไปเลย</p>
+    </div>
+
     <div class="key-takeaways">
       <span class="label">สรุปประเด็นสำคัญ</span>
       <ul>
@@ -335,6 +483,57 @@ IF &lt;condition&gt; THEN THE SYSTEM SHALL &lt;response&gt;</code></pre>
       <li>waves รันเรียงลำดับ; task ภายใน wave เดียวกันรันขนานกัน</li>
     </ul>
     <p>คุณไม่ต้องตั้งค่าเอง — เป็นอัตโนมัติ และเป็นเหตุผลที่ spec มักเสร็จเร็วกว่าสั่ง task เดียวกันทีละอันในแชต</p>
+
+    <h2>workflow ทั้งหมด ตั้งแต่ต้นจนจบ</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  START["intent ฟีเจอร์บรรทัดเดียว"] --> R["requirements.md
+acceptance criteria แบบ EARS"]
+  R --> G1{"คุณอนุมัติ?"}
+  G1 -->|"กระชับถ้อยคำ"| R
+  G1 -->|"อนุมัติ"| D["design.md
+สถาปัตยกรรม · error · กลยุทธ์ test"]
+  D --> G2{"คุณอนุมัติ?"}
+  G2 -->|"เปลี่ยนแนวทาง"| D
+  G2 -->|"อนุมัติ"| T["tasks.md — dependency graph"]
+  T --> W1["Wave 1 · task อิสระ รันขนาน"]
+  W1 --> W2["Wave 2 · task ที่ dependency ครบแล้ว"]
+  W2 --> W3["Wave 3 · …"]
+  W3 --> PR["การเปลี่ยนที่รีวิวแล้ว + โฟลเดอร์ spec ใน PR เดียว"]
+</pre>
+      <figcaption>ด่านอนุมัติสองด่านตอนต้น; หลังจากนั้นรันขนานอัตโนมัติ</figcaption>
+    </figure>
+
+    <h2>ในทางปฏิบัติ — spec สำหรับ rate limiting</h2>
+    <div class="example">
+      <span class="label">โจทย์: ticket PROJ-812 "Rate-limit the public API"</span>
+      <p><strong>เฟส Requirements</strong> คุณอธิบาย ticket Kiro ร่าง EARS; คุณกระชับสองข้อ:</p>
+      <pre><code>WHEN an unauthenticated client exceeds 60 requests in 60 seconds
+THE SYSTEM SHALL respond 429 with a Retry-After header.
+
+WHILE a client is rate-limited
+THE SYSTEM SHALL NOT count further requests toward the window.
+
+WHERE the client presents a valid API key
+THE SYSTEM SHALL apply the key's plan limit instead of the default.</code></pre>
+      <p><strong>เฟส Design</strong> Kiro เสนอ token-bucket ใน Redis, middleware ก่อน routing, และ fallback แบบ "fail open" ถ้า Redis ติดต่อไม่ได้ คุณเปลี่ยนอย่างเดียว — ให้ fail <em>closed</em> สำหรับ route จ่ายเงิน — แล้วอนุมัติ</p>
+      <p><strong>เฟส Tasks</strong> <code>tasks.md</code> ออกมาเป็น: (1) Redis client + config, (2) โมดูล token-bucket + unit test, (3) middleware, (4) wire เข้า router, (5) integration test, (6) metric ใน dashboard Waves: 1 กับ 2 รันด้วยกัน; 3 รอ 2; 4 รอ 3; 5 กับ 6 รันด้วยกันตอนจบ</p>
+      <p>PR มีทั้งโค้ด <em>และ</em> <code>.kiro/specs/PROJ-812-rate-limiting/</code> ผู้รีวิวจึงเห็นว่าทำไมเลือก "fail closed สำหรับจ่ายเงิน" โดยไม่ต้องถาม</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 3 — รัน spec ถึงด่านแรก</span>
+      <p class="goal">เป้าหมาย: สัมผัสด่าน requirements และเขียน EARS จริง</p>
+      <ol>
+        <li>เลือกฟีเจอร์เล็กจริง ๆ ที่ต้องใช้ (filter, export, field ในฟอร์ม)</li>
+        <li>เริ่ม <strong>Feature Spec</strong> ให้คำอธิบายหนึ่งหรือสองประโยค — ไม่มากกว่านั้น</li>
+        <li>เมื่อ Kiro สร้าง <code>requirements.md</code> ให้ <strong>หยุด</strong> ยังไม่อนุมัติ</li>
+        <li>เขียน acceptance criteria อย่างน้อยสองข้อใหม่ให้เป็น EARS เข้ม (<code>WHEN … THE SYSTEM SHALL …</code>) เพิ่ม <code>IF … THEN …</code> หนึ่งข้อสำหรับ error case ที่ร่างพลาดไป</li>
+        <li>อนุมัติ แล้วให้ Kiro สร้าง <code>design.md</code> อ่านมัน จดหนึ่งการตัดสินใจใน design ที่คุณคงไม่ได้คิดจะทำให้ชัดเอง</li>
+      </ol>
+      <p class="check"><strong>เสร็จเมื่อ</strong> <code>.kiro/specs/&lt;ฟีเจอร์ของคุณ&gt;/</code> มี <code>requirements.md</code> ที่คุณแก้ และ <code>design.md</code> ที่คุณอ่านแล้ว หยุดตรงนั้น — ไม่ต้อง implement</p>
+    </div>
 
     <h2>ประเภทของ spec</h2>
     <table>
@@ -423,6 +622,69 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
       <li>รีวิวการแก้ steering เหมือนรีวิวโค้ด — มันเปลี่ยนพฤติกรรม agent ของทั้งทีม</li>
     </ul>
 
+    <h2>เลือกโหมดไหน — decision tree</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  Q1{"ควรมีผลกับ
+ทุกบทสนทนา?"}
+  Q1 -->|"ใช่ — กฎสากล"| ALWAYS["inclusion: always
+(ทำให้สั้น — กิน token ทุกเทิร์น)"]
+  Q1 -->|"ไม่"| Q2{"เกี่ยวเฉพาะ
+บางไฟล์/path?"}
+  Q2 -->|"ใช่"| FM["inclusion: fileMatch
++ fileMatchPattern glob"]
+  Q2 -->|"ไม่"| Q3{"ให้ถ้อยคำของ request
+ดึงมาเองอัตโนมัติ?"}
+  Q3 -->|"ใช่"| AUTO["inclusion: auto
++ name + description"]
+  Q3 -->|"ไม่ — จะเรียกเอง"| MANUAL["inclusion: manual
+#file-name ในแชต"]
+</pre>
+      <figcaption>ไฟล์พื้นฐานเป็น <code>always</code> ที่เหลือให้เริ่มแคบ แล้วขยายเมื่อจำเป็นจริง</figcaption>
+    </figure>
+
+    <h2>ในทางปฏิบัติ — ไฟล์ <code>fileMatch</code> จริง</h2>
+    <div class="example">
+      <span class="label">.kiro/steering/code-style-ts.md</span>
+      <pre><code>---
+inclusion: fileMatch
+fileMatchPattern: ["**/*.ts", "**/*.tsx"]
+---
+# TypeScript conventions
+
+## Errors
+Never throw bare strings. Throw an `AppError` subclass with a `code`.
+Rationale: the API error middleware maps `code` to an HTTP status and a
+safe message; a bare string leaks internals and 500s.
+
+// avoid
+throw "user not found";
+// prefer
+throw new NotFoundError({ code: "user.not_found" });
+
+## Async
+No floating promises. Every `await`-able call is awaited or explicitly
+`void`-ed with a comment saying why.
+
+## Imports
+Absolute imports from `src/` only (`@/db`, not `../../db`).</code></pre>
+      <p>เพราะเป็น <code>fileMatch</code> ไฟล์นี้โหลดเฉพาะตอน agent แตะไฟล์ <code>.ts</code>/<code>.tsx</code> — นักพัฒนา Python ไม่ต้องจ่ายค่า token ของมัน และมันจะละเอียดแค่ไหนก็ได้</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 4 — สอน Kiro หนึ่งกฎจริง</span>
+      <p class="goal">เป้าหมาย: พิสูจน์ว่า steering เปลี่ยนพฤติกรรม และแก้ไฟล์พื้นฐานจาก Lab 1</p>
+      <ol>
+        <li>แก้ข้อความที่ผิด/คลุมเครือที่คุณเจอใน <code>product.md</code> / <code>tech.md</code> / <code>structure.md</code> ใน Lab 1</li>
+        <li>สร้าง <code>.kiro/steering/code-style.md</code> ด้วย <code>inclusion: always</code> และกฎจริง 5 ข้อที่ทีมเถียงกันในรีวิว อย่างน้อยสองข้อใส่ snippet <em>before / after</em> สั้น ๆ และเหตุผลหนึ่งบรรทัด</li>
+        <li>ถาม agent (แชตใหม่): <code>Write a function that fetches a user by id and returns a typed result.</code></li>
+        <li>เช็ค output เทียบกฎทั้งห้า ถ้ามันฝ่าฝืนข้อไหน กระชับถ้อยคำของกฎนั้นแล้วลองใหม่</li>
+        <li>ตอนนี้เปลี่ยนกฎหนึ่งข้อเป็นตรงกันข้าม ถามใหม่ ยืนยันว่า output ทำตามกฎใหม่ แล้ว revert</li>
+      </ol>
+      <p class="check"><strong>เสร็จเมื่อ</strong> prompt เดิมให้โค้ดที่ต่างกันและทำตามกฎ ก่อนและหลังการแก้ของคุณ — นั่นคือ steering ที่ทำงาน commit ไฟล์พื้นฐานที่แก้แล้วและ <code>code-style.md</code> บน branch</p>
+    </div>
+
     <div class="key-takeaways">
       <span class="label">สรุปประเด็นสำคัญ</span>
       <ul>
@@ -491,6 +753,68 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
 
     <h2>การสร้าง hook</h2>
     <p>ใน IDE: ปุ่ม <strong>+</strong> ใน Agent Hooks panel → "Ask Kiro to create a hook" → อธิบาย automation เป็นภาษาคน แล้ว Kiro เขียน JSON ให้ ใช้ชื่อไฟล์แบบ kebab-case (<code>lint-on-save.json</code>); hook ที่เกี่ยวข้องกันใส่ไฟล์เดียวกันได้</p>
+
+    <h2>trigger จุดตรงไหนใน session</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  S["session เริ่ม"] --> H1["SessionStart / AgentSpawn"]
+  H1 --> P["คุณส่งข้อความ"]
+  P --> H2["PromptSubmit — บล็อกได้"]
+  H2 --> LOOP{"agent ทำงาน"}
+  LOOP --> H3["PreToolUse — บล็อกได้"]
+  H3 --> TOOL["tool รัน (แก้ไฟล์ รันคำสั่ง…)"]
+  TOOL --> H4["PostToolUse"]
+  TOOL --> H5["PostFileCreate / PostFileSave / PostFileDelete
+(เฉพาะการแก้ของ agent)"]
+  H4 --> LOOP
+  H5 --> LOOP
+  LOOP --> H6["AgentStop"]
+  H6 --> P
+</pre>
+      <figcaption>รอบ ๆ task ของ spec ยังมี <code>PreTaskExecution</code> / <code>PostTaskExecution</code></figcaption>
+    </figure>
+
+    <h2>ในทางปฏิบัติ — สอง hook ที่ทีมมักปล่อยก่อน</h2>
+    <div class="example">
+      <span class="label">.kiro/hooks/dev-guardrails.json</span>
+      <pre><code>{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Format on save",
+      "trigger": "PostFileSave",
+      "matcher": "\\.(ts|tsx|js|jsx|json|css)$",
+      "action": { "type": "command", "command": "npx prettier --write \"$KIRO_FILE\"" },
+      "timeout": 30
+    },
+    {
+      "name": "Scaffold a test for new source files",
+      "trigger": "PostFileCreate",
+      "matcher": "^src/.*(?&lt;!\\.test)\\.ts$",
+      "action": {
+        "type": "agent",
+        "command": "A new source file was just created at $KIRO_FILE. If it exports anything testable and no sibling *.test.ts exists, create one with a failing placeholder test and a TODO listing the cases to cover. Do not implement the tests."
+      },
+      "timeout": 120
+    }
+  ]
+}</code></pre>
+      <p>อันแรกเป็น action แบบ <code>command</code> — shell ล้วน กำหนดผลได้แน่นอน ปลอดภัย อันที่สองเป็น action แบบ <code>agent</code> — ส่ง prompt กลับให้ agent มันจึงอ่านไฟล์แล้วเขียน test stub ที่สมเหตุสมผลได้ ทั้งคู่ไม่บล็อก: ถ้า Prettier ล้มเหลว workflow ก็เดินต่อ ยังไม่มี <code>PreToolUse</code> จนกว่าทีมจะไว้ใจสองอันนี้</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 5 — ปล่อย hook format-on-save</span>
+      <p class="goal">เป้าหมาย: เห็น hook จุดตอน agent แก้ — และยืนยันว่ามัน <em>ไม่</em> จุดตอนคุณเซฟเอง</p>
+      <ol>
+        <li>ใน Agent Hooks panel คลิก <strong>+</strong> → "Ask Kiro to create a hook" และอธิบาย: <em>run my formatter on TypeScript and JS files after the agent edits them</em></li>
+        <li>เช็ค JSON ที่สร้างใน <code>.kiro/hooks/</code>: <code>trigger</code> ถูก (<code>PostFileSave</code>), <code>matcher</code> ที่ match แค่นามสกุล source, action แบบ <code>command</code></li>
+        <li>สั่ง agent: <code>Add a small utility function to &lt;ไฟล์ .ts บางไฟล์&gt;, deliberately badly formatted.</code></li>
+        <li>ยืนยันว่าไฟล์ที่เซฟกลับมาถูก format โดยที่คุณไม่ได้ทำอะไร</li>
+        <li>ตอนนี้แก้ไฟล์เดียวกันด้วยมือให้ format เละ ๆ แล้วเซฟเอง ยืนยันว่า hook <strong>ไม่</strong> รัน — trigger ไฟล์มีไว้สำหรับการแก้ของ agent เท่านั้น</li>
+      </ol>
+      <p class="check"><strong>เสร็จเมื่อ</strong> คุณเห็น hook รันตอนขั้นที่ 4 และเงียบตอนขั้นที่ 5 commit hook JSON บน branch</p>
+    </div>
 
     <div class="key-takeaways">
       <span class="label">สรุปประเด็นสำคัญ</span>
@@ -567,6 +891,64 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
       ติดตั้ง MCP server จากแหล่งที่ไว้ใจได้เท่านั้น — server รันโค้ดบนเครื่องคุณและเห็น context ที่ agent ส่งให้ได้ ตรวจแพ็กเกจ, pin เวอร์ชัน และอย่า commit secret
     </div>
 
+    <h2>tool call ไหลยังไง</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart LR
+  YOU["คำขอของคุณ"] --> AGENT["Kiro agent"]
+  AGENT -->|"อ่าน"| CFG["mcp.json
+workspace + user + agent"]
+  CFG --> S1
+  CFG --> S2
+  subgraph SERVERS["MCP servers (จาก mcp.json)"]
+    S1["aws-docs
+stdio: uvx …"]
+    S2["internal-wiki
+HTTP endpoint"]
+  end
+  S1 -->|"search_documentation
+(autoApprove)"| DOCS[("AWS docs")]
+  S2 -->|"ต้องอนุมัติ"| WIKI[("Confluence / Notion")]
+  DOCS -.->|"ผลลัพธ์ที่อ้างอิงได้"| AGENT
+  WIKI -.->|"หน้า"| AGENT
+</pre>
+      <figcaption>agent เรียกได้แค่ tool ที่ <code>mcp.json</code> ประกาศ; อะไรที่ไม่อยู่ใน <code>autoApprove</code> จะถามคุณก่อน</figcaption>
+    </figure>
+
+    <h2>ในทางปฏิบัติ — <code>mcp.json</code> ระดับ workspace ที่ตรวจแล้ว</h2>
+    <div class="example">
+      <span class="label">.kiro/settings/mcp.json (commit ไว้)</span>
+      <pre><code>{
+  "mcpServers": {
+    "aws-docs": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@1.0.4"],
+      "disabled": false,
+      "autoApprove": ["search_documentation", "read_documentation"]
+    },
+    "eng-wiki": {
+      "url": "https://mcp.internal.acme.dev/wiki",
+      "headers": { "Authorization": "Bearer ${ENG_WIKI_TOKEN}" },
+      "disabled": false
+    }
+  }
+}</code></pre>
+      <p>ข้อตกลงของทีม: server AWS <strong>pin</strong> ที่ <code>1.0.4</code> ไม่ใช่ <code>@latest</code> การเปลี่ยนจาก upstream จึงแก้พฤติกรรมไม่ได้โดยไม่ผ่าน PR เฉพาะสอง tool อ่านอย่างเดียวเท่านั้นที่ auto-approve; server wiki ภายในเป็น HTTP, token มาจาก environment variable (ไม่เคย commit) และไม่มี tool ไหน auto-approve เพราะมันถูกสั่งให้เขียนหน้าได้</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 6 — ให้ agent เข้าถึงเอกสาร AWS สด</span>
+      <p class="goal">เป้าหมาย: เห็น agent เรียก MCP tool แทนการเดาจากข้อมูล training</p>
+      <ol>
+        <li>เปิด workspace MCP config (Command palette → "Kiro: Open workspace MCP config (JSON)")</li>
+        <li>เพิ่ม server <code>aws-docs</code> จากตัวอย่างข้างบน (pin เวอร์ชันจริงถ้าหาได้; ไม่งั้น <code>@latest</code> สำหรับ lab)</li>
+        <li>เช็คว่าแท็บ <strong>MCP Servers</strong> แสดงว่าเชื่อมต่อแล้ว ถ้าไม่ ให้อ่านแท็บ <strong>Output</strong></li>
+        <li>ถาม agent คำถามที่ต้องใช้รายละเอียด AWS <em>ปัจจุบัน</em> เช่น <code>What are the current default quotas for Amazon SQS FIFO queues, with a source link?</code></li>
+        <li>ดูมันเรียก <code>search_documentation</code> / <code>read_documentation</code> แล้วตอบพร้อมอ้างอิง ถามเรื่องเดิมโดยตั้ง server เป็น <code>disabled: true</code> แล้วเทียบความมั่นใจ</li>
+      </ol>
+      <p class="check"><strong>เสร็จเมื่อ</strong> คุณมีคำตอบหนึ่งอันที่มี MCP tool call พร้อมลิงก์เอกสารหนุน และเห็นความต่างเมื่อปิด server</p>
+    </div>
+
     <div class="key-takeaways">
       <span class="label">สรุปประเด็นสำคัญ</span>
       <ul>
@@ -629,6 +1011,50 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
       <tr><td><strong>Skills</strong></td><td>แพ็กเกจคำสั่งแบบ standalone</td></tr>
       <tr><td><strong>Powers</strong></td><td>แพ็กเกจที่ติดตั้งได้และรู้บริบท รวม tool + ความรู้ + คำแนะนำ</td></tr>
     </table>
+
+    <h2>intelligent loading ตัดสินใจยังไง</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  T["งานของคุณ: 'add a Stripe webhook
+for failed payments'"] --> M{"จับคู่ถ้อยคำงานกับ
+keyword ของ Power ที่ติดตั้งไว้"}
+  M -->|"'stripe', 'payment', 'webhook'"| L1["โหลด: Stripe Power
+(skills + mcp.json + steering)"]
+  M -->|"ไม่ match"| SKIP1["Supabase Power — ไม่โหลด"]
+  M -->|"ไม่ match"| SKIP2["Figma Power — ไม่โหลด"]
+  L1 --> CTX["context ของ agent = base + Stripe เท่านั้น
+(ไม่ใช่ 50k+ tokens ของทุกอย่าง)"]
+</pre>
+      <figcaption>เปลี่ยนไปทำงานฐานข้อมูลแล้วภาพกลับด้าน: Supabase โหลด Stripe หลุดออก คุณไม่ต้องสลับอะไร</figcaption>
+    </figure>
+
+    <h2>ในทางปฏิบัติ — แพ็ก Power ของทีมเอง</h2>
+    <div class="example">
+      <span class="label">acme-standards/plugin.json (Power ส่วนตัว)</span>
+      <pre><code>{
+  "name": "acme-standards",
+  "description": "ACME engineering conventions + internal service catalog",
+  "keywords": ["acme", "internal service", "new endpoint", "new service", "runbook"],
+  "skills": ["skills/service-scaffold", "skills/observability", "skills/runbook"],
+  "mcp": "mcp.json",
+  "dev.kiro": { "steering": ["dev.kiro/steering/code-review.md", "dev.kiro/steering/security.md"] }
+}</code></pre>
+      <p>เมื่อติดตั้งแล้ว agent ของคนใหม่จะดึงกฎรีวิว, กฎความปลอดภัย และ MCP service-catalog ภายในของ ACME เข้ามาเองทันทีที่พิมพ์ "add a new endpoint" — โดยไม่มีใครต้องคัดลอกไฟล์ steering ระหว่าง repo เอง แพ็กเดียวกันยังทำงานใน Cursor หรือ Copilot ได้เพราะทำตามรูปแบบ Agent Plugins แบบเปิด</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 7 — ดู Power เปิดใช้เอง</span>
+      <p class="goal">เป้าหมาย: ยืนยันว่า intelligent loading ทำงาน — Power ที่ถูกต้องเปิดเอง</p>
+      <ol>
+        <li>จาก <code>kiro.dev/powers</code> หรือใน IDE ติดตั้ง Power หนึ่งอันที่ตรงกับ stack ของคุณ (Supabase, AWS Aurora, Postman, Netlify…)</li>
+        <li>เริ่มงานที่ <em>ไม่เกี่ยว</em> กับมัน (เช่น "rename this variable everywhere") สังเกตตัวบ่งชี้ Powers — Power ควรว่างอยู่</li>
+        <li>เริ่มงานที่อยู่ในโดเมนของมันเต็ม ๆ (สำหรับ Supabase: "add a row-level-security policy so users only read their own orders") ดูตัวบ่งชี้แสดงว่า Power เปิดใช้อยู่</li>
+        <li>ตรวจ output: มันสะท้อนคำแนะนำของ Power ไหม (เช่น RLS policy จริง, type ที่ generate) แทนคำแนะนำทั่วไป?</li>
+        <li>ทางเลือก: ร่าง <code>plugin.json</code> สำหรับสิ่งหนึ่งที่ทีมอธิบายซ้ำตลอด (service scaffold, convention การ log) ไม่ต้องเผยแพร่ — แค่ออกแบบรายการ keyword</li>
+      </ol>
+      <p class="check"><strong>เสร็จเมื่อ</strong> คุณเห็นตัวบ่งชี้ Powers เปลี่ยนระหว่างงานที่ไม่เกี่ยวกับงานในโดเมน และ output ในโดเมนใช้ Power อย่างชัดเจน</p>
+    </div>
 
     <div class="key-takeaways">
       <span class="label">สรุปประเด็นสำคัญ</span>
@@ -718,6 +1144,51 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
       <tr><td>retro 2 สัปดาห์: ทำต่อ / ปรับ / หยุด</td><td>ทุกคน</td><td>แชร์บันทึกแล้ว</td></tr>
     </table>
 
+    <h2>pilot สองสัปดาห์ บนไทม์ไลน์</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart LR
+  subgraph W1["สัปดาห์ 1"]
+    direction TB
+    d1["วัน 1–2
+ติดตั้ง · ลงชื่อเข้าใช้ · import settings"] --> d2["วัน 2–4
+generate + แก้ steering พื้นฐาน → PR"]
+    d2 --> d3["วัน 5
+steering fileMatch แยกภาษา → PR"]
+  end
+  subgraph W2["สัปดาห์ 2"]
+    direction TB
+    e1[".kiroignore + Permissions → PR"] --> e2["mcp.json ระดับ workspace ที่ตรวจแล้ว → PR"]
+    e2 --> e3["ticket จริงแรกส่งผ่าน spec"]
+    e3 --> e4["retro: ทำต่อ / ปรับ / หยุด"]
+  end
+  W1 --> W2
+</pre>
+      <figcaption>ทุกอย่างเข้ามาเป็น PR ที่รีวิวแล้ว retro คือจุดตัดสินใจจริง ไม่ใช่พิธี</figcaption>
+    </figure>
+
+    <h2>ในทางปฏิบัติ — ทีม 4 คน สัปดาห์ 1–2</h2>
+    <div class="example">
+      <span class="label">โจทย์: 4 devs (TS 2, Python 1, platform 1), repo service ที่ใช้งานจริงหนึ่งอัน</span>
+      <p><strong>จ.–อ.</strong> ทั้งสี่ติดตั้ง IDE, import การตั้งค่า VS Code, ลงชื่อเข้าใช้ dev platform เปิด PR ที่มี <code>.kiro/steering/{product,tech,structure}.md</code> จาก "Generate Steering Docs" — แก้ <em>หนัก</em> เพราะ <code>tech.md</code> ที่ generate มาพลาดว่า background job รันบน worker แยก merge วันพุธหลังรีวิว</p>
+      <p><strong>พ.–พฤ.</strong> dev TS เพิ่ม <code>code-style-ts.md</code> (<code>fileMatch **/*.ts</code>) กับสี่กฎที่ขึ้นในรีวิวบ่อยสุด; dev Python เพิ่ม <code>code-style-python.md</code> ทั้งคู่เล็ก ทั้งคู่ผ่านรีวิว <code>security.md</code> ที่ใช้ร่วมกันเข้าเป็น <code>always</code> จำกัดที่แปดบรรทัด</p>
+      <p><strong>ศ.</strong> lead เพิ่ม <code>.kiroignore</code> (secret, fixture, <code>infra/secrets/</code>) และ Permissions ที่ default-deny นอก repo PR แยก: <code>mcp.json</code> ที่มีแค่ AWS docs server ที่ pin ไว้</p>
+      <p><strong>สัปดาห์ 2</strong> คู่หนึ่งเอา ticket <code>SVC-431</code> ผ่าน Feature Spec ตั้งแต่ต้นจนจบ — โฟลเดอร์ spec ไปกับ PR retro วันศุกร์: cycle time ของ <code>SVC-431</code> สั้นลงชัดเจน, ไอเดีย hook หนึ่งอัน (<code>PostFileCreate</code> test scaffold) เข้า backlog, ตัดสินใจ: <strong>ทำต่อ</strong>, เพิ่ม repo platform ต่อไป</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 8 — ร่าง pilot ของทีมคุณ</span>
+      <p class="goal">เป้าหมาย: ออกจากคอร์สนี้พร้อมแผนที่เป็นรูปธรรม มอบหมายได้ — ไม่ใช่ความตั้งใจลอย ๆ</p>
+      <ol>
+        <li>ระบุ <strong>repo pilot</strong> (หนึ่ง, ใช้งานจริง, มี convention จริง) และ <strong>คน</strong> (2–5) เขียนลงไป</li>
+        <li>เขียนย่อหน้าแรกของ <code>product.md</code> สำหรับ repo นั้น <em>ด้วยมือ</em> — มันคืออะไร ใครใช้ เป้าหมายธุรกิจหนึ่งข้อ นี่คือสิ่งที่ "Generate Steering Docs" ควรพูด</li>
+        <li>ลิสต์ <strong>ห้ากฎ</strong> ที่ทีมเถียงกันในรีวิวมากสุด กฎเหล่านี้กลายเป็น <code>code-style-*.md</code></li>
+        <li>ลิสต์สิ่งที่จะอยู่ใน <code>.kiroignore</code> ของ repo นี้ (secret, fixture, โฟลเดอร์ที่ generate, path ในขอบเขต compliance)</li>
+        <li>เลือก <strong>ticket แรก</strong> ที่จะรันผ่าน spec และใครจับคู่ ใส่วันที่ให้ retro</li>
+      </ol>
+      <p class="check"><strong>เสร็จเมื่อ</strong> ทุกแถวของ checklist rollout ข้างบนมีชื่อคนกำกับ และ retro มีวันที่ แชร์กับทีม</p>
+    </div>
+
     <div class="key-takeaways">
       <span class="label">สรุปประเด็นสำคัญ</span>
       <ul>
@@ -764,5 +1235,9 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
 </footer>
 
 <script src="assets/app.js"></script>
+<!-- stash raw mermaid source BEFORE mermaid can replace it with an SVG -->
+<script>document.querySelectorAll('pre.mermaid').forEach(function(el){el.dataset.src=el.textContent;});</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script src="assets/diagrams.js"></script>
 </body>
 </html>

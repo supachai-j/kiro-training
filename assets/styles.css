@@ -15,6 +15,7 @@
   --accent: #7c3aed;
   --accent-soft: #ede9fe;
   --accent-text: #6d28d9;
+  --accent2: #2563eb;
   --ok: #15803d;
   --ok-soft: #dcfce7;
   --warn: #b45309;
@@ -217,6 +218,48 @@ footer.site {
   border-top: 1px solid var(--border); padding: 2rem clamp(1rem, 4vw, 2rem); margin-top: 3rem;
   color: var(--text-faint); font-size: .85rem; text-align: center;
 }
+
+/* ---------- diagrams ---------- */
+figure.diagram { margin: 1.6rem 0; padding: 0; }
+figure.diagram pre.mermaid {
+  background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.1rem; margin: 0; overflow-x: auto; text-align: center;
+  font-family: var(--mono); font-size: .82rem; color: var(--text-soft); line-height: 1.5;
+}
+figure.diagram pre.mermaid svg { max-width: 100%; height: auto; }
+figure.diagram figcaption {
+  margin-top: .5rem; font-size: .82rem; color: var(--text-faint); text-align: center;
+}
+
+/* ---------- worked example ---------- */
+.example {
+  border: 1px solid var(--border); border-left: 3px solid var(--accent2, #5d8aa8);
+  background: var(--bg-soft); border-radius: 8px; padding: 1rem 1.2rem; margin: 1.5rem 0;
+}
+.example > .label {
+  font-weight: 700; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text); display: block; margin-bottom: .5rem;
+}
+.example p:first-of-type { margin-top: 0; }
+.example p:last-child { margin-bottom: 0; }
+
+/* ---------- lab ---------- */
+.lab {
+  border: 1px solid var(--accent); border-radius: var(--radius);
+  padding: 1.1rem 1.3rem; margin: 2rem 0 1rem;
+  background: linear-gradient(0deg, var(--accent-soft), transparent 140%);
+}
+.lab > .label {
+  font-weight: 700; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--accent-text); display: flex; align-items: center; gap: .4rem; margin-bottom: .4rem;
+}
+.lab ol { margin: .5rem 0 0; padding-left: 1.3rem; }
+.lab ol li { margin: .45rem 0; }
+.lab .goal { font-weight: 600; color: var(--text); margin: .2rem 0 .6rem; }
+.lab .check {
+  margin-top: .9rem; font-size: .9rem; border-top: 1px dashed var(--border); padding-top: .7rem;
+}
+.lab .check strong { color: var(--ok); }
 
 .lang-th [lang="en"], .lang-en [lang="th"] { display: none; }
 

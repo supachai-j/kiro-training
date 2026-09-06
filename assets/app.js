@@ -18,7 +18,9 @@
     root.setAttribute('data-theme', next);
     try { localStorage.setItem('kiro-theme', next); } catch (e) {}
     updateThemeLabel();
+    try { window.dispatchEvent(new CustomEvent('kiro-theme', { detail: next })); } catch (e) {}
   };
+  window.kiroCurrentTheme = currentTheme;
 
   function updateThemeLabel() {
     var el = document.getElementById('theme-label');

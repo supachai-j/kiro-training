@@ -79,12 +79,22 @@
 
     <h2>The core idea, as one loop</h2>
     <p>Every phase of AI-DLC runs the same cycle:</p>
-    <pre><code>AI drafts a detailed plan
-      → AI asks clarifying questions
-        → a human validates and decides
-          → AI executes the approved plan
-            → the team reviews the result
-              → repeat</code></pre>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  A["AI drafts a detailed plan"] --> B["AI asks clarifying questions"]
+  B --> C{"Human validates
+and decides"}
+  C -->|"changes needed"| A
+  C -->|"approved"| D["AI executes the plan"]
+  D --> E["Team reviews the result"]
+  E --> A
+  D -.->|"writes plan, requirements,
+design into the repo"| R[("Project repo
+= AI's memory")]
+</pre>
+      <figcaption>The AI-DLC loop. The human decision point is the one step that never gets skipped.</figcaption>
+    </figure>
     <p>The non-negotiable part is the human decision point. AWS: <em>"AI systematically creates detailed work plans, actively seeks clarification and guidance, and defers critical decisions to humans … only humans possess the contextual understanding and knowledge of business requirements needed to make informed choices."</em> The AI keeps its own memory by writing plans, requirements, and design artifacts into the project repository, so work continues cleanly across sessions.</p>
 
     <h2>Three phases</h2>
@@ -94,6 +104,30 @@
       <tr><td><strong>Construction</strong></td><td>Architecture, domain model, code, tests</td><td><strong>Mob Construction</strong> — the same group clarifies technical decisions as they surface</td></tr>
       <tr><td><strong>Operations</strong></td><td>Infrastructure as code, deployment and monitoring configuration</td><td>The team reviews outputs and keeps oversight through delivery</td></tr>
     </table>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart LR
+  BI["Business intent"] --> INC
+  subgraph INC["INCEPTION  ·  Mob Elaboration"]
+    direction TB
+    i1["Requirements
+User stories
+Units of work"]
+  end
+  subgraph CON["CONSTRUCTION  ·  Mob Construction"]
+    direction TB
+    c1["Architecture &amp; domain model
+Code + tests"]
+  end
+  subgraph OPS["OPERATIONS  ·  Team oversight"]
+    direction TB
+    o1["Infra as code
+Deploy + monitor"]
+  end
+  INC -->|"context carried forward"| CON -->|"context carried forward"| OPS
+</pre>
+      <figcaption>Each phase writes context that makes the next phase's AI suggestions sharper.</figcaption>
+    </figure>
     <p>Each phase writes context that makes the next phase's AI suggestions sharper.</p>
 
     <h2>New vocabulary</h2>
@@ -120,6 +154,15 @@
       Those figures come from vendor presentations, not an independently audited benchmark — treat them as a directional signal, not proof. The transferable lesson is the shape: a small team, a very tight loop, and a language whose feedback the AI can act on.
     </div>
 
+    <h2>In practice — one small feature through the loop</h2>
+    <div class="example">
+      <span class="label">Scenario: "Add CSV export to the Reports page"</span>
+      <p><strong>Inception.</strong> You give the agent the one-line intent. It comes back with questions a human has to answer: <em>Which columns? Respect the current filters, or export everything? What time zone for the date column? Who is allowed to export — every role, or just admins?</em> Nobody guessed — the team answered in a 15-minute mob. Output: a <code>requirements.md</code> with EARS lines like <em>"WHEN an admin clicks Export THE SYSTEM SHALL download a CSV of the currently filtered rows, dates in the workspace time zone."</em></p>
+      <p><strong>Construction.</strong> The agent proposes: reuse the existing <code>ReportQuery</code>, stream the CSV so a 200k-row export doesn't hold memory, add a <code>reports:export</code> permission check. One real decision surfaced — streaming vs building the file in memory — the team picked streaming in 2 minutes. The agent wrote the endpoint, the button, and tests, in one bolt.</p>
+      <p><strong>Operations.</strong> The agent added a CloudWatch metric for export count and duration, and a note in the runbook. The team reviewed the dashboard change and merged.</p>
+      <p><strong>The point:</strong> the rework-causing question ("just admins?") got asked in Inception, when the answer cost a sentence — not in code review, when it would have cost a rewrite of the endpoint and the button.</p>
+    </div>
+
     <h2>Honest caveats</h2>
     <ul>
       <li>AI-DLC is young (mid-2025) and still moving. The AWS blog and whitepaper are the canonical description; tooling and case studies are catching up.</li>
@@ -141,6 +184,19 @@
     <div class="callout tip">
       <span class="label">Try it</span>
       Skim the AWS founding blog post (link below), then look at your last feature. Which parts were "Inception" (deciding what to build), and which were "Construction"? Where did a missing decision cost you rework? That gap is what the Inception phase exists to close.
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 0 — Map a real PR onto AI-DLC</span>
+      <p class="goal">Goal: feel where the Inception / Construction line falls in your own work, and find one decision that leaked into code review.</p>
+      <ol>
+        <li>Open the last non-trivial pull request you reviewed or authored. Read the description and the diff.</li>
+        <li>On paper (or a scratch file), make three columns: <strong>Inception</strong>, <strong>Construction</strong>, <strong>Operations</strong>.</li>
+        <li>List every distinct decision or change from the PR under the phase where it <em>should</em> have been settled. Examples: "export is admin-only" → Inception; "stream the CSV" → Construction; "add export metric" → Operations.</li>
+        <li>Circle anything that was actually decided <em>during</em> code review or after merge. For each, write the one sentence that would have settled it in Inception.</li>
+        <li>Count: how many review comments were really missing-Inception, not missing-code-quality?</li>
+      </ol>
+      <p class="check"><strong>Done when</strong> you have at least one circled decision and its one-sentence Inception version. That sentence is the shape of an EARS acceptance criterion — you'll write these for real in Module 3.</p>
     </div>
 
     <h2>References</h2>
@@ -208,6 +264,53 @@
       <li><strong>Import your VS Code settings</strong> when prompted — keybindings, theme, and extensions carry over, so the IDE feels familiar on day one.</li>
       <li><strong>Open a real repo</strong> and run "Generate Steering Docs" (Module 4) so the agent has project context before you ask it anything.</li>
     </ol>
+
+    <h2>How the pieces connect</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  subgraph SURF["Surfaces — one agent behind each"]
+    IDE["IDE"]
+    CLI["CLI / CI"]
+    WEB["Web"]
+    MOB["Mobile"]
+  end
+  AGENT(["Kiro agent harness"])
+  IDE --> AGENT
+  CLI --> AGENT
+  WEB --> AGENT
+  MOB --> AGENT
+  AGENT --> KIRO
+  subgraph KIRO[".kiro/ — committed to the repo"]
+    ST["steering/*.md"]
+    HK["hooks/*.json"]
+    SP["specs/&lt;name&gt;/"]
+    MC["settings/mcp.json"]
+  end
+</pre>
+      <figcaption>Every surface drives the same agent; the agent's behaviour comes from <code>.kiro/</code>, which travels with the repository.</figcaption>
+    </figure>
+
+    <h2>In practice — start in the IDE, finish in CI</h2>
+    <div class="example">
+      <span class="label">Scenario: a bug fix that CI verifies</span>
+      <p>A developer opens the repo in the <strong>IDE</strong>, describes the bug, and the agent proposes a Bugfix Spec. They approve it and let the agent implement the fix — Supervised, so they eyeball each change.</p>
+      <p>They push the branch. In <strong>CI</strong>, a pipeline step runs <code>kiro</code> from the <strong>CLI</strong> against the same repo: it reads the committed <code>.kiro/steering/security.md</code> and runs a "review this diff against our security rules" prompt. Same agent, same rules, no extra configuration — because <code>.kiro/</code> is in the repo the CI job checked out.</p>
+      <p>The reviewer later glances at the change from the <strong>Mobile</strong> app on the way home and leaves a comment. One agent, four surfaces, one source of truth.</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 1 — First contact</span>
+      <p class="goal">Goal: get Kiro installed and see how it reads your project.</p>
+      <ol>
+        <li>Install the Kiro IDE and sign in. When prompted, import your VS Code settings.</li>
+        <li>Open a small real project you know well (not a fresh empty folder).</li>
+        <li>Run <strong>Generate Steering Docs</strong>. Open the new <code>.kiro/steering/product.md</code>, <code>tech.md</code>, and <code>structure.md</code>.</li>
+        <li>Read all three. In each, mark one statement that is <em>wrong or vague</em> about your project.</li>
+        <li>In the chat panel (vibe mode), ask: <code>Summarise what this project does and its main entry points.</code> Compare the answer to reality.</li>
+      </ol>
+      <p class="check"><strong>Done when</strong> you have three files on disk and a list of at least three things to correct in them. You'll fix those in Lab 4.</p>
+    </div>
 
     <div class="key-takeaways">
       <span class="label">Key takeaways</span>
@@ -279,6 +382,53 @@
       <li><strong>Compaction</strong> — when a session gets long, Kiro summarises earlier context to stay within the model's limits without losing the thread.</li>
     </ul>
 
+    <h2>Choosing a mode</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  Q1{"Do you know
+what to build?"}
+  Q1 -->|"no — still exploring"| VIBE["Vibe: ask, prototype, throw away"]
+  Q1 -->|"yes"| Q2{"Will someone review it,
+or touch &gt; 2 files?"}
+  Q2 -->|"no"| VIBE
+  Q2 -->|"yes"| Q3{"Is it a reproducible
+defect?"}
+  Q3 -->|"yes"| BUG["Bug Fix spec"]
+  Q3 -->|"no"| Q4{"Do you want the approach
+written before any code?"}
+  Q4 -->|"yes"| PLAN["Plan mode → then Spec"]
+  Q4 -->|"no, small &amp; well understood"| QUICK["Quick Spec"]
+  Q4 -->|"no, normal feature"| SPEC["Feature Spec"]
+</pre>
+      <figcaption>Vibe is the default; the moment work becomes reviewable, move up to a spec.</figcaption>
+    </figure>
+
+    <h2>In practice — a debugging session</h2>
+    <div class="example">
+      <span class="label">Scenario: intermittent 500 on checkout</span>
+      <p>You stay in <strong>vibe</strong> mode — this is investigation, not a feature. First message:</p>
+      <pre><code>The checkout endpoint 500s about 1 in 20 times.
+Here's the failing request and stack: #terminal
+Relevant code: #file:src/checkout/handler.ts #file:src/db/pool.ts
+Recent changes: #git diff</code></pre>
+      <p>With that context the agent spots that <code>#git diff</code> lowered the DB pool size while <code>handler.ts</code> opens two connections per request — under load the pool starves. You ask it to <em>explain the fix, don't apply it yet</em>. It does. You decide the real fix is a design change, so you close the vibe session and open a <strong>Bug Fix spec</strong> so the change is reviewed and the regression is captured.</p>
+      <p><strong>The point:</strong> vibe found the cause fast because you fed it the three things that mattered; the fix graduated to a spec because it was going to be reviewed.</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 2 — Context is everything</span>
+      <p class="goal">Goal: see, measurably, how answer quality tracks the context you provide.</p>
+      <ol>
+        <li>Pick a real file in your project that wires things together (an app entry point, a router, a DI container).</li>
+        <li>Ask in vibe mode, with <em>no</em> context provider: <code>What are the top 3 risks in this codebase's startup path?</code></li>
+        <li>Ask again, same question, adding: <code>#file:&lt;that file&gt; #folder:&lt;its directory&gt; #git diff</code></li>
+        <li>Ask a third time, adding <code>#problems</code> and <code>#terminal</code> (run your test suite first so there's output).</li>
+        <li>Note how specific and correct each answer is. Keep the best prompt as a template.</li>
+      </ol>
+      <p class="check"><strong>Done when</strong> you can point to a concrete claim in answer 3 that answer 1 got wrong or missed entirely.</p>
+    </div>
+
     <div class="key-takeaways">
       <span class="label">Key takeaways</span>
       <ul>
@@ -335,6 +485,57 @@ IF &lt;condition&gt; THEN THE SYSTEM SHALL &lt;response&gt;</code></pre>
       <li>Waves run in sequence; tasks inside a wave run in parallel.</li>
     </ul>
     <p>You don't configure this — it's automatic, and it's why a spec often finishes faster than issuing the same tasks one at a time in chat.</p>
+
+    <h2>The whole workflow, end to end</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  START["One-line feature intent"] --> R["requirements.md
+EARS acceptance criteria"]
+  R --> G1{"You approve?"}
+  G1 -->|"tighten wording"| R
+  G1 -->|"approve"| D["design.md
+architecture · errors · test strategy"]
+  D --> G2{"You approve?"}
+  G2 -->|"redirect approach"| D
+  G2 -->|"approve"| T["tasks.md — dependency graph"]
+  T --> W1["Wave 1 · independent tasks run in parallel"]
+  W1 --> W2["Wave 2 · tasks whose deps are now met"]
+  W2 --> W3["Wave 3 · …"]
+  W3 --> PR["Reviewed change + the spec folder, in one PR"]
+</pre>
+      <figcaption>Two approval gates up front; automatic parallel execution after.</figcaption>
+    </figure>
+
+    <h2>In practice — a spec for rate limiting</h2>
+    <div class="example">
+      <span class="label">Scenario: ticket PROJ-812 "Rate-limit the public API"</span>
+      <p><strong>Requirements phase.</strong> You describe the ticket. Kiro drafts EARS criteria; you tighten two:</p>
+      <pre><code>WHEN an unauthenticated client exceeds 60 requests in 60 seconds
+THE SYSTEM SHALL respond 429 with a Retry-After header.
+
+WHILE a client is rate-limited
+THE SYSTEM SHALL NOT count further requests toward the window.
+
+WHERE the client presents a valid API key
+THE SYSTEM SHALL apply the key's plan limit instead of the default.</code></pre>
+      <p><strong>Design phase.</strong> Kiro proposes a token-bucket in Redis, a middleware ahead of routing, and a fallback to "fail open" if Redis is unreachable. You change one thing — fail <em>closed</em> for the payments routes — and approve.</p>
+      <p><strong>Tasks phase.</strong> <code>tasks.md</code> comes out as: (1) Redis client + config, (2) token-bucket module + unit tests, (3) middleware, (4) wire into router, (5) integration tests, (6) dashboard metric. Waves: 1 and 2 run together; 3 waits on 2; 4 waits on 3; 5 and 6 run together at the end.</p>
+      <p>The PR contains the code <em>and</em> <code>.kiro/specs/PROJ-812-rate-limiting/</code>, so the reviewer sees why "fail closed for payments" was chosen without asking.</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 3 — Run a spec to the first gate</span>
+      <p class="goal">Goal: experience the requirements gate and write real EARS criteria.</p>
+      <ol>
+        <li>Pick a genuinely small feature you need (a filter, an export, a field on a form).</li>
+        <li>Start a <strong>Feature Spec</strong>. Give a one or two sentence description — no more.</li>
+        <li>When Kiro produces <code>requirements.md</code>, <strong>stop</strong>. Do not approve yet.</li>
+        <li>Rewrite at least two acceptance criteria into strict EARS form (<code>WHEN … THE SYSTEM SHALL …</code>). Add one <code>IF … THEN …</code> for an error case the draft missed.</li>
+        <li>Approve, and let Kiro produce <code>design.md</code>. Read it. Note one decision in the design you would not have thought to make explicit yourself.</li>
+      </ol>
+      <p class="check"><strong>Done when</strong> <code>.kiro/specs/&lt;your-feature&gt;/</code> contains a <code>requirements.md</code> you edited and a <code>design.md</code> you have read. Stop there — no need to implement.</p>
+    </div>
 
     <h2>Spec types</h2>
     <table>
@@ -423,6 +624,70 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
       <li>Review steering changes like code — they change agent behaviour for the whole team.</li>
     </ul>
 
+    <h2>Which mode? — a decision tree</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  Q1{"Should this apply to
+every interaction?"}
+  Q1 -->|"yes — universal rule"| ALWAYS["inclusion: always
+(keep it short — costs tokens every turn)"]
+  Q1 -->|"no"| Q2{"Only relevant for
+certain files/paths?"}
+  Q2 -->|"yes"| FM["inclusion: fileMatch
++ fileMatchPattern glob"]
+  Q2 -->|"no"| Q3{"Should a request's wording
+pull it in automatically?"}
+  Q3 -->|"yes"| AUTO["inclusion: auto
++ name + description"]
+  Q3 -->|"no — I'll ask for it"| MANUAL["inclusion: manual
+#file-name in chat"]
+</pre>
+      <figcaption>Foundation files are <code>always</code>. For everything else, start narrow and widen only if you keep needing it.</figcaption>
+    </figure>
+
+    <h2>In practice — a real <code>fileMatch</code> file</h2>
+    <div class="example">
+      <span class="label">.kiro/steering/code-style-ts.md</span>
+      <pre><code>---
+inclusion: fileMatch
+fileMatchPattern: ["**/*.ts", "**/*.tsx"]
+---
+# TypeScript conventions
+
+## Errors
+Never throw bare strings. Throw an `AppError` subclass with a `code`.
+Rationale: the API error middleware maps `code` to an HTTP status and a
+safe message; a bare string leaks internals and 500s.
+
+// avoid
+throw "user not found";
+// prefer
+throw new NotFoundError({ code: "user.not_found" });
+
+## Async
+No floating promises. Every `await`-able call is awaited or explicitly
+`void`-ed with a comment saying why.
+
+## Imports
+Absolute imports from `src/` only (`@/db`, not `../../db`). Enforced by
+eslint; steering exists so the agent writes them right the first time.</code></pre>
+      <p>Because it is <code>fileMatch</code>, this only loads when the agent touches a <code>.ts</code>/<code>.tsx</code> file — the Python developers never pay its token cost, and it can be as detailed as it needs to be.</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 4 — Teach Kiro one real rule</span>
+      <p class="goal">Goal: prove steering changes behaviour, and fix the foundation files from Lab 1.</p>
+      <ol>
+        <li>Correct the wrong/vague statements you found in <code>product.md</code> / <code>tech.md</code> / <code>structure.md</code> in Lab 1.</li>
+        <li>Create <code>.kiro/steering/code-style.md</code> with <code>inclusion: always</code> and 5 real rules your team argues about in review. For at least two, add a short <em>before / after</em> snippet and one line of rationale.</li>
+        <li>Ask the agent (fresh chat): <code>Write a function that fetches a user by id and returns a typed result.</code></li>
+        <li>Check the output against all five rules. If it breaks one, tighten the wording of that rule and try again.</li>
+        <li>Now change one rule to its opposite, re-ask, and confirm the output follows the new rule. Then revert.</li>
+      </ol>
+      <p class="check"><strong>Done when</strong> the same prompt produces different, rule-following code before and after your edit — that is steering working. Commit the corrected foundation files and <code>code-style.md</code> on a branch.</p>
+    </div>
+
     <div class="key-takeaways">
       <span class="label">Key takeaways</span>
       <ul>
@@ -491,6 +756,68 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
 
     <h2>Creating hooks</h2>
     <p>In the IDE: the <strong>+</strong> button in the Agent Hooks panel → "Ask Kiro to create a hook" → describe the automation in plain language and Kiro writes the JSON. Use kebab-case filenames (<code>lint-on-save.json</code>); related hooks can share one file.</p>
+
+    <h2>Where triggers fire in a session</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  S["Session starts"] --> H1["SessionStart / AgentSpawn"]
+  H1 --> P["You send a message"]
+  P --> H2["PromptSubmit — can block"]
+  H2 --> LOOP{"Agent working"}
+  LOOP --> H3["PreToolUse — can block"]
+  H3 --> TOOL["Tool runs (edit file, run command…)"]
+  TOOL --> H4["PostToolUse"]
+  TOOL --> H5["PostFileCreate / PostFileSave / PostFileDelete
+(agent edits only)"]
+  H4 --> LOOP
+  H5 --> LOOP
+  LOOP --> H6["AgentStop"]
+  H6 --> P
+</pre>
+      <figcaption>Around spec tasks you also get <code>PreTaskExecution</code> / <code>PostTaskExecution</code>.</figcaption>
+    </figure>
+
+    <h2>In practice — two hooks a team actually ships first</h2>
+    <div class="example">
+      <span class="label">.kiro/hooks/dev-guardrails.json</span>
+      <pre><code>{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Format on save",
+      "trigger": "PostFileSave",
+      "matcher": "\\.(ts|tsx|js|jsx|json|css)$",
+      "action": { "type": "command", "command": "npx prettier --write \"$KIRO_FILE\"" },
+      "timeout": 30
+    },
+    {
+      "name": "Scaffold a test for new source files",
+      "trigger": "PostFileCreate",
+      "matcher": "^src/.*(?&lt;!\\.test)\\.ts$",
+      "action": {
+        "type": "agent",
+        "command": "A new source file was just created at $KIRO_FILE. If it exports anything testable and no sibling *.test.ts exists, create one with a failing placeholder test and a TODO listing the cases to cover. Do not implement the tests."
+      },
+      "timeout": 120
+    }
+  ]
+}</code></pre>
+      <p>The first is a <code>command</code> action — pure shell, deterministic, safe. The second is an <code>agent</code> action — it hands a prompt back to the agent, so it can read the file and write a sensible test stub. Both are non-blocking: if Prettier fails, the workflow continues. No <code>PreToolUse</code> blocker until the team trusts these.</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 5 — Ship a format-on-save hook</span>
+      <p class="goal">Goal: watch a hook fire on an agent edit — and confirm it does <em>not</em> fire on your own save.</p>
+      <ol>
+        <li>In the Agent Hooks panel, click <strong>+</strong> → "Ask Kiro to create a hook" and describe: <em>run my formatter on TypeScript and JS files after the agent edits them</em>.</li>
+        <li>Check the generated JSON in <code>.kiro/hooks/</code>: correct <code>trigger</code> (<code>PostFileSave</code>), a <code>matcher</code> that only matches your source extensions, a <code>command</code> action.</li>
+        <li>Ask the agent: <code>Add a small utility function to &lt;some .ts file&gt;, deliberately badly formatted.</code></li>
+        <li>Confirm the saved file comes back formatted, with no action from you.</li>
+        <li>Now hand-edit the same file with messy formatting and save it yourself. Confirm the hook does <strong>not</strong> run — file triggers are for agent edits only.</li>
+      </ol>
+      <p class="check"><strong>Done when</strong> you have seen the hook run on step 4 and stay silent on step 5. Commit the hook JSON on a branch.</p>
+    </div>
 
     <div class="key-takeaways">
       <span class="label">Key takeaways</span>
@@ -567,6 +894,64 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
       Only install MCP servers from sources you trust — a server can run code on your machine and see whatever context the agent sends it. Vet the package, pin versions, and never commit secrets.
     </div>
 
+    <h2>How a tool call flows</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart LR
+  YOU["Your request"] --> AGENT["Kiro agent"]
+  AGENT -->|"reads"| CFG["mcp.json
+workspace + user + agent"]
+  CFG --> S1
+  CFG --> S2
+  subgraph SERVERS["MCP servers (from mcp.json)"]
+    S1["aws-docs
+stdio: uvx …"]
+    S2["internal-wiki
+HTTP endpoint"]
+  end
+  S1 -->|"search_documentation
+(autoApprove)"| DOCS[("AWS docs")]
+  S2 -->|"needs approval"| WIKI[("Confluence / Notion")]
+  DOCS -.->|"cited results"| AGENT
+  WIKI -.->|"pages"| AGENT
+</pre>
+      <figcaption>The agent only ever calls tools that <code>mcp.json</code> declares; anything not in <code>autoApprove</code> prompts you first.</figcaption>
+    </figure>
+
+    <h2>In practice — a vetted workspace <code>mcp.json</code></h2>
+    <div class="example">
+      <span class="label">.kiro/settings/mcp.json (committed)</span>
+      <pre><code>{
+  "mcpServers": {
+    "aws-docs": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@1.0.4"],
+      "disabled": false,
+      "autoApprove": ["search_documentation", "read_documentation"]
+    },
+    "eng-wiki": {
+      "url": "https://mcp.internal.acme.dev/wiki",
+      "headers": { "Authorization": "Bearer ${ENG_WIKI_TOKEN}" },
+      "disabled": false
+    }
+  }
+}</code></pre>
+      <p>Notes the team agreed on: the AWS server is <strong>pinned</strong> to <code>1.0.4</code>, not <code>@latest</code>, so an upstream change can't alter behaviour without a PR. Only its two read-only tools are auto-approved. The internal wiki server is HTTP, its token comes from an environment variable (never committed), and none of its tools are auto-approved because it can be asked to write pages.</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 6 — Give the agent live AWS docs</span>
+      <p class="goal">Goal: see the agent call an MCP tool instead of guessing from training data.</p>
+      <ol>
+        <li>Open the workspace MCP config (Command palette → "Kiro: Open workspace MCP config (JSON)").</li>
+        <li>Add the <code>aws-docs</code> server from the example above (pin a real version if you can find one; otherwise <code>@latest</code> for the lab).</li>
+        <li>Check the <strong>MCP Servers</strong> tab shows it connected. If not, read the <strong>Output</strong> tab.</li>
+        <li>Ask the agent a question that needs <em>current</em> AWS detail, e.g. <code>What are the current default quotas for Amazon SQS FIFO queues, with a source link?</code></li>
+        <li>Watch it call <code>search_documentation</code> / <code>read_documentation</code> and return a cited answer. Ask the same thing with the server <code>disabled: true</code> and compare confidence.</li>
+      </ol>
+      <p class="check"><strong>Done when</strong> you have one answer backed by an MCP tool call with a doc link, and you have seen the difference when the server is off.</p>
+    </div>
+
     <div class="key-takeaways">
       <span class="label">Key takeaways</span>
       <ul>
@@ -629,6 +1014,50 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
       <tr><td><strong>Skills</strong></td><td>Standalone instruction packages</td></tr>
       <tr><td><strong>Powers</strong></td><td>Installable, context-aware packages that combine tools + knowledge + guidance</td></tr>
     </table>
+
+    <h2>How intelligent loading decides</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  T["Your task: 'add a Stripe webhook
+for failed payments'"] --> M{"Match task wording against
+each installed Power's keywords"}
+  M -->|"'stripe', 'payment', 'webhook'"| L1["Load: Stripe Power
+(skills + mcp.json + steering)"]
+  M -->|"no match"| SKIP1["Supabase Power — stays unloaded"]
+  M -->|"no match"| SKIP2["Figma Power — stays unloaded"]
+  L1 --> CTX["Agent context = base + Stripe only
+(not 50k+ tokens of everything)"]
+</pre>
+      <figcaption>Switch to database work and the picture flips: Supabase loads, Stripe drops out. You never toggle anything.</figcaption>
+    </figure>
+
+    <h2>In practice — package your team's own Power</h2>
+    <div class="example">
+      <span class="label">acme-standards/plugin.json (a private Power)</span>
+      <pre><code>{
+  "name": "acme-standards",
+  "description": "ACME engineering conventions + internal service catalog",
+  "keywords": ["acme", "internal service", "new endpoint", "new service", "runbook"],
+  "skills": ["skills/service-scaffold", "skills/observability", "skills/runbook"],
+  "mcp": "mcp.json",
+  "dev.kiro": { "steering": ["dev.kiro/steering/code-review.md", "dev.kiro/steering/security.md"] }
+}</code></pre>
+      <p>Once installed, a new hire's agent automatically pulls in ACME's review rules, security rules, and the internal service-catalog MCP the moment they type "add a new endpoint" — without anyone hand-copying steering files between repos. The same bundle also works in Cursor or Copilot because it follows the open Agent Plugins format.</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 7 — Watch a Power activate</span>
+      <p class="goal">Goal: confirm intelligent loading works — the right Power turns on by itself.</p>
+      <ol>
+        <li>From <code>kiro.dev/powers</code> or the IDE, install one Power that matches your stack (Supabase, AWS Aurora, Postman, Netlify…).</li>
+        <li>Start a task <em>unrelated</em> to it (e.g. "rename this variable everywhere"). Note the Powers indicator — the Power should be idle.</li>
+        <li>Start a task squarely in its domain (for Supabase: "add a row-level-security policy so users only read their own orders"). Watch the indicator show the Power active.</li>
+        <li>Inspect the output: does it reflect the Power's guidance (e.g. an actual RLS policy, generated types) rather than generic advice?</li>
+        <li>Optional: sketch a <code>plugin.json</code> for one thing your team re-explains constantly (a service scaffold, your logging conventions). You don't have to publish it — just design the keyword list.</li>
+      </ol>
+      <p class="check"><strong>Done when</strong> you have seen the Powers indicator change between an unrelated task and an in-domain task, and the in-domain output clearly used the Power.</p>
+    </div>
 
     <div class="key-takeaways">
       <span class="label">Key takeaways</span>
@@ -718,6 +1147,51 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
       <tr><td>2-week retro: keep / adjust / stop</td><td>All</td><td>Notes shared</td></tr>
     </table>
 
+    <h2>The two-week pilot, on a timeline</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart LR
+  subgraph W1["Week 1"]
+    direction TB
+    d1["Days 1–2
+Install · sign in · import settings"] --> d2["Days 2–4
+Generate + hand-edit foundation steering → PR"]
+    d2 --> d3["Day 5
+Per-language fileMatch steering → PR"]
+  end
+  subgraph W2["Week 2"]
+    direction TB
+    e1[".kiroignore + Permissions → PR"] --> e2["Vetted workspace mcp.json → PR"]
+    e2 --> e3["First real ticket shipped via a spec"]
+    e3 --> e4["Retro: keep / adjust / stop"]
+  end
+  W1 --> W2
+</pre>
+      <figcaption>Everything lands as a reviewed PR. The retro is a real decision point, not a formality.</figcaption>
+    </figure>
+
+    <h2>In practice — a 4-person team, weeks 1–2</h2>
+    <div class="example">
+      <span class="label">Scenario: 4 devs (2 TS, 1 Python, 1 platform), one active service repo</span>
+      <p><strong>Mon–Tue.</strong> All four install the IDE, import VS Code settings, sign in. The platform dev opens a PR with <code>.kiro/steering/{product,tech,structure}.md</code> from "Generate Steering Docs" — <em>heavily</em> edited, because the generated <code>tech.md</code> missed that background jobs run on a separate worker. Merged Wednesday after review.</p>
+      <p><strong>Wed–Thu.</strong> The TS devs add <code>code-style-ts.md</code> (<code>fileMatch **/*.ts</code>) with the four rules that come up most in review; the Python dev adds <code>code-style-python.md</code>. Both small, both PR-reviewed. A shared <code>security.md</code> goes in as <code>always</code>, kept to eight lines.</p>
+      <p><strong>Fri.</strong> The lead adds <code>.kiroignore</code> (secrets, fixtures, <code>infra/secrets/</code>) and a Permissions config that default-denies outside the repo. Separate PR: <code>mcp.json</code> with only the pinned AWS docs server.</p>
+      <p><strong>Week 2.</strong> A pair takes ticket <code>SVC-431</code> through a Feature Spec end to end — the spec folder ships in the PR. Friday retro: cycle time on <code>SVC-431</code> was noticeably shorter, one hook idea (<code>PostFileCreate</code> test scaffold) is added to the backlog, decision: <strong>keep going</strong>, add the platform repo next.</p>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 8 — Draft your team's pilot</span>
+      <p class="goal">Goal: leave this course with a concrete, assignable plan — not a vague intention.</p>
+      <ol>
+        <li>Name the <strong>pilot repo</strong> (one, active, with real conventions) and the <strong>people</strong> (2–5). Write it down.</li>
+        <li>Write the first paragraph of <code>product.md</code> for that repo <em>by hand</em> — what it is, who uses it, the one business goal. This is what "Generate Steering Docs" should have said.</li>
+        <li>List the <strong>five rules</strong> your team argues about most in review. These become <code>code-style-*.md</code>.</li>
+        <li>List what goes in <code>.kiroignore</code> for this repo (secrets, fixtures, generated dirs, compliance-scoped paths).</li>
+        <li>Pick the <strong>first ticket</strong> you will run through a spec, and who pairs on it. Put a date on the retro.</li>
+      </ol>
+      <p class="check"><strong>Done when</strong> every row of the rollout checklist above has a name next to it and the retro has a date. Share it with the team.</p>
+    </div>
+
     <div class="key-takeaways">
       <span class="label">Key takeaways</span>
       <ul>
@@ -764,5 +1238,9 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
 </footer>
 
 <script src="assets/app.js"></script>
+<!-- stash raw mermaid source BEFORE mermaid can replace it with an SVG -->
+<script>document.querySelectorAll('pre.mermaid').forEach(function(el){el.dataset.src=el.textContent;});</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script src="assets/diagrams.js"></script>
 </body>
 </html>
