@@ -25,18 +25,20 @@ def assign(start, end, sex):
         VOICE_MAP[i] = sex
 
 # Adjust these ranges to match your actual deck module layout
-# This deck: 1-2 intro, 3-5 M1, 6-8 M2, 9-12 M3, 13-15 M4,
-# 16-18 M5, 19-21 M6, 22-25 M7, 26-29 M8, 30-31 cheat sheet + close.
+# This deck (34 slides): 1-2 intro/agenda, 3-5 M0 (AI-DLC), 6-8 M1,
+# 9-11 M2, 12-15 M3, 16-18 M4, 19-21 M5, 22-24 M6, 25-28 M7, 29-32 M8,
+# 33 cheat sheet, 34 close.
 assign(1, 2, "F")    # title + agenda
-assign(3, 5, "M")    # M1
-assign(6, 8, "F")    # M2
-assign(9, 12, "M")   # M3
-assign(13, 15, "F")  # M4
-assign(16, 18, "M")  # M5
-assign(19, 21, "F")  # M6
-assign(22, 25, "M")  # M7
-assign(26, 29, "F")  # M8
-assign(30, 40, "M")  # cheat sheet + close + buffer
+assign(3, 5, "M")    # M0 AI-DLC
+assign(6, 8, "F")    # M1
+assign(9, 11, "M")   # M2
+assign(12, 15, "F")  # M3
+assign(16, 18, "M")  # M4
+assign(19, 21, "F")  # M5
+assign(22, 24, "M")  # M6
+assign(25, 28, "F")  # M7
+assign(29, 32, "M")  # M8
+assign(33, 45, "F")  # cheat sheet + close + buffer
 
 # Voice catalog — Multilingual variants for EN (newer, more natural)
 # TH stays on classic Neural voices (no multilingual TH variant on edge-tts)

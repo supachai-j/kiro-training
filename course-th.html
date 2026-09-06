@@ -26,6 +26,7 @@
     <strong>คอร์ส</strong>
     <a href="#intro">ภาพรวม</a>
     <strong>บทเรียน</strong>
+    <a href="#m0">0 · พื้นฐาน AI-DLC</a>
     <a href="#m1">1 · Kiro คืออะไร และทำไม</a>
     <a href="#m2">2 · โหมด Vibe / Chat</a>
     <a href="#m3">3 · Specs</a>
@@ -54,6 +55,104 @@
       <span class="label">ความสดของข้อมูล</span>
       Kiro ออกอัปเดตเร็วมาก ชื่อ trigger, flag และรายการ Powers อาจเปลี่ยนได้ ให้ใช้คอร์สนี้เป็น "แนวคิดหลัก" แล้วตรวจรายละเอียดเป๊ะ ๆ กับ <a href="https://kiro.dev/docs/" target="_blank" rel="noopener">kiro.dev/docs</a> อีกครั้ง
     </div>
+  </article>
+
+  <!-- ================= MODULE 0 ================= -->
+  <article id="m0">
+    <span class="module-tag">บทที่ 0</span>
+    <h1>พื้นฐาน AI-DLC</h1>
+    <p>ก่อนจะถึงเครื่องมือ ต้องเข้าใจแนวคิดก่อน <strong>AI-DLC — AI-Driven Development Lifecycle</strong> คือ methodology ที่ Kiro ถูกสร้างมาเพื่อรองรับ บทนี้เป็นพื้นหลัง: มันมาจากไหน, พูดว่าอะไรจริง ๆ และทำไมบทที่เหลือของคอร์สนี้ (specs, steering) จึงคือ AI-DLC ในทางปฏิบัติ ไม่มี config ในบทนี้ — มีแค่แนวคิดหลัก</p>
+
+    <div class="callout">
+      <span class="label">สรุปบรรทัดเดียว</span>
+      AI-DLC ออกแบบ software lifecycle ใหม่รอบ ๆ loop ง่าย ๆ: <em>AI ร่างแผนและลงมือทำ มนุษย์เป็นคนตัดสินใจ ทีมเป็นคนรีวิว</em> มันเป็น <strong>methodology</strong> ไม่ใช่ product — เผยแพร่โดย AWS และ Kiro คือการนำไปใช้จริงที่ตรงที่สุด
+    </div>
+
+    <h2>ประวัติสั้น ๆ — เรามาถึงจุดนี้ได้ยังไง</h2>
+    <ol>
+      <li><strong>ยุคเขียนมือ</strong> SDLC แบบคลาสสิกสร้างรอบ ๆ กระบวนการที่ขับเคลื่อนด้วยมนุษย์และใช้เวลานาน: sprint, การจัด backlog, การประเมิน, การส่งต่องานระหว่างบทบาทเฉพาะทาง มุมมองของ AWS คือทีมใช้เวลาส่วนใหญ่ไปกับ "กิจกรรมที่ไม่ใช่งานหลัก เช่น การวางแผน การประชุม และพิธีกรรม SDLC อื่น ๆ" แทนที่จะทำที่ตัวผลิตภัณฑ์</li>
+      <li><strong>AI-assisted coding (ประมาณ 2021–2023)</strong> GitHub Copilot และเครื่องมือคล้ายกันนำ autocomplete มาช่วย AI เร่งงานเฉพาะจุด — เติมโค้ด, boilerplate, docs — แต่กระบวนการรอบ ๆ ไม่เปลี่ยน AI เป็นแค่ sidecar ที่แปะเข้ากับ workflow ที่ออกแบบมาสำหรับมนุษย์</li>
+      <li><strong>"Vibe coding" (ต้นปี 2025)</strong> Andrej Karpathy ทำให้คำนี้เป็นที่รู้จักในโพสต์บน X เมื่อ 2 กุมภาพันธ์ 2025: <em>"There's a new kind of coding I call 'vibe coding'"</em> — บอกสิ่งที่อยากได้, รับการแก้ของ AI โดยแทบไม่อ่าน, วาง error กลับเข้าไป Karpathy ตั้งใจให้ใช้กับโปรเจกต์เล่น ๆ ช่วงสุดสัปดาห์ มันเร็วและสนุก และได้ซอฟต์แวร์ที่ไม่มี requirements, ไม่มี design ที่ผ่านการรีวิว, ไม่มีความเข้าใจร่วมกัน — โอเคสำหรับ demo แต่เป็นภาระสำหรับอะไรก็ตามที่ทีมต้องดูแล</li>
+      <li><strong>methodology แบบ AI-native — AI-DLC (กลางปี 2025)</strong> จุดยืนของ AWS คือกลยุทธ์ที่มีอยู่ทั้งสองแบบยังไม่พอ: การพัฒนาแบบ <em>AI-assisted</em> ขี้อายเกินไป (AI ยังเป็นแค่ผู้ช่วย) และแบบ <em>AI-autonomous</em> ตัดวิจารณญาณของมนุษย์ออกทั้งหมด ในคำพูดของ AWS ทั้งคู่ "ให้ผลลัพธ์ที่ไม่ดีนักทั้งด้านความเร็วและคุณภาพซอฟต์แวร์" และ "การเอา AI มาแปะเป็นผู้ช่วยเฉย ๆ ไม่เพียงจำกัดความสามารถของมัน แต่ยังตอกย้ำความไม่มีประสิทธิภาพแบบเดิม" คำตอบของ AI-DLC คือออกแบบ lifecycle เองใหม่ให้หมุนรอบ AI ที่ลงมือทำงานภายใต้การกำกับของมนุษย์อย่างต่อเนื่อง</li>
+    </ol>
+    <p>Raja SP, Principal Solutions Architect ที่ AWS เผยแพร่คำอธิบายก่อตั้งบน AWS DevOps blog เมื่อ <strong>31 กรกฎาคม 2025</strong> พร้อม whitepaper นิยาม method ตามด้วยบทความเดินตัวอย่างกับ Amazon Q Developer เมื่อ 29 พฤศจิกายน 2025 และ AWS Labs ปล่อย workflow engine แบบโอเพนซอร์ส (<code>awslabs/aidlc-workflows</code>)</p>
+
+    <h2>แนวคิดหลัก ในรูปของ loop เดียว</h2>
+    <p>ทุกเฟสของ AI-DLC รันวงจรเดียวกัน:</p>
+    <pre><code>AI ร่างแผนละเอียด
+      → AI ถามคำถามเพื่อความชัดเจน
+        → มนุษย์ตรวจและตัดสินใจ
+          → AI ลงมือทำตามแผนที่อนุมัติ
+            → ทีมรีวิวผลลัพธ์
+              → วนซ้ำ</code></pre>
+    <p>ส่วนที่ต่อรองไม่ได้คือจุดตัดสินใจของมนุษย์ AWS: <em>"AI สร้างแผนงานละเอียดอย่างเป็นระบบ ขอความชัดเจนและคำแนะนำอย่างจริงจัง และเลื่อนการตัดสินใจสำคัญให้มนุษย์ … มีแต่มนุษย์เท่านั้นที่มีความเข้าใจบริบทและความรู้เรื่อง business requirements ที่จำเป็นต่อการตัดสินใจอย่างมีข้อมูล"</em> AI เก็บความจำของตัวเองด้วยการเขียนแผน, requirements และ design artifacts ลงใน repository เพื่อให้งานเดินต่อได้อย่างต่อเนื่องข้าม session</p>
+
+    <h2>สามเฟส</h2>
+    <table>
+      <tr><th>เฟส</th><th>AI ผลิต</th><th>พิธีกรรมของทีม</th></tr>
+      <tr><td><strong>Inception</strong></td><td>requirements, user story, "units of work" จาก business intent</td><td><strong>Mob Elaboration</strong> — ทีม cross-functional ทั้งหมดร่วมกันตรวจคำถามและข้อเสนอของ AI พร้อมกันแบบ real time</td></tr>
+      <tr><td><strong>Construction</strong></td><td>สถาปัตยกรรม, domain model, โค้ด, test</td><td><strong>Mob Construction</strong> — กลุ่มเดิมช่วยกันเคลียร์การตัดสินใจทางเทคนิคเมื่อมันโผล่ขึ้นมา</td></tr>
+      <tr><td><strong>Operations</strong></td><td>infrastructure as code, การตั้งค่า deploy และ monitoring</td><td>ทีมรีวิวผลลัพธ์และคงการกำกับดูแลตลอดการส่งมอบ</td></tr>
+    </table>
+    <p>แต่ละเฟสเขียน context ที่ทำให้ข้อเสนอของ AI ในเฟสถัดไปคมขึ้น</p>
+
+    <h2>คำศัพท์ใหม่</h2>
+    <table>
+      <tr><th>คำแบบ Agile</th><th>คำแบบ AI-DLC</th><th>อะไรเปลี่ยน</th></tr>
+      <tr><td>Sprint (~2 สัปดาห์)</td><td><strong>Bolt</strong> (หลักชั่วโมงถึงวัน)</td><td>AI ทำงานหนักแทน วงจร validate → execute → review เต็มรอบจึงหดสั้นลงมาก</td></tr>
+      <tr><td>Epic</td><td><strong>Unit of work</strong></td><td>ภาชนะของคุณค่าก้อนหนึ่ง ขนาดพอดีกับหนึ่ง bolt หรือไม่กี่อัน</td></tr>
+      <tr><td>งานเดี่ยว + ส่งต่อแบบ async</td><td>เซสชัน <strong>Mob</strong></td><td>ทีมมารวมกันแบบ real time เพื่อตัดสินใจ ระหว่างที่ AI จัดการงาน routine ระหว่างจุดตัดสินใจ</td></tr>
+    </table>
+
+    <h2>Kiro อยู่ตรงไหน</h2>
+    <p>แยกสามระดับให้ชัด:</p>
+    <ul>
+      <li><strong>AI-DLC</strong> คือ <em>methodology</em> — เฟส, loop, กฎว่ามนุษย์เป็นคนตัดสินใจ</li>
+      <li><strong>Spec-driven development</strong> คือ <em>วิธีหนึ่งในการจัดโครงสร้าง artifacts</em> ที่ AI-DLC ต้องการ</li>
+      <li><strong>Kiro</strong> คือ <em>เครื่องมือ</em> ที่สร้างรอบโครงสร้างนั้น</li>
+    </ul>
+    <p><code>requirements.md → design.md → tasks.md</code> ของ Kiro คือ artifact trail ที่ Inception และ Construction สมมติไว้พอดี; ไฟล์ steering พก context ถาวรที่ loop นี้พึ่งพา Kiro CLI รัน <code>aidlc-workflows</code> ของ AWS ได้ตรง ๆ ดังนั้นบทที่ 3 และ 4 ของคอร์สนี้ — Specs และ Steering — คือเฟส Inception และ Construction ของ AI-DLC ที่ทำให้เป็นรูปธรรม</p>
+
+    <h2>ตัวเลขที่ทุกคนชอบอ้าง</h2>
+    <p>งานพูดของ AWS อ้างถึงการ re-architecture บริการ Amazon Bedrock ภายในซ้ำ ๆ: เดิมประเมินไว้ราว 18 เดือนสำหรับนักพัฒนาราว 30 คน แต่ทีม 6 คนส่งมอบได้ในราว 76 วันด้วย AI-DLC กับ Amazon Q CLI — ราว 100,000 บรรทัดของ production Rust, 40+ commit ต่อสัปดาห์ต่อคน เลือก Rust ส่วนหนึ่งเพราะ error จาก compiler ที่แม่นยำช่วยให้ AI วินิจฉัยและแก้ความผิดพลาดของตัวเองได้</p>
+    <div class="callout warn">
+      <span class="label">อ่านอย่างมีวิจารณญาณ</span>
+      ตัวเลขเหล่านี้มาจากงานนำเสนอของ vendor ไม่ใช่ benchmark ที่ตรวจสอบโดยอิสระ — ให้มองเป็นสัญญาณเชิงทิศทาง ไม่ใช่หลักฐาน บทเรียนที่นำไปใช้ได้คือรูปทรง: ทีมเล็ก, loop ที่แน่นมาก และภาษาที่ feedback ของมัน AI เอาไปทำต่อได้
+    </div>
+
+    <h2>ข้อควรระวังอย่างตรงไปตรงมา</h2>
+    <ul>
+      <li>AI-DLC ยังใหม่ (กลางปี 2025) และยังขยับอยู่ AWS blog กับ whitepaper คือคำอธิบายมาตรฐาน; เครื่องมือและ case study ยังตามมา</li>
+      <li>เซสชัน "Mob" สมมติว่ามีทีม cross-functional จริงที่ว่างพร้อมกัน ทีมเล็กหรือทีมเดี่ยวปรับใช้แนวคิด ไม่ได้รันตามตัวอักษร</li>
+      <li>เป็น methodology ของ vendor — AWS ได้ประโยชน์เมื่อคุณรับมาใช้ หลักการพื้นฐาน (requirements ก่อนโค้ด, มนุษย์อยู่บนการตัดสินใจ, loop สั้น, context อยู่ใน repo) ยังใช้ได้ไม่ว่าจะใช้เครื่องมือไหน</li>
+    </ul>
+
+    <div class="key-takeaways">
+      <span class="label">สรุปประเด็นสำคัญ</span>
+      <ul>
+        <li>AI-DLC ออกแบบ lifecycle ใหม่รอบ ๆ <em>AI ทำงาน มนุษย์ตัดสินใจ ทีมรีวิว</em> — ไม่ใช่ AI แบบ autocomplete (ขี้อายเกินไป) และไม่ใช่ AI อิสระ (ไม่มีวิจารณญาณ)</li>
+        <li>loop: AI วางแผน → AI ถาม → มนุษย์ตรวจ → AI ลงมือ → ทีมรีวิว → วนซ้ำ</li>
+        <li>เฟส: Inception (Mob Elaboration) → Construction (Mob Construction) → Operations context สะสมไปข้างหน้า</li>
+        <li>คำศัพท์: Sprint → <strong>Bolt</strong>, Epic → <strong>Unit of work</strong>, งานเดี่ยว/async → <strong>Mob</strong></li>
+        <li>AI-DLC คือ methodology; spec-driven development จัดโครงสร้าง artifacts; Kiro คือเครื่องมือ บท Specs และ Steering ของคอร์สนี้ <em>คือ</em> AI-DLC ในทางปฏิบัติ</li>
+        <li>เรื่อง 76 วัน / Rust 100k บรรทัด เป็น anecdote ของ vendor — เป็นสัญญาณที่มีประโยชน์ ไม่ใช่ผลที่ตรวจสอบแล้ว</li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <span class="label">ลองทำ</span>
+      อ่านผ่าน ๆ AWS blog ก่อตั้ง (ลิงก์ด้านล่าง) แล้วดูฟีเจอร์ล่าสุดที่คุณทำ ส่วนไหนคือ "Inception" (ตัดสินว่าจะสร้างอะไร) และส่วนไหนคือ "Construction"? การตัดสินใจที่ขาดหายไปตรงไหนทำให้คุณต้องแก้งานซ้ำ? ช่องว่างนั้นคือสิ่งที่เฟส Inception มีไว้เพื่อปิด
+    </div>
+
+    <h2>แหล่งอ้างอิง</h2>
+    <ul>
+      <li>Raja SP, <a href="https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/" target="_blank" rel="noopener">"AI-Driven Development Lifecycle (AI-DLC)"</a>, AWS DevOps Blog, 31 ก.ค. 2025 — คำอธิบายก่อตั้งและนิยาม method</li>
+      <li>Will Matos, Raj Jain, Siddhesh Jog, Raja SP, <a href="https://aws.amazon.com/blogs/devops/building-with-ai-dlc-using-amazon-q-developer/" target="_blank" rel="noopener">"Building with AI-DLC using Amazon Q Developer"</a>, AWS DevOps Blog, 29 พ.ย. 2025 — เดินตัวอย่าง end-to-end (ระบุด้วยว่า Kiro CLI รัน AI-DLC ได้โดยไม่ต้องตั้งค่าเพิ่ม)</li>
+      <li><a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">awslabs/aidlc-workflows</a> — workflow engine AI-DLC แบบโอเพนซอร์สของ AWS Labs สำหรับ coding agents (สัญญาอนุญาต MIT-0)</li>
+      <li><a href="https://aws.amazon.com/blogs/industries/ai-driven-development-lifecycle-for-financial-services/" target="_blank" rel="noopener">"AI-Driven Development Lifecycle for Financial Services"</a>, AWS for Industries Blog — AI-DLC ในบริบทที่มีการกำกับ</li>
+      <li><a href="https://www.ibm.com/think/topics/ai-dlc" target="_blank" rel="noopener">IBM, "AI-DLC: The AI-Driven Development Lifecycle"</a> — คำอธิบายจากภายนอก ใช้ cross-check มุมมองของ AWS</li>
+      <li>Dirk Michel, <a href="https://towardsaws.com/on-kiro-and-the-ai-driven-development-lifecycle-3459c2c19751" target="_blank" rel="noopener">"On Kiro and the AI-Driven Development Lifecycle"</a>, Towards AWS — ไฟล์ spec ของ Kiro แมปกับเฟส AI-DLC ยังไง</li>
+      <li>เรื่อง "vibe coding": Andrej Karpathy, โพสต์บน X, 2 ก.พ. 2025; ดู <a href="https://www.coderabbit.ai/blog/a-semantic-history-how-the-term-vibe-coding-went-from-a-tweet-to-prod" target="_blank" rel="noopener">"A semantic history of vibe coding" ของ CodeRabbit</a> สำหรับคำพูดต้นฉบับและ timeline</li>
+    </ul>
   </article>
 
   <!-- ================= MODULE 1 ================= -->

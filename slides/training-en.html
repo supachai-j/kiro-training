@@ -60,20 +60,75 @@
 <!-- AGENDA -->
 <section>
   <h2>What we'll cover</h2>
-  <ol>
+  <ol start="0">
+    <li>AI-DLC Foundations — the methodology behind Kiro</li>
     <li>What is Kiro &amp; why</li>
     <li>Vibe / Chat mode</li>
     <li>Specs — spec-driven development</li>
     <li>Agent Steering</li>
     <li>Agent Hooks</li>
-    <li>MCP — external tools &amp; data</li>
   </ol>
-  <p class="muted">…then Kiro Powers, and our team adoption plan.</p>
+  <p class="muted">…then MCP, Kiro Powers, and our team adoption plan.</p>
   <aside class="notes">
-    Eight modules. The first three are about how you drive Kiro day to day.
-    Modules four to six are the files we commit into dot-kiro to make the agent
-    behave consistently for everyone. Then Powers, which bundle those pieces,
-    and finally the concrete plan for rolling this out on one pilot project.
+    Nine modules. We start with the methodology Kiro serves — AI-DLC. Then
+    modules one to three are how you drive Kiro day to day. Four to six are the
+    files we commit into dot-kiro. Then Powers, and the concrete plan for rolling
+    this out on one pilot project.
+  </aside>
+</section>
+
+<!-- M0 -->
+<section>
+  <h2>0 · AI-DLC — the idea behind Kiro</h2>
+  <p class="big">AI-Driven Development Lifecycle: a methodology (not a product) that rebuilds the lifecycle around <em>AI does the work, humans decide, the team reviews.</em></p>
+  <ul>
+    <li>Hand-written SDLC → AI-assisted autocomplete → "vibe coding" (Karpathy, Feb 2025) → an AI-native lifecycle</li>
+    <li>Rejects both extremes: AI-assisted is too timid; AI-autonomous drops human judgement</li>
+    <li>Published by AWS (Raja SP), AWS DevOps Blog, 31 Jul 2025</li>
+  </ul>
+  <aside class="notes">
+    Before the tool, the idea. AI-DLC is AWS's answer to a real gap. Bolting AI
+    on as an assistant keeps the old slow process; letting it run fully
+    autonomous throws away human judgement. AI-DLC redesigns the lifecycle itself
+    so AI does the work and humans stay on every decision. Kiro is how you
+    actually practise it.
+  </aside>
+</section>
+
+<section>
+  <h2>0 · The loop and the three phases</h2>
+<pre><code class="language-text">AI drafts a plan → AI asks questions → human validates
+   → AI executes → team reviews → repeat</code></pre>
+  <table>
+    <tr><th>Phase</th><th>AI produces</th><th>Team ritual</th></tr>
+    <tr><td>Inception</td><td>Requirements, stories, units of work</td><td>Mob Elaboration</td></tr>
+    <tr><td>Construction</td><td>Architecture, code, tests</td><td>Mob Construction</td></tr>
+    <tr><td>Operations</td><td>IaC, deploy, monitoring</td><td>Team oversight</td></tr>
+  </table>
+  <aside class="notes">
+    Every phase runs the same loop, and the non-negotiable step is the human
+    decision. AWS's line: only humans have the business context to make the call.
+    The AI writes plans and requirements into the repo so context survives across
+    sessions. Each phase sharpens the next.
+  </aside>
+</section>
+
+<section>
+  <h2>0 · New words, and where Kiro fits</h2>
+  <table>
+    <tr><th>Agile</th><th>AI-DLC</th></tr>
+    <tr><td>Sprint (≈2 weeks)</td><td><strong>Bolt</strong> (hours–days)</td></tr>
+    <tr><td>Epic</td><td><strong>Unit of work</strong></td></tr>
+    <tr><td>Solo + async hand-offs</td><td><strong>Mob</strong> sessions</td></tr>
+  </table>
+  <p class="muted">Methodology = AI-DLC · artifact structure = spec-driven dev · tool = Kiro. Kiro's <code>requirements → design → tasks</code> <em>is</em> the Inception/Construction trail.</p>
+  <p class="quote">Widely quoted: an Amazon Bedrock re-architecture, ~18 months / 30 devs → ~76 days / 6 engineers, ~100k lines of Rust. Vendor anecdote — signal, not proof.</p>
+  <aside class="notes">
+    Three levels: AI-DLC is the methodology, spec-driven development is how you
+    shape its artifacts, Kiro is the tool. Kiro's three spec files are exactly
+    the Inception and Construction trail. The big Rust number gets quoted
+    everywhere — it comes from vendor talks, so treat it as direction, not a
+    benchmark. Full references are in the course page.
   </aside>
 </section>
 

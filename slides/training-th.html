@@ -62,19 +62,71 @@
 <!-- AGENDA -->
 <section>
   <h2>สิ่งที่เราจะครอบคลุม</h2>
-  <ol>
+  <ol start="0">
+    <li>พื้นฐาน AI-DLC — methodology เบื้องหลัง Kiro</li>
     <li>Kiro คืออะไร และทำไม</li>
     <li>โหมด Vibe / Chat</li>
     <li>Specs — spec-driven development</li>
     <li>Agent Steering</li>
     <li>Agent Hooks</li>
-    <li>MCP — เครื่องมือและข้อมูลภายนอก</li>
   </ol>
-  <p class="muted">…แล้วต่อด้วย Kiro Powers และแผนนำไปใช้ในทีมของเรา</p>
+  <p class="muted">…แล้วต่อด้วย MCP, Kiro Powers และแผนนำไปใช้ในทีมของเรา</p>
   <aside class="notes">
-    แปดบท สามบทแรกว่าด้วยการขับ Kiro ในแต่ละวัน บทสี่ถึงหกคือไฟล์ที่เรา commit ลง
-    dot-kiro เพื่อให้ agent ทำงานสม่ำเสมอสำหรับทุกคน แล้วต่อด้วย Powers ที่รวมชิ้นส่วนพวกนั้น
-    และปิดท้ายด้วยแผนลงมือจริงบนโปรเจกต์ pilot หนึ่งอัน
+    เก้าบท เริ่มจาก methodology ที่ Kiro รองรับ — AI-DLC จากนั้นบทหนึ่งถึงสามว่าด้วย
+    การขับ Kiro ในแต่ละวัน บทสี่ถึงหกคือไฟล์ที่เรา commit ลง dot-kiro แล้วต่อด้วย
+    Powers และแผนลงมือจริงบนโปรเจกต์ pilot หนึ่งอัน
+  </aside>
+</section>
+
+<!-- M0 -->
+<section>
+  <h2>0 · AI-DLC — แนวคิดเบื้องหลัง Kiro</h2>
+  <p class="big">AI-Driven Development Lifecycle: methodology (ไม่ใช่ product) ที่สร้าง lifecycle ใหม่รอบ ๆ <em>AI ทำงาน มนุษย์ตัดสินใจ ทีมรีวิว</em></p>
+  <ul>
+    <li>SDLC เขียนมือ → AI-assisted autocomplete → "vibe coding" (Karpathy, ก.พ. 2025) → lifecycle แบบ AI-native</li>
+    <li>ปฏิเสธทั้งสองสุดขั้ว: AI-assisted ขี้อายเกินไป; AI-autonomous ตัดวิจารณญาณมนุษย์</li>
+    <li>เผยแพร่โดย AWS (Raja SP), AWS DevOps Blog, 31 ก.ค. 2025</li>
+  </ul>
+  <aside class="notes">
+    ก่อนเครื่องมือ ต้องเข้าใจแนวคิด AI-DLC คือคำตอบของ AWS ต่อช่องว่างจริง การเอา AI
+    มาแปะเป็นผู้ช่วยยังคงกระบวนการช้าแบบเดิม การปล่อยให้รันอิสระเต็มที่ทิ้งวิจารณญาณมนุษย์
+    AI-DLC ออกแบบ lifecycle เองใหม่ให้ AI ทำงานและมนุษย์อยู่บนทุกการตัดสินใจ Kiro คือวิธี
+    ลงมือทำจริง
+  </aside>
+</section>
+
+<section>
+  <h2>0 · loop และสามเฟส</h2>
+<pre><code class="language-text">AI ร่างแผน → AI ถามคำถาม → มนุษย์ตรวจ
+   → AI ลงมือ → ทีมรีวิว → วนซ้ำ</code></pre>
+  <table>
+    <tr><th>เฟส</th><th>AI ผลิต</th><th>พิธีกรรมของทีม</th></tr>
+    <tr><td>Inception</td><td>requirements, story, units of work</td><td>Mob Elaboration</td></tr>
+    <tr><td>Construction</td><td>สถาปัตยกรรม, โค้ด, test</td><td>Mob Construction</td></tr>
+    <tr><td>Operations</td><td>IaC, deploy, monitoring</td><td>ทีมกำกับดูแล</td></tr>
+  </table>
+  <aside class="notes">
+    ทุกเฟสรัน loop เดียวกัน และขั้นที่ต่อรองไม่ได้คือการตัดสินใจของมนุษย์ คำพูดของ AWS:
+    มีแต่มนุษย์ที่มีบริบทธุรกิจพอจะตัดสิน AI เขียนแผนและ requirements ลง repo เพื่อให้
+    context อยู่รอดข้าม session แต่ละเฟสทำให้เฟสถัดไปคมขึ้น
+  </aside>
+</section>
+
+<section>
+  <h2>0 · คำใหม่ และ Kiro อยู่ตรงไหน</h2>
+  <table>
+    <tr><th>Agile</th><th>AI-DLC</th></tr>
+    <tr><td>Sprint (~2 สัปดาห์)</td><td><strong>Bolt</strong> (ชั่วโมง–วัน)</td></tr>
+    <tr><td>Epic</td><td><strong>Unit of work</strong></td></tr>
+    <tr><td>งานเดี่ยว + ส่งต่อ async</td><td>เซสชัน <strong>Mob</strong></td></tr>
+  </table>
+  <p class="muted">methodology = AI-DLC · โครงสร้าง artifact = spec-driven dev · เครื่องมือ = Kiro. <code>requirements → design → tasks</code> ของ Kiro <em>คือ</em> เส้นทาง Inception/Construction</p>
+  <p class="quote">ที่อ้างกันบ่อย: re-architecture Amazon Bedrock, ~18 เดือน / 30 คน → ~76 วัน / 6 คน, Rust ~100k บรรทัด เป็น anecdote ของ vendor — สัญญาณ ไม่ใช่หลักฐาน</p>
+  <aside class="notes">
+    สามระดับ: AI-DLC คือ methodology, spec-driven development คือวิธีจัดรูป artifacts,
+    Kiro คือเครื่องมือ ไฟล์ spec สามอันของ Kiro คือเส้นทาง Inception และ Construction พอดี
+    ตัวเลข Rust ก้อนใหญ่ถูกอ้างทุกที่ — มันมาจากงานพูดของ vendor ให้มองเป็นทิศทาง ไม่ใช่
+    benchmark แหล่งอ้างอิงเต็มอยู่ในหน้าคอร์ส
   </aside>
 </section>
 
