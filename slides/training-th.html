@@ -53,9 +53,10 @@
   <p class="muted">v1 · 2026 · เดินเรื่องประมาณ 90 นาที</p>
   <p><span class="pill">ไทย</span><span class="pill">also in English</span></p>
   <aside class="notes">
-    สวัสดีครับ Kiro คือสภาพแวดล้อมพัฒนาแบบ AI ของ AWS วันนี้เราจะดูว่ามันคืออะไร,
-    spec-driven development เปลี่ยน workflow ยังไง และสี่ส่วนควบคุมที่เราจะตั้งค่าจริงใน
-    repo: steering, hooks, MCP และ Powers จบคอร์สคุณควรรันฟีเจอร์ผ่าน spec บนโปรเจกต์ตัวเองได้
+    สวัสดีครับ เดี๋ยวเราจะใช้เวลาราวชั่วโมงครึ่งด้วยกัน. Kiro คือ AI ของ AWS
+    ที่ช่วยให้เราส่งงานได้จริง ไม่ใช่แค่เติมโค้ดให้. เราจะดูว่ามันคืออะไร
+    ทำไมการเขียน spec ก่อนถึงเปลี่ยนทุกอย่าง แล้วก็สิ่งที่คุณจะตั้งค่าใน repo
+    ของตัวเอง. เอาโน้ตบุ๊กมาด้วยนะ. จบแล้วคุณจะรันฟีเจอร์ผ่าน spec ได้เอง.
   </aside>
 </section>
 
@@ -72,9 +73,9 @@
   </ol>
   <p class="muted">…แล้วต่อด้วย MCP, Kiro Powers และแผนนำไปใช้ในทีมของเรา</p>
   <aside class="notes">
-    เก้าบท เริ่มจาก methodology ที่ Kiro รองรับ — AI-DLC จากนั้นบทหนึ่งถึงสามว่าด้วย
-    การขับ Kiro ในแต่ละวัน บทสี่ถึงหกคือไฟล์ที่เรา commit ลง dot-kiro แล้วต่อด้วย
-    Powers และแผนลงมือจริงบนโปรเจกต์ pilot หนึ่งอัน
+    เก้าบทสั้น ๆ. เปิดด้วยแนวคิดเบื้องหลัง Kiro. สามบทแรกคือการใช้งานในแต่ละวัน.
+    สามบทกลางคือไฟล์ที่เรา commit ให้ agent ทำงานเหมือนกันทั้งทีม. Powers มัด
+    ทุกอย่างเข้าด้วยกัน. แล้วปิดท้ายด้วยแผนที่ลงมือได้จริงตั้งแต่สัปดาห์หน้า.
   </aside>
 </section>
 
@@ -88,10 +89,10 @@
     <li>เผยแพร่โดย AWS (Raja SP), AWS DevOps Blog, 31 ก.ค. 2025</li>
   </ul>
   <aside class="notes">
-    ก่อนเครื่องมือ ต้องเข้าใจแนวคิด AI-DLC คือคำตอบของ AWS ต่อช่องว่างจริง การเอา AI
-    มาแปะเป็นผู้ช่วยยังคงกระบวนการช้าแบบเดิม การปล่อยให้รันอิสระเต็มที่ทิ้งวิจารณญาณมนุษย์
-    AI-DLC ออกแบบ lifecycle เองใหม่ให้ AI ทำงานและมนุษย์อยู่บนทุกการตัดสินใจ Kiro คือวิธี
-    ลงมือทำจริง
+    ก่อนแตะเครื่องมือ มาที่แนวคิดก่อน. AWS มองว่าสองทางเลือกที่เห็นชัด ๆ ยังไม่พอ.
+    เอา AI มาแปะเป็นผู้ช่วย กระบวนการก็ยังช้าเหมือนเดิม. ปล่อยให้มันวิ่งเอง
+    เราก็เสียวิจารณญาณของคนไป. เขาเลยออกแบบวงจรใหม่ให้อยู่ตรงกลาง. AI ทำงาน
+    คุณตัดสินใจ. Kiro คือวิธีลงมือทำจริง.
   </aside>
 </section>
 
@@ -106,9 +107,10 @@
     <tr><td>Operations</td><td>IaC, deploy, monitoring</td><td>ทีมกำกับดูแล</td></tr>
   </table>
   <aside class="notes">
-    ทุกเฟสรัน loop เดียวกัน และขั้นที่ต่อรองไม่ได้คือการตัดสินใจของมนุษย์ คำพูดของ AWS:
-    มีแต่มนุษย์ที่มีบริบทธุรกิจพอจะตัดสิน AI เขียนแผนและ requirements ลง repo เพื่อให้
-    context อยู่รอดข้าม session แต่ละเฟสทำให้เฟสถัดไปคมขึ้น
+    ทุกเฟสวิ่งวงจรเล็ก ๆ อันเดียวกัน. และมีขั้นนึงที่ข้ามไม่ได้เด็ดขาด
+    คือการตัดสินใจของคน. AWS พูดตรง ๆ ว่า มีแต่คนที่รู้บริบทธุรกิจพอจะตัดสิน.
+    AI เขียนแผนกับ requirements ลง repo เลย พอปิดเครื่องก็ไม่หาย. แต่ละเฟส
+    ส่งบริบทที่คมขึ้นให้เฟสถัดไป.
   </aside>
 </section>
 
@@ -123,10 +125,10 @@
   <p class="muted">methodology = AI-DLC · โครงสร้าง artifact = spec-driven dev · เครื่องมือ = Kiro. <code>requirements → design → tasks</code> ของ Kiro <em>คือ</em> เส้นทาง Inception/Construction</p>
   <p class="quote">ที่อ้างกันบ่อย: re-architecture Amazon Bedrock, ~18 เดือน / 30 คน → ~76 วัน / 6 คน, Rust ~100k บรรทัด เป็น anecdote ของ vendor — สัญญาณ ไม่ใช่หลักฐาน</p>
   <aside class="notes">
-    สามระดับ: AI-DLC คือ methodology, spec-driven development คือวิธีจัดรูป artifacts,
-    Kiro คือเครื่องมือ ไฟล์ spec สามอันของ Kiro คือเส้นทาง Inception และ Construction พอดี
-    ตัวเลข Rust ก้อนใหญ่ถูกอ้างทุกที่ — มันมาจากงานพูดของ vendor ให้มองเป็นทิศทาง ไม่ใช่
-    benchmark แหล่งอ้างอิงเต็มอยู่ในหน้าคอร์ส
+    สามคำ สามระดับ. AI-DLC คือวิธีการ. spec-driven development คือวิธีจัดเอกสาร
+    ที่มันต้องการ. Kiro คือเครื่องมือ. ไฟล์ spec สามอันที่เดี๋ยวจะเห็น นั่นแหละคือ
+    เส้นทาง Inception กับ Construction ที่จับต้องได้. อ้อ เรื่อง Rust แสนบรรทัดที่
+    คนชอบอ้าง มันมาจากงานพูดของ vendor. เอาไว้ดูทิศทาง ไม่ใช่ตัวเลขมาตรฐาน.
   </aside>
 </section>
 
@@ -140,9 +142,10 @@
     <li>config ติดไปกับ repository — ตั้งครั้งเดียว มีผลทุกที่</li>
   </ul>
   <aside class="notes">
-    สิ่งที่ต้องจำ: Kiro ไม่ใช่แค่ editor แต่เป็น agent ตัวเดียวหลังหลายประตู และ config
-    อยู่ใน repo ในชื่อ dot-kiro ฟีเจอร์เด่นคือเอกสารการวางแผน — requirements และ design —
-    กลายเป็นไฟล์จริงที่รีวิวได้ แทนที่จะหายไปในประวัติแชต
+    จำไว้อย่างนึง. Kiro ไม่ใช่แค่ editor. มันคือ agent ตัวเดียวที่นั่งอยู่หลัง
+    หลายประตู ทั้ง IDE, terminal, เบราว์เซอร์, มือถือ. และพฤติกรรมของมันมาจาก
+    โฟลเดอร์ชื่อ dot kiro. จุดเด่นคือ requirements กับ design ของคุณเลิกเป็น
+    ข้อความแชต กลายเป็นไฟล์จริงที่รีวิวได้.
   </aside>
 </section>
 
@@ -157,9 +160,9 @@
   </table>
   <p class="muted">config <code>.kiro/</code> ใช้ร่วมกันทุกช่องทาง</p>
   <aside class="notes">
-    agent เดียวกัน คนละทางเข้า คุณอาจเริ่มงานใน IDE, เช็กจากมือถือตอนเดินทาง แล้วให้ CI
-    รัน CLI กับ steering ชุดเดียวกัน ความสม่ำเสมอมาจากการที่ dot-kiro อยู่ใน version
-    control ข้าง ๆ โค้ด
+    สมองเดียวกัน คนละประตู. คุณอาจเริ่มงานใน IDE เหลือบดูจากมือถือตอนนั่งรถไฟ
+    แล้วให้ CI รันตัว command line กับกฎชุดเดียวกัน. ทำไมมันถึงตรงกันหมด?
+    เพราะ dot kiro อยู่ใน git ข้าง ๆ โค้ด.
   </aside>
 </section>
 
@@ -175,9 +178,10 @@
     └── mcp.json      # การเชื่อมต่อเครื่องมือภายนอก</code></pre>
   <p class="muted">commit เหมือน source อื่น รีวิวการแก้เหมือนโค้ด</p>
   <aside class="notes">
-    นี่คือพื้นที่ทั้งหมด steering เป็น context แบบ markdown hooks เป็น automation แบบ
-    JSON specs เป็นโฟลเดอร์ต่อฟีเจอร์ที่มีเอกสารสามไฟล์ และ mcp.json ต่อเครื่องมือภายนอก
-    ทุกอย่างในนี้รีวิวใน pull request เพราะมันเปลี่ยนพฤติกรรม agent ของทั้งทีม
+    นี่คือพื้นที่ทั้งหมด ทำความคุ้นเคยไว้. steering เป็น markdown คือบริบทของ
+    โปรเจกต์. hooks เป็น automation เล็ก ๆ แบบ JSON. specs เป็นโฟลเดอร์ต่อฟีเจอร์
+    มีสามเอกสาร. ส่วน ไฟล์ mcp json ต่อเครื่องมือภายนอก. ทุกอย่างในนี้ผ่าน
+    pull request เพราะมันเปลี่ยนวิธีที่ agent ทำงานให้ทั้งทีม.
   </aside>
 </section>
 
@@ -193,9 +197,10 @@
     <tr><td>Quick Spec</td><td>สร้าง spec อัตโนมัติ</td><td>ฟีเจอร์เล็ก ไว้ใจ agent</td></tr>
   </table>
   <aside class="notes">
-    Vibe คือ agent เริ่มต้น — คุยกับ codebase อิสระ ไม่มีเอกสาร Spec คือเส้นทางมีโครงสร้าง
-    Plan, Bug Fix, Quick Spec อยู่ตรงกลาง หลักคิด: ถ้ามีคนจะรีวิวหรือถามทีหลัง ใช้ spec
-    นอกนั้น vibe ได้
+    Vibe เป็นโหมดเริ่มต้น. คุยกับ codebase ตรง ๆ ไม่มีเอกสาร ไม่มีพิธี. Spec คือ
+    เส้นทางที่มีโครงสร้าง. Plan, Bug Fix, Quick Spec อยู่ระหว่างกลาง. กฎที่ผมใช้
+    คือ ถ้ามีคนจะรีวิว หรือถามทีหลังว่าทำไมสร้างแบบนี้ ก็ใช้ spec. นอกนั้น vibe
+    ไปเลย.
   </aside>
 </section>
 
@@ -213,9 +218,10 @@
   </div>
   <p class="quote">อยู่ Supervised จนกว่าจะเห็น agent ทำ <em>งานประเภทนี้</em> ถูกต้องหลายครั้ง — แล้วค่อยเลื่อนงานประเภทนั้น</p>
   <aside class="notes">
-    นี่เป็นสวิตช์แยกจากโหมด เริ่มที่ Supervised กับทุกอย่าง เมื่อเห็น agent จัดการงาน
-    ประเภทหนึ่งได้เรียบร้อยหลายครั้ง — เช่นเพิ่มไฟล์ test — ค่อยย้ายเฉพาะประเภทนั้นไป
-    Autopilot อย่าเปลี่ยนทุกอย่างพร้อมกัน
+    อันนี้เป็นปุ่มแยกจากโหมด. เริ่มที่ Supervised กับทุกอย่าง คุณอนุมัติทุก
+    การเปลี่ยน. พอเห็น agent ทำงานประเภทนึงได้เนียนหลายครั้ง เช่นเพิ่มไฟล์ test
+    ค่อยย้ายเฉพาะประเภทนั้นไป Autopilot. แค่ประเภทเดียวนะ. อย่าสลับทั้งหมด
+    พร้อมกันแล้วภาวนา.
   </aside>
 </section>
 
@@ -232,9 +238,10 @@
   </table>
   <p class="muted">ผสมกันในข้อความเดียวได้ วางรูปภาพก็ได้</p>
   <aside class="notes">
-    Kiro รู้แค่สิ่งที่อยู่ใน context เมนู hash คือวิธีโหลดเข้ามา ผสมได้อิสระ: fix the
-    failing test in hash-problems using the pattern from hash-file คุณภาพคำตอบขึ้นกับ
-    คุณภาพ context เกือบเป๊ะ ๆ จึงต้องตั้งใจเลือกสิ่งที่ดึงเข้ามา
+    Kiro รู้แค่สิ่งที่คุณวางตรงหน้ามัน. เมนูที่ขึ้นต้นด้วยเครื่องหมาย hash
+    คือวิธีส่งของให้. ผสมได้อิสระ. test ที่พังจาก hash problems บวก pattern
+    ในไฟล์นึง บวก diff ที่ยังไม่ commit. คำตอบดีเท่ากับบริบทที่ให้ เพราะงั้น
+    เลือกให้ดีว่าจะดึงอะไรเข้ามา. วางสกรีนช็อตก็ได้.
   </aside>
 </section>
 
@@ -249,8 +256,9 @@
     <tr><td><code>tasks.md</code></td><td>task ย่อยพร้อมสถานะ real-time</td></tr>
   </table>
   <aside class="notes">
-    spec แทนแชตยาว ๆ ด้วยเอกสารสามอัน คุณอนุมัติ requirements ก่อน design ถูกเขียน และ
-    design ก่อน tasks ถูกรัน แต่ละด่านคือ checkpoint ที่การแก้ความเข้าใจผิดยังราคาถูก
+    spec เปลี่ยนแชตยาว ๆ อันเดียว เป็นเอกสารสั้นสามอัน. คุณเซ็นอนุมัติ
+    requirements ก่อนจะมี design. เซ็นอนุมัติ design ก่อนจะมีโค้ดรัน. แต่ละด่าน
+    คือจังหวะที่การแก้ความเข้าใจผิดยังราคาแค่ประโยคเดียว ไม่ใช่ทั้งสุดสัปดาห์.
   </aside>
 </section>
 
@@ -263,9 +271,9 @@
   </ol>
   <p class="quote">ความเข้าใจผิดที่แก้ใน requirements.md ราคาหนึ่งประโยค ถ้าแก้หลัง 12 ไฟล์ ราคาทั้งบ่าย</p>
   <aside class="notes">
-    ด่านคือหัวใจ มันเย้ายวนให้อ่าน requirements ผ่าน ๆ แล้วปล่อยรัน อย่าทำ สองนาทีที่
-    กระชับ acceptance criteria ประหยัดการเขียนใหม่ การรีวิว design คือจุดที่ถูกรองลงมา
-    ในการเปลี่ยนทิศงาน
+    ด่านคือทั้งหมดของเรื่องนี้. มันเย้ายวนให้อ่าน requirements ผ่าน ๆ แล้วกดรัน.
+    อย่า. สองนาทีที่กระชับ acceptance criteria ประหยัดการเขียนใหม่ทั้งก้อน.
+    และการรีวิว design คือโอกาสถูก ๆ อันดับสองที่จะเปลี่ยนทิศงานไปทางที่ดีกว่า.
   </aside>
 </section>
 
@@ -281,8 +289,9 @@ WHEN a user submits checkout with an expired card
 THE SYSTEM SHALL reject the payment and show "Your card has expired"</code></pre>
   <p class="muted">แต่ละบรรทัดกลายเป็น test</p>
   <aside class="notes">
-    EARS เป็นแค่เทมเพลตประโยคไม่กี่แบบ คุณค่าคือทุกเกณฑ์ไม่กำกวมและทดสอบได้ตรง ๆ ตอน
-    รีวิว requirements ให้เขียนบรรทัดที่คลุมเครือใหม่ให้เป็นหนึ่งในรูปแบบเหล่านี้
+    EARS เป็นแค่รูปประโยคไม่กี่แบบ. เมื่อเกิดสิ่งนี้ ระบบจะต้องทำสิ่งนั้น.
+    ประเด็นคือทุกบรรทัดไม่กำกวม และเอาไปเขียนเป็น test ได้ตรง ๆ. เพราะงั้น
+    ตอนรีวิว requirements เจอประโยคคลุมเครือ ก็บังคับมันเข้าหนึ่งในรูปเหล่านี้.
   </aside>
 </section>
 
@@ -297,8 +306,9 @@ THE SYSTEM SHALL reject the payment and show "Your card has expired"</code></pre
   </ul>
   <p class="muted">เหตุผลที่ spec มักเสร็จเร็วกว่าพิมพ์ task ทีละอัน</p>
   <aside class="notes">
-    คุณไม่ต้องตั้งค่า Kiro หาว่า task ไหนเป็นอิสระต่อกันแล้วรันพร้อมกัน จากนั้น wave ถัดไป
-    เรื่อย ๆ เป็นข้อได้เปรียบด้านความเร็วจริง ๆ เทียบกับสั่งทีละคำสั่งในแชต
+    คุณไม่ต้องตั้งอะไรเลย. Kiro ดูรายการ task แล้วหาว่าอันไหนไม่พึ่งกัน
+    รันพวกนั้นพร้อมกัน. แล้วชุดถัดไป. แล้วชุดถัดไป. ความขนานตรงนี้เร็วกว่า
+    พิมพ์ task ทีละอันในแชตจริง ๆ.
   </aside>
 </section>
 
@@ -314,9 +324,9 @@ THE SYSTEM SHALL reject the payment and show "Your card has expired"</code></pre
   </table>
   <p class="muted">สร้างโดย "Generate Steering Docs" · โหลดทุกบทสนทนา</p>
   <aside class="notes">
-    steering คือวิธีเลิกอธิบายโปรเจกต์ซ้ำทุกบทสนทนา สร้างไฟล์พื้นฐานสามไฟล์ แล้วแก้ด้วยมือ
-    จนตรงความจริง — ตัว generate ให้แค่ร่าง ไม่ใช่คัมภีร์ ทั้งสามไฟล์นี้โหลดเข้าทุก
-    interaction
+    steering คือวิธีเลิกอธิบายโปรเจกต์ตั้งแต่ศูนย์ทุกบทสนทนา. สร้างไฟล์พื้นฐาน
+    สามไฟล์ แล้ว อันนี้สำคัญ แก้ด้วยมือจนมันตรงความจริงจริง ๆ. ที่ generate มาให้
+    เป็นแค่ร่างหยาบ. สามไฟล์นี้โหลดเข้าทุก interaction เพราะงั้นมันต้องถูก.
   </aside>
 </section>
 
@@ -338,9 +348,10 @@ name: api-design
 description: REST API patterns. Use when creating endpoints.
 ---</code></pre>
   <aside class="notes">
-    front-matter ที่หัวไฟล์ steering คุมว่าจะโหลดเมื่อไร always สำหรับกฎสากล fileMatch
-    เพื่อจำกัดคำแนะนำให้กับพื้นที่หนึ่งของ codebase manual เมื่ออยากเรียกด้วยชื่อ auto
-    เมื่อ description ควรจุดให้โหลด ทำไฟล์ always ให้เล็ก เพราะกิน token ทุกเทิร์น
+    front-matter ที่หัวไฟล์ steering ตัดสินว่าจะโหลดเมื่อไร. always สำหรับกฎที่
+    ใช้ทุกที่. fileMatch เพื่อจำกัดคำแนะนำให้พื้นที่เดียวของ codebase. manual
+    เมื่ออยากเรียกด้วยชื่อ. auto เมื่อ description ควรจุดให้โหลด. และทำไฟล์
+    always ให้ผอม มันกิน token ทุกเทิร์น.
   </aside>
 </section>
 
@@ -353,9 +364,10 @@ description: REST API patterns. Use when creating endpoints.
     <li>หนึ่งเรื่องต่อไฟล์ · อธิบาย <em>เหตุผล</em> · ห้าม secret · รีวิวเหมือนโค้ด</li>
   </ul>
   <aside class="notes">
-    ชี้ steering ไปที่ไฟล์จริงเพื่อไม่ให้หลุดจาก source Kiro อ่านมาตรฐานข้ามเครื่องมือ
-    AGENTS.md ด้วย และจำไว้ว่า custom agents ไม่สืบทอด steering อัตโนมัติ — ต้องเพิ่มใน
-    รายการ resources มองการแก้ steering ทุกครั้งเป็น pull request
+    ชี้ steering ไปที่ไฟล์จริง มันจะได้ไม่ค่อย ๆ หลุดจาก source. Kiro อ่าน
+    มาตรฐาน AGENTS.md ข้ามเครื่องมือด้วย ถ้าคุณมี. จุดที่คนสะดุดคือ custom
+    agents ไม่ได้รับ steering อัตโนมัติ คุณต้องใส่ในรายการ resources.
+    และการแก้ steering ทุกครั้งคือ pull request เหมือนโค้ด.
   </aside>
 </section>
 
@@ -371,9 +383,10 @@ description: REST API patterns. Use when creating endpoints.
     <tr><td>Task (IDE)</td><td><code>PreTaskExecution/PostTaskExecution</code></td></tr>
   </table>
   <aside class="notes">
-    hook ทำงานตาม event ระหว่าง session และเปิดใช้อัตโนมัติเมื่อ session เริ่ม ตัวที่
-    บล็อกได้ — PreToolUse และ PromptSubmit — ทรงพลังแต่ให้นำมาใช้ทีหลังสุด เมื่อทีมไว้ใจ
-    ตัวที่ไม่บล็อกแล้ว
+    hook รันอะไรบางอย่างเมื่อมี event. คำสั่ง shell หรือ prompt ส่งกลับให้ agent.
+    มันอยู่เป็น JSON แล้วเปิดเองเมื่อ session เริ่ม. ตัวที่บล็อกได้ อย่าง
+    PreToolUse กับ PromptSubmit ทรงพลัง. เก็บไว้ใช้ทีหลังสุด ตอนที่ทีมไว้ใจ
+    ตัวที่อ่อนโยนแล้ว.
   </aside>
 </section>
 
@@ -393,9 +406,9 @@ description: REST API patterns. Use when creating endpoints.
 }</code></pre>
   <p class="muted"><code>action.type</code>: <code>"command"</code> (shell) หรือ <code>"agent"</code> (แทรก prompt) · trigger ไฟล์ทำงานกับการแก้ของ <em>agent</em> เท่านั้น</p>
   <aside class="notes">
-    matcher เป็น regex ที่จำกัดว่า event ไหนจุด hook action เป็นคำสั่ง shell หรือ prompt
-    ที่ส่งให้ agent จุดพลาดที่ต้องย้ำ: trigger ไฟล์ตอบสนองต่อการแก้ของ agent ไม่ใช่ตอน
-    คุณเซฟไฟล์เองใน editor
+    matcher เป็น regex. มันกรองว่า event ไหนจะจุด hook จริง. action เป็นคำสั่ง
+    shell หรือ prompt ที่ส่งให้ agent. จุดพลาดที่ต้องพูดซ้ำ. trigger ไฟล์
+    ตอบสนองการแก้ของ agent ไม่ใช่ตอนคุณเซฟไฟล์เอง.
   </aside>
 </section>
 
@@ -409,9 +422,9 @@ description: REST API patterns. Use when creating endpoints.
   </ul>
   <p class="muted">สร้างใน IDE: <strong>+</strong> ใน Agent Hooks → "Ask Kiro to create a hook" → อธิบาย</p>
   <aside class="notes">
-    เริ่มด้วย hook เสี่ยงต่ำสองอัน: format ตอนเซฟ และสร้างโครง test เมื่อมีไฟล์ source ใหม่
-    คุณอธิบายสิ่งที่ต้องการเป็นภาษาคน แล้ว Kiro เขียน JSON ให้ จากนั้นรีวิว JSON นั้นใน
-    pull request เหมือนโค้ด
+    เริ่มด้วยสองอัน เสี่ยงต่ำทั้งคู่. format ตอนเซฟ. กับสร้างไฟล์ test เมื่อมี
+    ไฟล์ source ใหม่โผล่มา. คุณอธิบายสิ่งที่อยากได้เป็นภาษาคน Kiro เขียน JSON ให้
+    แล้วคุณรีวิว JSON นั้นใน pull request เหมือนโค้ดทั่วไป.
   </aside>
 </section>
 
@@ -427,9 +440,10 @@ description: REST API patterns. Use when creating endpoints.
   </table>
   <p class="muted">Local (stdio) &amp; remote (HTTP/SSE) — ทุกที่ยกเว้น Mobile</p>
   <aside class="notes">
-    MCP คือปลั๊กสำหรับอะไรก็ตามที่โมเดลไม่รู้เอง — wiki ภายใน, ระบบ ticket, cloud API,
-    การค้นเอกสาร config อยู่สามระดับ ตัวที่ทีมสนใจคือ workspace mcp.json ที่ commit ไว้
-    เพื่อให้ทุกคนรัน server ที่ตรวจแล้วชุดเดียวกัน
+    MCP คือปลั๊กสำหรับอะไรก็ตามที่โมเดลไม่รู้เอง. wiki ภายใน ระบบ ticket
+    cloud API การค้นเอกสารสด. config อยู่สามระดับ. ตัวที่สำคัญสำหรับทีมคือไฟล์
+    ระดับ workspace ที่ commit ไว้ ทุกคนจะได้รัน server ชุดเดียวกันที่คุณ
+    ตรวจแล้วจริง ๆ.
   </aside>
 </section>
 
@@ -447,9 +461,9 @@ description: REST API patterns. Use when creating endpoints.
 }</code></pre>
   <p class="muted"><code>disabled</code> ปิดโดยไม่ลบ · <code>autoApprove</code> = tool อ่านอย่างเดียวเท่านั้น · secret ผ่าน <code>env</code> ห้าม commit</p>
   <aside class="notes">
-    AWS Documentation server เป็นตัวแรกที่ดี — agent ค้นเอกสาร AWS จริงแทนการเดาจากข้อมูล
-    training ให้ autoApprove เฉพาะ tool อ่านอย่างเดียว เพื่อให้อะไรที่เปลี่ยน state ยังถาม
-    คุณอยู่
+    AWS Documentation server เป็นตัวแรกที่ดี. แทนที่จะเดาจากข้อมูล training
+    agent ค้นเอกสารจริงแล้วกลับมาพร้อมลิงก์. ให้ autoApprove เฉพาะ tool ที่
+    อ่านอย่างเดียว. อะไรที่เปลี่ยน state ควรหยุดถามคุณก่อน.
   </aside>
 </section>
 
@@ -462,9 +476,9 @@ description: REST API patterns. Use when creating endpoints.
     <li>ชื่อ tool: <code>^[a-zA-Z][a-zA-Z0-9_]*$</code>, &lt; 64 อักขระ</li>
   </ul>
   <aside class="notes">
-    นี่คือสไลด์ความปลอดภัยหนึ่งเดียวของ MCP MCP server คือโค้ดที่รันได้และมองเห็น context
-    ของคุณ เราตรวจทุก server ก่อนใส่ใน mcp.json ที่ใช้ร่วมกัน pin เวอร์ชัน และเก็บ
-    credential ใน environment variable ที่ไม่เคย commit
+    นี่คือสไลด์ความปลอดภัย. MCP server คือโค้ดที่รันบนเครื่องคุณ และมันเห็น
+    บริบทที่ agent ส่งให้. เพราะงั้นเราตรวจทุก server ก่อนเข้าไฟล์ที่ใช้ร่วมกัน.
+    pin เวอร์ชัน. และ credential อยู่ใน environment variable ที่ไม่เคย commit.
   </aside>
 </section>
 
@@ -481,9 +495,10 @@ description: REST API patterns. Use when creating endpoints.
   </table>
   <p class="muted">สร้างบน spec <strong>Agent Plugins</strong> แบบเปิด (Amazon, Cursor, Microsoft, OpenAI, Vercel)</p>
   <aside class="notes">
-    Power คือ steering บวก skills บวก MCP ทางเลือก แพ็กให้ติดตั้งคลิกเดียว เพราะสร้างบน
-    มาตรฐาน Agent Plugins ที่ไม่ผูกเจ้า Power เดียวกันใช้นอก Kiro ได้ มองเป็นความเชี่ยวชาญ
-    ของ framework ที่ส่งมาโดยคนที่สร้าง framework นั้น
+    Power คือ steering บวก skills บวกอาจมี MCP server. แพ็กให้ติดตั้งคลิกเดียว.
+    มันสร้างบนมาตรฐานที่ไม่ผูกเจ้า เพราะงั้นแพ็กเดียวกันใช้ใน Cursor หรือ
+    Copilot ก็ได้. มองเป็นความเชี่ยวชาญของ framework ที่แพ็กมาโดยคนที่สร้าง
+    framework นั้นจริง ๆ.
   </aside>
 </section>
 
@@ -501,9 +516,10 @@ description: REST API patterns. Use when creating endpoints.
   </div>
   <p class="muted">พูดว่า "payment" → Stripe เปิด เปลี่ยนไปทำงาน DB → Supabase โหลดแทน</p>
   <aside class="notes">
-    ต่อ server มากขึ้นไม่ได้ช่วยอัตโนมัติ — มันฝัง agent ไว้ใน context Powers แก้ด้วยการ
-    โหลด on demand คุณไม่ต้องสลับ; คำอธิบายงานเป็นตัวตัดสินว่าความรู้ของ Power ตัวไหนเข้ามา
-    ใน context
+    เรื่องมันเป็นแบบนี้. ต่อ server มากขึ้นไม่ได้ทำให้ agent ฉลาดขึ้นอัตโนมัติ.
+    context เยอะเกินไปแบบไม่มีโครงสร้างกลับฝังมันไว้. Powers แก้ด้วยการโหลด
+    ตามต้องการ. คุณไม่ต้องสลับอะไร. สิ่งที่คุณกำลังทำเป็นตัวตัดสินว่าความรู้
+    ของ Power ตัวไหนโผล่มา.
   </aside>
 </section>
 
@@ -516,9 +532,10 @@ description: REST API patterns. Use when creating endpoints.
   </ul>
   <p class="muted">Launch partner: Datadog · Dynatrace · Figma · Neon · Netlify · Postman · Supabase · Stripe · AWS Aurora</p>
   <aside class="notes">
-    Power ของแต่ละ partner สร้างโดยบริษัทเจ้าของเครื่องมือ — คำแนะนำ design-to-code ของ
-    Figma เอง, pattern Row Level Security ของ Supabase เอง คุณแพ็ก convention ของทีม
-    บวก MCP ภายในเป็น Power ส่วนตัวได้เมื่อ steering นิ่งแล้ว
+    Power ของแต่ละ partner สร้างโดยบริษัทเจ้าของเครื่องมือ. คำแนะนำ
+    design-to-code ของ Figma เอง. pattern ความปลอดภัยของ Supabase เอง.
+    และพอ steering ของคุณนิ่งแล้ว คุณห่อ convention ของทีม กับ MCP server
+    ภายใน เป็น Power ส่วนตัวของตัวเองได้.
   </aside>
 </section>
 
@@ -531,9 +548,9 @@ description: REST API patterns. Use when creating endpoints.
     <tr><td>Powers</td><td>ติดตั้งได้ รู้บริบท — tool + ความรู้ + คำแนะนำ</td></tr>
   </table>
   <aside class="notes">
-    แยกให้ชัดเร็ว ๆ steering เป็นของคุณ เขียนเอง เฉพาะ Kiro Skill คือชุดคำสั่งพกพาได้
-    Power ห่อ skills กับ MCP กับ steering เข้าด้วยกันเป็นสิ่งที่ติดตั้งได้และโหลดแบบ
-    ฉลาด Powers คือรูปแบบการกระจาย
+    แยกเร็ว ๆ. steering เป็นของคุณ เขียนมือ เฉพาะ Kiro. skill คือชุดคำสั่ง
+    พกพาได้. Power ห่อ skills กับ MCP กับ steering เข้าด้วยกันเป็นของชิ้นเดียว
+    ที่ติดตั้งได้ และโหลดตัวเองเมื่อเกี่ยวข้อง. Powers คือรูปแบบการกระจาย.
   </aside>
 </section>
 
@@ -547,9 +564,10 @@ description: REST API patterns. Use when creating endpoints.
     <li>steering หลายภาษา: ชุด <code>always</code> เล็ก + ไฟล์ <code>fileMatch</code> แยกภาษา (<code>code-style-ts.md</code>, <code>-python.md</code>, <code>infra-aws.md</code>)</li>
   </ul>
   <aside class="notes">
-    เราเป็นทีมเล็ก จึงไม่มีเฟสเริ่มบางคนก่อน — ทุกคนเริ่มบน repo จริงอันเดียว ผลงานชิ้นแรก
-    คือ steering พื้นฐานที่แม่นยำจริง เพราะเราส่งงานหลายภาษา แยกกฎ style เป็นไฟล์ fileMatch
-    ให้แต่ละไฟล์โหลดเฉพาะตอนแตะภาษานั้น
+    เราทีมเล็ก เพราะงั้นไม่มีเฟสลองกับคนสองสามคนก่อน. ทุกคนเริ่ม บน repo จริง
+    อันเดียว. ของชิ้นแรกที่ส่งคือ steering พื้นฐานที่แม่นยำจริง. และเพราะเรา
+    ทำงานหลายภาษา แยกกฎ style เป็นไฟล์ fileMatch ให้แต่ละอันโหลดเฉพาะตอนคุณ
+    อยู่ในภาษานั้น.
   </aside>
 </section>
 
@@ -562,9 +580,10 @@ description: REST API patterns. Use when creating endpoints.
     <li>ต้นทุน: steering <code>always</code> สั้น, พึ่ง compaction, Supervised เป็นค่าเริ่มต้น</li>
   </ul>
   <aside class="notes">
-    ทุก ticket มีโฟลเดอร์ spec ของตัวเอง ตั้งชื่อตาม id ของ ticket commit ไปกับโค้ดเพื่อให้
-    เหตุผลเดินทางไปกับการเปลี่ยน เรื่องต้นทุน: การรัน Autopilot ที่พลาดเผาทั้ง run บวกเวลา
-    รีวิว เราจึงอยู่ Supervised จนกว่างานประเภทนั้นจะน่าเบื่อเพราะเชื่อถือได้
+    ทุก ticket มีโฟลเดอร์ spec ของตัวเอง ตั้งชื่อตาม ticket commit ไปกับโค้ด
+    เหตุผลจะได้เดินทางไปกับการเปลี่ยน. เรื่องต้นทุน. การรัน Autopilot ที่พลาด
+    เผาทั้ง run บวกเวลารีวิวคุณ. เพราะงั้นเราอยู่ Supervised จนกว่างานประเภทนั้น
+    จะน่าเบื่อจริง ๆ.
   </aside>
 </section>
 
@@ -578,9 +597,10 @@ description: REST API patterns. Use when creating endpoints.
     <li>เริ่มด้วย AWS Docs MCP + AWS Aurora Power</li>
   </ul>
   <aside class="notes">
-    เพราะโค้ดบางส่วนของเราอ่อนไหว kiroignore และ Permissions ใส่ตั้งแต่วันแรก และเราไม่
-    auto-approve tool ที่เขียนหรือเรียกออกนอกเด็ดขาด ช่องทาง Web และ Mobile ส่ง context
-    ออกนอกเครื่อง งานอ่อนไหวจึงอยู่ใน IDE AWS Docs MCP กับ Aurora Power คือจุดเริ่มร่วมกัน
+    โค้ดบางส่วนของเราอ่อนไหว. เพราะงั้น kiroignore กับ Permissions ใส่ตั้งแต่
+    วันแรก และเราไม่ auto-approve tool ที่เขียนหรือเรียกออกนอกเด็ดขาด. ช่องทาง
+    Web กับ Mobile ส่งบริบทออกนอกเครื่อง งานอ่อนไหวจึงอยู่ใน IDE. AWS docs
+    กับ Aurora Power คือจุดที่เราเริ่ม.
   </aside>
 </section>
 
@@ -597,8 +617,9 @@ description: REST API patterns. Use when creating endpoints.
     <tr><td>retro 2 สัปดาห์: ทำต่อ / ปรับ / หยุด</td><td>แชร์บันทึกแล้ว</td></tr>
   </table>
   <aside class="notes">
-    เจ็ด checkpoint ข้อสุดท้ายคือจุดตัดสินใจจริง — หลังสองสัปดาห์เราดู retro แล้วตัดสินใจ
-    ว่าจะทำต่อ ปรับ หรือหยุด นี่เป็นการทดลองที่มีขอบเขต ไม่ใช่คำสั่งให้รับทุกอย่างมาใช้
+    เจ็ด checkpoint. ดูข้อสุดท้าย. หลังสองสัปดาห์เรานั่งลงกับ retro แล้ว
+    ตัดสินใจ. ทำต่อ ปรับ หรือหยุด. นี่คือการทดลองที่มีขอบเขตและมีทางออก
+    ไม่ใช่คำสั่งทั้งบริษัทให้รับทุกอย่างมาใช้.
   </aside>
 </section>
 
@@ -615,8 +636,8 @@ description: REST API patterns. Use when creating endpoints.
     <tr><td>ย้อนการรันที่พลาด</td><td>rewind ไป checkpoint</td></tr>
   </table>
   <aside class="notes">
-    สกรีนช็อตอันนี้ไว้ มันแมปเจตนาที่พบบ่อยกับกลไก เวอร์ชันเต็มพร้อม context providers
-    และ kiroignore อยู่ในหน้าคอร์ส
+    สกรีนช็อตอันนี้เก็บไว้. มันแค่แมป อยากทำ X ก็หยิบ Y. เวอร์ชันเต็มพร้อม
+    context providers กับ kiroignore อยู่ในหน้าคอร์สที่คุณอ่านเองได้ตามจังหวะ.
   </aside>
 </section>
 
@@ -626,9 +647,9 @@ description: REST API patterns. Use when creating endpoints.
   <p class="muted">คอร์ส + สไลด์ · ภายใน · อ้างอิงจาก kiro.dev/docs</p>
   <p><span class="pill">course-en.html</span><span class="pill">course-th.html</span></p>
   <aside class="notes">
-    นั่นคือทัวร์ทั้งหมด คอร์สเรียนด้วยตัวเองลงลึกทุกบทพร้อม config คัดลอกไปใช้ได้และแบบฝึก
-    "ลองทำ" ทุกบท ขั้นถัดไป: ทุกคนติดตั้ง IDE และ generate steering บน repo จริงก่อน
-    session หน้า มีคำถามอะไรครับ
+    นั่นคือทัวร์ทั้งหมด. คอร์สเรียนเองลงลึกทุกบท พร้อม config ที่ก๊อปไปใช้ได้เลย
+    และแบบฝึกเล็ก ๆ บทละอัน. ขอไว้อย่างนึงก่อนเจอกันครั้งหน้า ติดตั้ง IDE แล้ว
+    รัน Generate Steering Docs บน repo จริง. เอาละ มีอะไรในใจบ้างครับ?
   </aside>
 </section>
 
@@ -740,7 +761,6 @@ description: REST API patterns. Use when creating endpoints.
     var text = note.textContent.trim();
     var sentences = text.split(/(?<=[.!?ๆ])\s+/).map(function (s) { return s.trim(); }).filter(Boolean);
     if (sentences.length < 2) {
-      // Thai has no sentence spaces — fall back to whitespace chunks of ~8 words
       var words = text.split(/\s+/), chunk = [];
       sentences = [];
       words.forEach(function (w, i) {

@@ -49,11 +49,11 @@
   <p class="muted">v1 · 2026 · ~90 min walkthrough</p>
   <p><span class="pill">EN</span><span class="pill">also in ภาษาไทย</span></p>
   <aside class="notes">
-    Welcome. Kiro is AWS's AI development environment, and today we're covering
-    what it is, how spec-driven development changes the workflow, and the four
-    control surfaces we'll actually configure in our repo: steering, hooks, MCP,
-    and Powers. By the end you should be able to run a feature through a spec on
-    your own project.
+    Hey, welcome. So here's the plan for the next hour and a half. Kiro is
+    AWS's take on an AI that helps you actually ship, not just autocomplete.
+    We'll look at what it is, why writing a spec first changes everything, and
+    the handful of things you'll set up in your own repo. Bring a laptop. By
+    the end, you'll have run a real feature through a spec yourself.
   </aside>
 </section>
 
@@ -70,10 +70,10 @@
   </ol>
   <p class="muted">…then MCP, Kiro Powers, and our team adoption plan.</p>
   <aside class="notes">
-    Nine modules. We start with the methodology Kiro serves — AI-DLC. Then
-    modules one to three are how you drive Kiro day to day. Four to six are the
-    files we commit into dot-kiro. Then Powers, and the concrete plan for rolling
-    this out on one pilot project.
+    Nine short modules. We open with the idea behind Kiro. Then the first three
+    are how you drive it day to day. The middle three are the files you commit
+    so the agent behaves the same for everyone. Powers ties it together. And we
+    finish with a plan you can actually run next week.
   </aside>
 </section>
 
@@ -87,11 +87,11 @@
     <li>Published by AWS (Raja SP), AWS DevOps Blog, 31 Jul 2025</li>
   </ul>
   <aside class="notes">
-    Before the tool, the idea. AI-DLC is AWS's answer to a real gap. Bolting AI
-    on as an assistant keeps the old slow process; letting it run fully
-    autonomous throws away human judgement. AI-DLC redesigns the lifecycle itself
-    so AI does the work and humans stay on every decision. Kiro is how you
-    actually practise it.
+    Before we touch the tool, the idea. AWS looked at the two obvious options
+    and said both fall short. Bolt AI on as a helper, and you keep the same
+    slow process. Let it run loose, and you throw away the human judgement that
+    matters. So they rebuilt the lifecycle around a middle path. AI does the
+    work, you make the calls. Kiro is how you actually do that.
   </aside>
 </section>
 
@@ -106,10 +106,11 @@
     <tr><td>Operations</td><td>IaC, deploy, monitoring</td><td>Team oversight</td></tr>
   </table>
   <aside class="notes">
-    Every phase runs the same loop, and the non-negotiable step is the human
-    decision. AWS's line: only humans have the business context to make the call.
-    The AI writes plans and requirements into the repo so context survives across
-    sessions. Each phase sharpens the next.
+    Every phase runs the same little loop. And there's one step you never skip:
+    the human decision. AWS put it plainly. Only a person has the business
+    context to make that call. The AI writes its plan and its requirements
+    straight into the repo, so nothing's lost when you close the laptop. Each
+    phase hands richer context to the next.
   </aside>
 </section>
 
@@ -124,11 +125,11 @@
   <p class="muted">Methodology = AI-DLC · artifact structure = spec-driven dev · tool = Kiro. Kiro's <code>requirements → design → tasks</code> <em>is</em> the Inception/Construction trail.</p>
   <p class="quote">Widely quoted: an Amazon Bedrock re-architecture, ~18 months / 30 devs → ~76 days / 6 engineers, ~100k lines of Rust. Vendor anecdote — signal, not proof.</p>
   <aside class="notes">
-    Three levels: AI-DLC is the methodology, spec-driven development is how you
-    shape its artifacts, Kiro is the tool. Kiro's three spec files are exactly
-    the Inception and Construction trail. The big Rust number gets quoted
-    everywhere — it comes from vendor talks, so treat it as direction, not a
-    benchmark. Full references are in the course page.
+    Three words, three levels. AI-DLC is the method. Spec-driven development is
+    how you shape the paperwork it asks for. Kiro is the tool. Those three spec
+    files you'll see in a minute are the Inception and Construction trail, made
+    real. Oh, and that hundred-thousand-lines-of-Rust story? It's from a vendor
+    talk. Take it as a direction, not a benchmark.
   </aside>
 </section>
 
@@ -142,10 +143,11 @@
     <li>Config travels with the repository — set up once, applies everywhere</li>
   </ul>
   <aside class="notes">
-    The thing to hold onto: Kiro is not just an editor. It's one agent behind
-    several front doors, and its configuration lives in your repo as dot-kiro.
-    The headline feature is that planning artifacts — requirements and design —
-    become real files you review, instead of disappearing into chat history.
+    Here's the one thing to hold onto. Kiro isn't just an editor. It's a single
+    agent sitting behind several front doors: the IDE, your terminal, a
+    browser, your phone. And its behaviour comes from a folder in your repo
+    called dot-kiro. The headline? Your requirements and your design stop being
+    chat messages and become real files you review.
   </aside>
 </section>
 
@@ -160,10 +162,10 @@
   </table>
   <p class="muted">Your <code>.kiro/</code> config is shared across all of them.</p>
   <aside class="notes">
-    Same agent, different entry points. You might start a task in the IDE, check
-    it from your phone on the commute, and have CI run the CLI against the same
-    steering rules. The consistency comes from dot-kiro being version-controlled
-    alongside the code.
+    Same brain, different doors. You might kick off a task in the IDE, glance
+    at it from your phone on the train, and let CI run the command-line version
+    against the exact same rules. Why does it stay consistent? Because dot-kiro
+    is checked into git, right next to the code.
   </aside>
 </section>
 
@@ -179,10 +181,11 @@
     └── mcp.json      # external tool connections</code></pre>
   <p class="muted">Commit it like any other source. Review changes like code.</p>
   <aside class="notes">
-    This is the whole surface area. Steering is markdown context. Hooks are JSON
-    automation. Specs are per-feature folders with three documents. And mcp.json
-    wires in external tools. Everything in here is reviewed in pull requests
-    because it changes how the agent behaves for the whole team.
+    This is the whole surface area, so get comfortable with it. Steering is
+    markdown, that's project context. Hooks are little JSON automations. Specs
+    are one folder per feature, three documents each. And mcp-dot-json wires in
+    outside tools. Everything in here goes through pull request review, because
+    it changes how the agent works for the whole team.
   </aside>
 </section>
 
@@ -198,10 +201,11 @@
     <tr><td>Quick Spec</td><td>Auto-generated spec</td><td>Small feature, trust the agent</td></tr>
   </table>
   <aside class="notes">
-    Vibe is the default agent — free conversation with your codebase, no
-    documents. Spec is the structured path. Plan, Bug Fix, and Quick Spec are
-    points in between. The rule of thumb: if someone will review it or ask why
-    later, use a spec. Otherwise vibe it.
+    Vibe mode is the default. You just talk to your codebase. No documents, no
+    ceremony. Spec is the structured route. Plan, Bug Fix and Quick Spec sit
+    somewhere between. Here's the rule I use. If someone's going to review it,
+    or ask why we built it this way later, it's a spec. Everything else? Vibe
+    it.
   </aside>
 </section>
 
@@ -219,10 +223,11 @@
   </div>
   <p class="quote">Stay Supervised until you've watched the agent do <em>this kind of task</em> right a few times — then graduate that one task type.</p>
   <aside class="notes">
-    This is a separate switch from the mode. Start Supervised on everything.
-    When you've seen the agent handle a specific kind of task cleanly several
-    times — say, adding a test file — move just that task type to Autopilot.
-    Don't flip everything at once.
+    This is a separate dial from the mode. Start with Supervised on
+    everything. You approve each change. Then, once you've watched the agent
+    nail one specific kind of task a few times, say adding a test file, move
+    that one task type to Autopilot. Just that one. Don't flip the whole thing
+    at once and hope.
   </aside>
 </section>
 
@@ -239,10 +244,11 @@
   </table>
   <p class="muted">Combine them in one message. You can paste images too.</p>
   <aside class="notes">
-    Kiro only knows what's in context. The hash menu is how you load it.
-    Combine freely: fix the failing test in hash-problems using the pattern from
-    hash-file colon this path. Answer quality tracks context quality almost
-    exactly, so be deliberate about what you pull in.
+    Kiro only knows what you put in front of it. The hash menu is how you hand
+    it things. Mix them freely. The failing test from hash-problems, plus the
+    pattern in one file, plus your uncommitted diff. The answer is only as good
+    as the context, so be picky about what you pull in. You can drop in a
+    screenshot too.
   </aside>
 </section>
 
@@ -257,9 +263,10 @@
     <tr><td><code>tasks.md</code></td><td>Discrete tasks with live status</td></tr>
   </table>
   <aside class="notes">
-    A spec replaces one long chat with three documents. You approve requirements
-    before design gets written, and design before tasks get executed. Each gate
-    is a checkpoint where fixing a misunderstanding is still cheap.
+    A spec swaps one endless chat for three short documents. You sign off on
+    the requirements before any design gets written. You sign off on the design
+    before any code runs. Each of those gates is a moment where fixing a
+    misunderstanding still costs you a sentence, not a weekend.
   </aside>
 </section>
 
@@ -272,9 +279,10 @@
   </ol>
   <p class="quote">A misunderstanding fixed in requirements.md costs a sentence. Fixed after 12 files, it costs an afternoon.</p>
   <aside class="notes">
-    The gates are the whole point. It's tempting to skim requirements and let it
-    run. Don't. Two minutes tightening acceptance criteria saves you a rewrite.
-    Design review is the second-cheapest place to redirect the work.
+    The gates are the entire point. It's really tempting to skim the
+    requirements and hit go. Don't. Two minutes tightening the acceptance
+    criteria will save you a rewrite. And the design review is your
+    second-cheapest chance to steer the whole thing somewhere better.
   </aside>
 </section>
 
@@ -290,9 +298,10 @@ WHEN a user submits checkout with an expired card
 THE SYSTEM SHALL reject the payment and show "Your card has expired"</code></pre>
   <p class="muted">Each line becomes a test.</p>
   <aside class="notes">
-    EARS is just a handful of sentence templates. The value is that every
-    criterion is unambiguous and directly testable. When you review
-    requirements, rewrite any vague line into one of these shapes.
+    EARS is just a handful of sentence shapes. When this happens, the system
+    shall do that. The point is that every line is unambiguous, and you can
+    turn it straight into a test. So when you're reviewing requirements, take
+    any woolly sentence and force it into one of these shapes.
   </aside>
 </section>
 
@@ -307,9 +316,10 @@ THE SYSTEM SHALL reject the payment and show "Your card has expired"</code></pre
   </ul>
   <p class="muted">Why a spec often finishes faster than the same tasks typed one-by-one.</p>
   <aside class="notes">
-    You don't set this up. Kiro works out which tasks are independent and runs
-    those together, then the next wave, and so on. It's a real speed advantage
-    over issuing instructions serially in chat.
+    You don't set any of this up. Kiro looks at the task list, works out which
+    ones don't depend on each other, and runs those together. Then the next
+    batch. Then the next. That parallelism is a real speed-up over typing tasks
+    one at a time into a chat.
   </aside>
 </section>
 
@@ -325,10 +335,11 @@ THE SYSTEM SHALL reject the payment and show "Your card has expired"</code></pre
   </table>
   <p class="muted">Generated by "Generate Steering Docs" · loaded on every interaction.</p>
   <aside class="notes">
-    Steering is how you stop re-explaining your project every conversation.
-    Generate the three foundation files, then hand-edit them until they're
-    actually true — the generator gives you a draft, not gospel. These three
-    load into every single interaction.
+    Steering is how you stop explaining your project from scratch every single
+    conversation. Generate the three foundation files, then, and this matters,
+    hand-edit them until they're actually true. What the generator gives you is
+    a rough draft. Those three files load into every interaction, so they need
+    to be right.
   </aside>
 </section>
 
@@ -350,10 +361,11 @@ name: api-design
 description: REST API patterns. Use when creating endpoints.
 ---</code></pre>
   <aside class="notes">
-    Front-matter at the top of a steering file controls when it loads. Always
-    for universal rules. fileMatch to scope guidance to an area of the codebase.
-    Manual when you want to pull it in by name. Auto when a description should
-    trigger it. Keep always-files small — they cost tokens every turn.
+    The front-matter at the top of a steering file decides when it loads.
+    Always, for the rules that apply everywhere. fileMatch to scope guidance to
+    one part of the codebase. Manual when you want to call it up by name. Auto
+    when a description should trigger it. And keep the always-files lean. They
+    cost you tokens on every single turn.
   </aside>
 </section>
 
@@ -366,10 +378,11 @@ description: REST API patterns. Use when creating endpoints.
     <li>One domain per file · explain the <em>why</em> · no secrets · review like code</li>
   </ul>
   <aside class="notes">
-    Point steering at real files so it can't drift from source. Kiro also reads
-    the cross-tool AGENTS.md standard. And remember custom agents don't inherit
-    steering automatically — you add it in their resources list. Treat every
-    steering change as a pull request.
+    Point steering at real files, so it can't quietly drift from the source.
+    Kiro also reads the cross-tool AGENTS.md standard, if you've got one. One
+    thing people trip on: custom agents don't inherit steering automatically.
+    You list it in their resources. And every steering change is a pull
+    request, same as code.
   </aside>
 </section>
 
@@ -385,9 +398,10 @@ description: REST API patterns. Use when creating endpoints.
     <tr><td>Task (IDE)</td><td><code>PreTaskExecution/PostTaskExecution</code></td></tr>
   </table>
   <aside class="notes">
-    Hooks fire on events during a session and activate automatically at session
-    start. The blocking ones — PreToolUse and PromptSubmit — are powerful but
-    introduce them last, once the team trusts the non-blocking ones.
+    A hook runs something when an event fires. A shell command, or a prompt
+    back to the agent. They live as JSON and switch on when your session
+    starts. The blocking ones, PreToolUse and PromptSubmit, are powerful. Save
+    those for last, once the team trusts the gentle ones.
   </aside>
 </section>
 
@@ -407,10 +421,10 @@ description: REST API patterns. Use when creating endpoints.
 }</code></pre>
   <p class="muted"><code>action.type</code>: <code>"command"</code> (shell) or <code>"agent"</code> (inject a prompt). File triggers fire on <em>agent</em> edits only.</p>
   <aside class="notes">
-    The matcher is a regex that narrows which events fire the hook. The action
-    is either a shell command or a prompt handed to the agent. The gotcha worth
-    repeating: file triggers respond to the agent's edits, not to you saving a
-    file yourself in the editor.
+    The matcher is a regex. It narrows down which events actually fire the
+    hook. The action is either a shell command, or a prompt you hand to the
+    agent. And the gotcha worth saying twice: file triggers respond to the
+    agent's edits, not to you saving a file yourself.
   </aside>
 </section>
 
@@ -424,9 +438,10 @@ description: REST API patterns. Use when creating endpoints.
   </ul>
   <p class="muted">Create in IDE: <strong>+</strong> in Agent Hooks → "Ask Kiro to create a hook" → describe it.</p>
   <aside class="notes">
-    Start with two low-risk hooks: format on save, and scaffold a test when a
-    new source file appears. You describe what you want in plain language and
-    Kiro writes the JSON. Then review that JSON in a pull request like any code.
+    Start with two, both low-risk. Format on save. And scaffold a test file
+    when a new source file shows up. You describe what you want in plain
+    English, Kiro writes the JSON, and then you review that JSON in a pull
+    request, just like any other code.
   </aside>
 </section>
 
@@ -442,10 +457,11 @@ description: REST API patterns. Use when creating endpoints.
   </table>
   <p class="muted">Local (stdio) &amp; remote (HTTP/SSE) — everywhere except Mobile.</p>
   <aside class="notes">
-    MCP is the plug for anything the model doesn't know natively — internal
-    wikis, ticketing, cloud APIs, docs search. Config lives at three levels. The
-    one we care about for the team is a committed workspace mcp.json so everyone
-    runs the same vetted servers.
+    MCP is the plug for anything the model doesn't know on its own. Your
+    internal wiki, your ticketing system, a cloud API, live docs search. The
+    config sits at three levels. The one that matters for a team is a committed
+    workspace file, so everybody's running the same servers you've actually
+    checked.
   </aside>
 </section>
 
@@ -463,9 +479,10 @@ description: REST API patterns. Use when creating endpoints.
 }</code></pre>
   <p class="muted"><code>disabled</code> toggles without deleting · <code>autoApprove</code> = read-only tools only · secrets via <code>env</code>, never committed.</p>
   <aside class="notes">
-    The AWS Documentation server is a great first one — the agent searches real
-    AWS docs instead of guessing from training data. Keep autoApprove to
-    read-only tools so anything that changes state still prompts you.
+    The AWS Documentation server is a great first one. Instead of guessing from
+    training data, the agent searches the real docs and comes back with a link.
+    Keep autoApprove to read-only tools only. Anything that changes state
+    should still stop and ask you first.
   </aside>
 </section>
 
@@ -478,10 +495,10 @@ description: REST API patterns. Use when creating endpoints.
     <li>Tool names: <code>^[a-zA-Z][a-zA-Z0-9_]*$</code>, &lt; 64 chars</li>
   </ul>
   <aside class="notes">
-    This is the one security slide for MCP. An MCP server is executable code
-    with visibility into your context. We vet every server before it goes in the
-    shared mcp.json, pin the version, and keep credentials in environment
-    variables that are never committed.
+    This is the security slide. An MCP server is code running on your machine,
+    and it can see whatever context the agent sends it. So we check every
+    server before it goes in the shared file. We pin the version. And
+    credentials live in environment variables that never get committed.
   </aside>
 </section>
 
@@ -498,10 +515,10 @@ description: REST API patterns. Use when creating endpoints.
   </table>
   <p class="muted">Built on the open <strong>Agent Plugins</strong> spec (Amazon, Cursor, Microsoft, OpenAI, Vercel).</p>
   <aside class="notes">
-    A Power is steering plus skills plus optional MCP, packaged so you install it
-    in one click. Because it's built on the vendor-neutral Agent Plugins
-    standard, the same Power works beyond Kiro. Think of it as expertise for a
-    framework, shipped by the people who built that framework.
+    A Power is steering, plus skills, plus maybe an MCP server. Bundled so you
+    install it in one click. It's built on a vendor-neutral standard, so the
+    same bundle works in Cursor or Copilot too. Think of it as expertise for a
+    framework, packaged by the people who actually built that framework.
   </aside>
 </section>
 
@@ -519,9 +536,10 @@ description: REST API patterns. Use when creating endpoints.
   </div>
   <p class="muted">Say "payment" → Stripe activates. Switch to DB work → Supabase loads instead.</p>
   <aside class="notes">
-    Connecting more servers doesn't automatically help — it can bury the agent
-    in context. Powers fix that by loading on demand. You never toggle them; the
-    task description decides which Power's knowledge comes into context.
+    Here's the thing. Connecting more servers doesn't automatically make the
+    agent smarter. Too much unstructured context actually buries it. Powers fix
+    that by loading on demand. You never toggle anything. What you're working
+    on decides which Power's knowledge shows up.
   </aside>
 </section>
 
@@ -534,10 +552,10 @@ description: REST API patterns. Use when creating endpoints.
   </ul>
   <p class="muted">Launch partners: Datadog · Dynatrace · Figma · Neon · Netlify · Postman · Supabase · Stripe · AWS Aurora</p>
   <aside class="notes">
-    Each partner Power is built by the company behind the tool — Figma's own
-    design-to-code guidance, Supabase's own Row Level Security patterns. You can
-    also package your team's conventions plus internal MCP as a private Power
-    once your steering has stabilised.
+    Each partner Power is built by the company behind the tool. Figma's own
+    design-to-code guidance. Supabase's own security patterns. And once your
+    steering has settled down, you can wrap your team's own conventions and
+    your internal MCP server into a private Power of your own.
   </aside>
 </section>
 
@@ -550,10 +568,10 @@ description: REST API patterns. Use when creating endpoints.
     <tr><td>Powers</td><td>Installable, context-aware — tools + knowledge + guidance</td></tr>
   </table>
   <aside class="notes">
-    Quick disambiguation. Steering is yours, hand-written, Kiro-only. A Skill is
-    a portable instruction bundle. A Power wraps skills and MCP and steering
-    together into something installable that loads intelligently. Powers are the
-    distribution format.
+    Quick untangle. Steering is yours. Hand-written, Kiro only. A skill is a
+    portable bundle of instructions. A Power wraps skills and MCP and steering
+    together into one installable thing that loads itself when it's relevant.
+    Powers are the distribution format.
   </aside>
 </section>
 
@@ -567,10 +585,11 @@ description: REST API patterns. Use when creating endpoints.
     <li>Polyglot steering: tiny <code>always</code> set + per-language <code>fileMatch</code> files (<code>code-style-ts.md</code>, <code>-python.md</code>, <code>infra-aws.md</code>)</li>
   </ul>
   <aside class="notes">
-    We're a small team, so there's no subset-first phase — everyone starts on one
-    real repo. The first deliverable is foundation steering that's actually
-    accurate. Because we ship in several languages, split the style rules into
-    fileMatch files so each only loads when you touch that language.
+    We're small, so there's no try-it-with-a-couple-of-people-first phase.
+    Everyone starts, on one real repo. First thing you ship is foundation
+    steering that's genuinely accurate. And since we work in a few languages,
+    split the style rules into fileMatch files, so each one only loads when
+    you're in that language.
   </aside>
 </section>
 
@@ -583,10 +602,10 @@ description: REST API patterns. Use when creating endpoints.
     <li>Cost: short <code>always</code> steering, lean on compaction, Supervised by default</li>
   </ul>
   <aside class="notes">
-    Every ticket gets its own spec folder, named after the ticket id, committed
-    with the code so the reasoning travels with the change. On cost: a wrong
-    Autopilot run burns the whole run plus your review time, so we stay
-    Supervised until a task type is boringly reliable.
+    Every ticket gets its own spec folder, named after the ticket, committed
+    alongside the code. So the reasoning travels with the change. On cost: an
+    Autopilot run that goes wrong burns the whole run plus your review time. So
+    we stay Supervised until a task type is genuinely boring.
   </aside>
 </section>
 
@@ -600,10 +619,10 @@ description: REST API patterns. Use when creating endpoints.
     <li>Start with AWS Docs MCP + AWS Aurora Power</li>
   </ul>
   <aside class="notes">
-    Because some of our code is sensitive, kiroignore and Permissions go in from
-    day one, and we never auto-approve a tool that writes or calls out. The Web
-    and Mobile surfaces send context off the machine, so sensitive work stays in
-    the IDE. AWS Docs MCP and the Aurora Power are the shared starting point.
+    Some of our code is sensitive. So kiroignore and Permissions go in on day
+    one, and we never auto-approve a tool that writes or calls out. The Web and
+    Mobile surfaces send context off your machine, so sensitive work stays in
+    the IDE. AWS docs and the Aurora Power are where we start.
   </aside>
 </section>
 
@@ -620,9 +639,9 @@ description: REST API patterns. Use when creating endpoints.
     <tr><td>2-week retro: keep / adjust / stop</td><td>Notes shared</td></tr>
   </table>
   <aside class="notes">
-    Seven checkpoints. The last one is a real decision point — after two weeks we
-    look at the retro and decide whether to keep going, adjust, or stop. This is
-    a scoped experiment, not a mandate to adopt everything.
+    Seven checkpoints. Look at the last one. After two weeks we sit down with
+    the retro and decide. Keep going, adjust, or stop. This is a scoped
+    experiment with an exit, not a company-wide mandate to adopt everything.
   </aside>
 </section>
 
@@ -639,8 +658,9 @@ description: REST API patterns. Use when creating endpoints.
     <tr><td>Undo a bad run</td><td>Rewind to checkpoint</td></tr>
   </table>
   <aside class="notes">
-    Screenshot this one. It maps the common intentions to the mechanism. The
-    full version with context providers and kiroignore is in the course page.
+    Screenshot this one. It's just "I want to do X" mapped to "so reach for Y".
+    The fuller version, with the context providers and kiroignore, is in the
+    course page you can read at your own pace.
   </aside>
 </section>
 
@@ -650,10 +670,10 @@ description: REST API patterns. Use when creating endpoints.
   <p class="muted">Course + slides · internal · sourced from kiro.dev/docs</p>
   <p><span class="pill">course-en.html</span><span class="pill">course-th.html</span></p>
   <aside class="notes">
-    That's the tour. The self-paced course goes deeper on every module with
-    copy-paste config and a "try it" task each. Next step: everyone installs the
-    IDE and generates steering on a real repo before our next session. What
-    questions do you have?
+    That's the whole tour. The self-paced course goes deeper on every module,
+    with config you can copy straight out and a little lab each. One ask before
+    next time: install the IDE and run Generate Steering Docs on a real repo.
+    Now, what's on your mind?
   </aside>
 </section>
 

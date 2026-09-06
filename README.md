@@ -34,8 +34,11 @@ connection the first time; the course pages and landing work fully offline.
 
 - Open a deck and press **F** for fullscreen, **S** for speaker view (shows the notes), **Esc** for the slide overview.
 - Canvas is 1280×800 — projector-safe.
-- **Narration is built in.** Each deck has a bottom-right audio bar: per-slide voice-over (`audio/{en,th}/sNN.mp3`), an auto-advance toggle (slide advances when the clip ends unless you paused), plus optional captions and a transcript drawer. Audio was generated with edge-tts; re-run `generate-edge-tts.py slides/training-en.html` after editing speaker notes.
-- Audio files (~9 min per language) live in `audio/` and are committed.
+- **Narration is built in.** Each deck has a bottom-right audio bar: per-slide voice-over (`audio/{en,th}/sNN.mp3`), an auto-advance toggle (slide advances when the clip ends unless you paused), plus optional captions and a transcript drawer.
+- Speaker notes are written in a **spoken, conversational register** (see `narrating-course-slides/references/SPEAKER-NOTES-STYLE.md`) — short sentences, contractions/particles, direct address, breath-beat periods.
+- Audio is generated with **Gemini Flash TTS** (`generate-gemini-tts.py`), with a per-module delivery-style prompt and F/M voice rotation. `export GEMINI_API_KEY="$(cat ~/.config/gemini-key)"` then `python3 generate-gemini-tts.py slides/training-en.html`. `TTS_SLIDES="3 4 5" python3 …` regenerates just those slides.
+- `generate-edge-tts.py` is the free/offline fallback (edge-tts) — lower naturalness, no style prompts.
+- Audio (~12 min per language) lives in `audio/` and is committed.
 
 ## Deploy to GitHub Pages
 
