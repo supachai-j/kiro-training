@@ -200,10 +200,14 @@ flowchart TB
     <p><code>requirements.md → design.md → tasks.md</code> ของ Kiro คือ artifact trail ที่ Inception และ Construction สมมติไว้พอดี; ไฟล์ steering พก context ถาวรที่ loop นี้พึ่งพา Kiro CLI รัน <code>aidlc-workflows</code> ของ AWS ได้ตรง ๆ ดังนั้นบทที่ 3 และ 4 ของคอร์สนี้ — Specs และ Steering — คือเฟส Inception และ Construction ของ AI-DLC ที่ทำให้เป็นรูปธรรม</p>
 
     <h2>ตัวเลขที่ทุกคนชอบอ้าง</h2>
-    <p>งานพูดของ AWS อ้างถึงการ re-architecture บริการ Amazon Bedrock ภายในซ้ำ ๆ: เดิมประเมินไว้ราว 18 เดือนสำหรับนักพัฒนาราว 30 คน แต่ทีม 6 คนส่งมอบได้ในราว 76 วันด้วย AI-DLC กับ Amazon Q CLI — ราว 100,000 บรรทัดของ production Rust, 40+ commit ต่อสัปดาห์ต่อคน เลือก Rust ส่วนหนึ่งเพราะ error จาก compiler ที่แม่นยำช่วยให้ AI วินิจฉัยและแก้ความผิดพลาดของตัวเองได้</p>
+    <ul>
+      <li><strong>Amazon Bedrock — "Mantle"</strong> การ re-architecture inference engine ประเมินไว้ ~40 คน หนึ่งปี; ทีม 6 คนส่งได้ใน ~76 วันด้วย Kiro — ราว 100,000 บรรทัดของ production Rust, 40+ commit ต่อสัปดาห์ต่อคน เลือก Rust ส่วนหนึ่งเพราะ error จาก compiler ที่แม่นยำช่วยให้ AI แก้ความผิดพลาดของตัวเองได้</li>
+      <li><strong>Wipro</strong> ที่ re:Invent 2025 (DVT214) AWS เล่าว่าย่นงานที่วางแผนไว้ ~3 เดือน เหลือ ~20 ชั่วโมง — mob session วันละ 4 ชั่วโมง 5 วัน</li>
+      <li><strong>สถาบันการเงินในยุโรปแห่งหนึ่ง</strong> จาก 1 product owner + 12 devs ส่ง 15 features ต่อ sprint กลายเป็น 1 product owner + 3 devs ส่ง 35 features ต่อ sprint — ตัด contractor ภายนอก 9 FTE</li>
+    </ul>
     <div class="callout warn">
       <span class="label">อ่านอย่างมีวิจารณญาณ</span>
-      ตัวเลขเหล่านี้มาจากงานนำเสนอของ vendor ไม่ใช่ benchmark ที่ตรวจสอบโดยอิสระ — ให้มองเป็นสัญญาณเชิงทิศทาง ไม่ใช่หลักฐาน บทเรียนที่นำไปใช้ได้คือรูปทรง: ทีมเล็ก, loop ที่แน่นมาก และภาษาที่ feedback ของมัน AI เอาไปทำต่อได้
+      ทั้งหมดนี้เป็นตัวเลขของ AWS จากงานที่ AWS ช่วยรัน และยังไม่มีใครเผยแพร่เคสที่ล้มเหลว baseline อิสระที่ใกล้ที่สุด: การรับ AI-assistant แบบไม่มีโครงสร้างได้ราว 10–15% ไม่ใช่ 10–15 เท่า มองตัวเลขเป็นทิศทาง — บทเรียนที่นำไปใช้ได้คือ <em>รูปทรง</em>: ทีมเล็ก, loop ที่แน่นมาก และภาษาที่ feedback ของมัน AI เอาไปทำต่อได้
     </div>
 
     <h2>ในทางปฏิบัติ — ฟีเจอร์เล็ก ๆ หนึ่งอันผ่าน loop</h2>
@@ -601,6 +605,22 @@ THE SYSTEM SHALL apply the key's plan limit instead of the default.</code></pre>
       <p><strong>เฟส Design</strong> Kiro เสนอ token-bucket ใน Redis, middleware ก่อน routing, และ fallback แบบ "fail open" ถ้า Redis ติดต่อไม่ได้ คุณเปลี่ยนอย่างเดียว — ให้ fail <em>closed</em> สำหรับ route จ่ายเงิน — แล้วอนุมัติ</p>
       <p><strong>เฟส Tasks</strong> <code>tasks.md</code> ออกมาเป็น: (1) Redis client + config, (2) โมดูล token-bucket + unit test, (3) middleware, (4) wire เข้า router, (5) integration test, (6) metric ใน dashboard Waves: 1 กับ 2 รันด้วยกัน; 3 รอ 2; 4 รอ 3; 5 กับ 6 รันด้วยกันตอนจบ</p>
       <p>PR มีทั้งโค้ด <em>และ</em> <code>.kiro/specs/PROJ-812-rate-limiting/</code> ผู้รีวิวจึงเห็นว่าทำไมเลือก "fail closed สำหรับจ่ายเงิน" โดยไม่ต้องถาม</p>
+    </div>
+
+    <h2>ในทางปฏิบัติ — แอปเล็ก ๆ ทั้งแอป ทีละด่าน</h2>
+    <div class="example">
+      <span class="label">walkthrough ของ AWS เอง: แอปเว็บเกม "river crossing" ด้วย Amazon Q + AI-DLC</span>
+      <p>คุณพิมพ์บรรทัดเดียว: <code>Using AI-DLC let's build a web application to solve the river crossing puzzle.</code> จากนั้นทุกขั้นคือด่านที่คุณผ่านด้วย <code>Continue</code> หรือ <code>Done</code>:</p>
+      <ol>
+        <li><strong>Workspace Detection</strong> — ไม่มีโค้ดเดิม เป็น greenfield จึง <em>ข้าม Reverse Engineering</em> สร้าง <code>aidlc-docs/</code> ที่มี <code>aidlc-state.md</code> และ <code>audit.md</code></li>
+        <li><strong>Requirements Analysis</strong> — เขียน <code>requirement-verification-questions.md</code>: เกมแบบไหน (Classic farmer / fox / chicken / grain หรืออื่น)? มีคะแนน? มี leaderboard? รูปแบบการโต้ตอบ? คุณตอบในไฟล์ พิมพ์ <code>Done</code> มันเช็คความขัดแย้ง แล้วสร้าง <code>requirements.md</code></li>
+        <li>เพราะเป็นหน้า frontend อย่างเดียว มัน <strong>แนะนำให้ข้าม User Stories</strong> — คุณพิมพ์ <code>Continue</code></li>
+        <li><strong>Workflow Planning</strong> — <code>execution-plan.md</code> ข้าม Application Design และ Units-of-Work planning ตรงไป Code Generation Planning</li>
+        <li><strong>Code Generation Planning</strong> — checklist 8 ขั้นในไฟล์ <code>&lt;unit&gt;-code-generation-plan.md</code>: โครงสร้าง HTML → styling → game logic → docs</li>
+        <li><strong>Code Generation</strong> — รันตามแผน ติ๊กช่อง แล้วสร้าง <code>index.html</code> อันเดียวที่มี CSS และ JS ฝังอยู่</li>
+        <li><strong>Build &amp; Test</strong> — เอกสารคำสั่ง build และ test (unit / integration / UI) พร้อมสรุป "พร้อมรัน"</li>
+      </ol>
+      <p><strong>ประเด็น:</strong> คุณไม่เคยเขียน spec — คุณตอบการสัมภาษณ์ที่มีโครงสร้างและอนุมัติแผน และ workflow แบบ adaptive ข้าม stage ไปราวครึ่งเพราะงานง่าย ถ้าเป็นการย้ายแพลตฟอร์มก็จะรันครบทุกอัน</p>
     </div>
 
     <div class="lab">
@@ -1101,6 +1121,14 @@ HTTP endpoint"]
       <tr><td><strong>Skills</strong></td><td>แพ็กเกจคำสั่งแบบ standalone</td></tr>
       <tr><td><strong>Powers</strong></td><td>แพ็กเกจที่ติดตั้งได้และรู้บริบท รวม tool + ความรู้ + คำแนะนำ</td></tr>
     </table>
+
+    <h2>core เดียว หลาย harness</h2>
+    <p>คำว่า "ย้ายข้ามเจ้าได้" ไม่ใช่การตลาด — AI-DLC โอเพนซอร์สของ AWS ส่งมาจาก <strong>core ที่ไม่ผูก harness</strong> อันเดียว และรันได้เองใน <strong>Claude Code, Kiro IDE, Kiro CLI, Codex CLI, Cursor, opencode และ GitHub Copilot</strong> ส่วนที่กำหนดผลได้แน่นอน — stage protocol, agent roster, state machine และ audit log — เหมือนกันทุกที่แบบ byte ต่อ byte ต่างแค่ shell บาง ๆ ต่อเครื่องมือ</p>
+    <table>
+      <tr><th>สิ่งที่เหมือนกัน</th><th>สิ่งที่ต่างต่อเครื่องมือ</th></tr>
+      <tr><td>เนื้อหาของ rule / steering และ workflow artifacts ใน <code>aidlc-docs/</code> (requirements, design, plans, state)</td><td>ที่อยู่ของ rules file: <code>.kiro/steering/</code>, <code>.cursor/rules/</code>, <code>.amazonq/rules/</code>, <code>.github/copilot-instructions.md</code>, <code>CLAUDE.md</code> บวก hooks / permissions / sub-agent adapter ของ host นั้น</td></tr>
+    </table>
+    <p>ผลในทางปฏิบัติ: เพื่อนร่วมทีมใช้เครื่องมือคนละตัวบนโปรเจกต์เดียวกันได้ Dev A ใน Cursor, Dev B ใน Claude Code, Dev C ใน Amazon Q — ทุกคนอ่านและเขียน <code>aidlc-docs/aidlc-state.md</code> เดียวกัน และ bolt ที่เริ่มใน IDE หนึ่งทำต่อในอีก IDE ได้ Power ส่วนตัวที่คุณแพ็กให้ทีมก็เดินทางแบบเดียวกัน</p>
 
     <h2>intelligent loading ตัดสินใจยังไง</h2>
     <figure class="diagram">

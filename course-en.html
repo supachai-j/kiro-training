@@ -199,11 +199,15 @@ flowchart TB
     </ul>
     <p>Kiro's <code>requirements.md → design.md → tasks.md</code> is exactly the artifact trail Inception and Construction assume; steering files carry the persistent context the loop depends on. The Kiro CLI can run AWS's <code>aidlc-workflows</code> directly. So Modules 3 and 4 of this course — Specs and Steering — are the Inception and Construction phases of AI-DLC, made concrete.</p>
 
-    <h2>The number everyone quotes</h2>
-    <p>AWS talks repeatedly cite an internal re-architecture of an Amazon Bedrock service: originally scoped at roughly 18 months for about 30 developers, it was delivered by 6 engineers in about 76 days using AI-DLC with the Amazon Q CLI — on the order of 100,000 lines of production Rust, 40+ commits per week per developer. Rust was chosen partly because its precise compiler errors let the AI diagnose and fix its own mistakes.</p>
+    <h2>The numbers everyone quotes</h2>
+    <ul>
+      <li><strong>Amazon Bedrock — "Mantle".</strong> Re-architecting the inference engine was scoped at ~40 engineers for a year; 6 engineers shipped it in ~76 days with Kiro — roughly 100,000 lines of production Rust, 40+ commits per week per developer. Rust partly because its precise compiler errors let the AI fix its own mistakes.</li>
+      <li><strong>Wipro.</strong> At re:Invent 2025 (DVT214), AWS described compressing ~3 months of planned work into ~20 hours — five days of four-hour mob sessions.</li>
+      <li><strong>A European financial-services institution.</strong> Went from 1 product owner + 12 developers delivering 15 features per sprint, to 1 product owner + 3 developers delivering 35 per sprint — 9 external contractor FTEs off the books.</li>
+    </ul>
     <div class="callout warn">
       <span class="label">Read this critically</span>
-      Those figures come from vendor presentations, not an independently audited benchmark — treat them as a directional signal, not proof. The transferable lesson is the shape: a small team, a very tight loop, and a language whose feedback the AI can act on.
+      All of these are AWS's figures, from engagements AWS helped run, and nobody has published the failure cases. The nearest independent baseline: unstructured AI-assistant adoption buys roughly 10–15%, not 10–15×. Treat the numbers as directional — the transferable lesson is the <em>shape</em>: a small team, a very tight loop, and a language whose feedback the AI can act on.
     </div>
 
     <h2>In practice — one small feature through the loop</h2>
@@ -603,6 +607,22 @@ THE SYSTEM SHALL apply the key's plan limit instead of the default.</code></pre>
       <p><strong>Design phase.</strong> Kiro proposes a token-bucket in Redis, a middleware ahead of routing, and a fallback to "fail open" if Redis is unreachable. You change one thing — fail <em>closed</em> for the payments routes — and approve.</p>
       <p><strong>Tasks phase.</strong> <code>tasks.md</code> comes out as: (1) Redis client + config, (2) token-bucket module + unit tests, (3) middleware, (4) wire into router, (5) integration tests, (6) dashboard metric. Waves: 1 and 2 run together; 3 waits on 2; 4 waits on 3; 5 and 6 run together at the end.</p>
       <p>The PR contains the code <em>and</em> <code>.kiro/specs/PROJ-812-rate-limiting/</code>, so the reviewer sees why "fail closed for payments" was chosen without asking.</p>
+    </div>
+
+    <h2>In practice — a whole small app, gate by gate</h2>
+    <div class="example">
+      <span class="label">AWS's own walkthrough: a "river crossing" puzzle web app with Amazon Q + AI-DLC</span>
+      <p>You type one line: <code>Using AI-DLC let's build a web application to solve the river crossing puzzle.</code> Then every step is a gate you clear with <code>Continue</code> or <code>Done</code>:</p>
+      <ol>
+        <li><strong>Workspace Detection</strong> — no existing code, so it's greenfield; <em>Reverse Engineering is skipped</em>. It creates <code>aidlc-docs/</code> with <code>aidlc-state.md</code> and <code>audit.md</code>.</li>
+        <li><strong>Requirements Analysis</strong> — writes <code>requirement-verification-questions.md</code>: which puzzle variant (Classic farmer / fox / chicken / grain, or other)? scoring? a leaderboard? interaction style? You answer inline, type <code>Done</code>, it checks for contradictions, then produces <code>requirements.md</code>.</li>
+        <li>Because it's a frontend-only page, it <strong>recommends skipping User Stories</strong> — you type <code>Continue</code>.</li>
+        <li><strong>Workflow Planning</strong> — <code>execution-plan.md</code> skips Application Design and Units-of-Work planning and jumps to Code Generation Planning.</li>
+        <li><strong>Code Generation Planning</strong> — an 8-step numbered checklist in <code>&lt;unit&gt;-code-generation-plan.md</code>: HTML structure → styling → game logic → docs.</li>
+        <li><strong>Code Generation</strong> — runs the plan, ticking boxes, and produces one <code>index.html</code> with embedded CSS and JS.</li>
+        <li><strong>Build &amp; Test</strong> — a build-and-test instructions doc (unit / integration / UI checks) and a "ready to run" summary.</li>
+      </ol>
+      <p><strong>The point:</strong> you never wrote a spec — you answered a structured interview and approved plans. And the adaptive workflow skipped roughly half its stages because the task was simple; a platform migration would have run them all.</p>
     </div>
 
     <div class="lab">
@@ -1104,6 +1124,14 @@ HTTP endpoint"]
       <tr><td><strong>Skills</strong></td><td>Standalone instruction packages</td></tr>
       <tr><td><strong>Powers</strong></td><td>Installable, context-aware packages that combine tools + knowledge + guidance</td></tr>
     </table>
+
+    <h2>One core, many harnesses</h2>
+    <p>The "portable across vendors" claim isn't marketing — AWS's open-source AI-DLC ships from a single <strong>harness-neutral core</strong> and runs natively in <strong>Claude Code, Kiro IDE, Kiro CLI, Codex CLI, Cursor, opencode, and GitHub Copilot</strong>. The deterministic parts — the stage protocol, the agent roster, the state machine and audit log — are byte-identical everywhere; only a thin shell per tool differs.</p>
+    <table>
+      <tr><th>What's identical</th><th>What differs per tool</th></tr>
+      <tr><td>The rule / steering content. The workflow artifacts in <code>aidlc-docs/</code> (requirements, design, plans, state).</td><td>Where the rules file lives: <code>.kiro/steering/</code>, <code>.cursor/rules/</code>, <code>.amazonq/rules/</code>, <code>.github/copilot-instructions.md</code>, <code>CLAUDE.md</code>. Plus the hooks / permissions / sub-agent adapter for that host.</td></tr>
+    </table>
+    <p>Practical upshot: teammates can be on different tools on the same project. Dev A in Cursor, Dev B in Claude Code, Dev C in Amazon Q — they all read and write the same <code>aidlc-docs/aidlc-state.md</code>, and a bolt started in one IDE resumes in another. A private Power you package for your team travels the same way.</p>
 
     <h2>How intelligent loading decides</h2>
     <figure class="diagram">
