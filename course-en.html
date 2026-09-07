@@ -132,6 +132,57 @@ Deploy + monitor"]
     </figure>
     <p>Each phase writes context that makes the next phase's AI suggestions sharper.</p>
 
+    <h2>End to end — one unit of work, stage by stage</h2>
+    <p>The loop above is one turn of the crank. This is the whole path a single <em>unit of work</em> takes — from "we want X" to "X is running in production" — with every gate named. The methodology talks in three phases; the open-source engine formalises the same shape into roughly 33 stages. Either way the spine is the same:</p>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  A["Feature intent
+one unit of work"] --> B["Workspace detection
+greenfield or brownfield"]
+  B --> C["Requirements analysis
+AI asks - you answer - requirements.md"]
+  C --> G1{"requirements
+edited and approved"}
+  G1 --> D["Design, units of work, NFR
+name the services, data, identity assumed"]
+  D --> G2{"human-reviewed
+acceptance tests exist"}
+  G2 --> E["Code-generation plan
+numbered steps per unit"]
+  E --> F["The bolt
+code + tests + IaC"]
+  F --> G3{"named approver signs off
+vs frozen tests and steering"}
+  G3 --> H["Build, test, integrate
+one change ticket"]
+  H --> I["Deployment orchestration"]
+  I --> G4{"prod change
+approved"}
+  G4 --> J["Runtime monitor
+anomalies - defect-escape rate"]
+  J -->|"next unit or fix"| A
+</pre>
+      <figcaption>One unit of work, entry to production. Diamonds are gates — you don't proceed until the condition holds.</figcaption>
+    </figure>
+    <table>
+      <tr><th>Phase</th><th>Stage</th><th>AI produces</th><th>You do</th><th>Gate to pass</th></tr>
+      <tr><td rowspan="4"><strong>Inception</strong></td><td>Workspace detection</td><td>Greenfield / brownfield call; creates <code>aidlc-docs/</code> (state + audit log)</td><td>Point it at the repo, or an empty dir for greenfield</td><td>—</td></tr>
+      <tr><td>Requirements analysis</td><td><code>requirement-verification-questions.md</code>, then <code>requirements.md</code></td><td>Answer inline, type <code>Done</code>, edit the result</td><td>Requirements you actually reviewed and approved</td></tr>
+      <tr><td>User stories <em>(often skipped)</em></td><td>Stories + acceptance criteria</td><td>Trim, or skip with <code>Continue</code></td><td>—</td></tr>
+      <tr><td>Design · units of work · NFR</td><td>Architecture, <code>design.md</code>, unit breakdown, NFR assessment then NFR design</td><td>Review which services, data and permissions the plan assumes; <strong>write the acceptance tests</strong></td><td>Human-reviewed acceptance tests exist — Inception is done</td></tr>
+      <tr><td rowspan="3"><strong>Construction</strong></td><td>Code-generation planning</td><td>Numbered step checklist per unit (<code>&lt;unit&gt;-code-generation-plan.md</code>)</td><td>Read and approve the plan</td><td>Plan approved</td></tr>
+      <tr><td>The bolt — code generation</td><td>Code, tests, IaC, CI config for one unit — hours, not weeks</td><td>Review at checkpoints against the frozen tests and the steering files</td><td>Named approver signs off — <em>not</em> whoever prompted it</td></tr>
+      <tr><td>Build and test</td><td>Build / test instructions, integration, "ready to run" summary</td><td>Run it, confirm acceptance tests green, open one change ticket</td><td>Tests green, through the existing change process</td></tr>
+      <tr><td rowspan="2"><strong>Operations</strong></td><td>Deployment orchestration</td><td>Deploy config, rollout, rollback path</td><td>Approve the production change</td><td>Prod approval — machine-authored vs human-approved recorded</td></tr>
+      <tr><td>Runtime monitoring</td><td>Anomaly detection, alerts</td><td>Triage, escalate incidents; watch defect-escape rate next to cycle time</td><td>—</td></tr>
+    </table>
+    <p><strong>Where the rest of this course sits on that spine:</strong> Module 2 (vibe mode) is the quick path that <em>skips</em> Inception — fine for a throwaway, a liability for anything the team keeps. Module 3 is the spec mechanics of Inception into Construction. Module 4 (steering) is the policy every stage reads. Modules 5–7 are Construction-time tooling. Module 8 wraps the whole loop in the governance the gates above assume.</p>
+    <div class="callout tip">
+      <span class="label">The list is a maximum, not a mandate</span>
+      The adaptive engine skips stages it judges unnecessary — in Module 3's walkthrough it skipped roughly half because the task was simple. A platform migration would run them all. Depth is a dial (Minimal / Standard / Comprehensive), set per unit of work.
+    </div>
+
     <h2>New vocabulary</h2>
     <table>
       <tr><th>Agile term</th><th>AI-DLC term</th><th>What changed</th></tr>

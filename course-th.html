@@ -132,6 +132,57 @@ deploy + monitor"]
     </figure>
     <p>แต่ละเฟสเขียน context ที่ทำให้ข้อเสนอของ AI ในเฟสถัดไปคมขึ้น</p>
 
+    <h2>end to end — หนึ่ง unit of work ทีละ stage</h2>
+    <p>loop ข้างบนคือการหมุนหนึ่งรอบ ส่วนนี้คือเส้นทางทั้งหมดที่ <em>unit of work</em> หนึ่งอันเดินผ่าน — จาก "เราอยากได้ X" ถึง "X รันอยู่บน production" — พร้อมชื่อทุกด่าน methodology พูดเป็นสามเฟส ส่วน engine โอเพนซอร์สจัดรูปเดียวกันนี้เป็นราว 33 stage แต่กระดูกสันหลังเหมือนกัน:</p>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  A["feature intent
+หนึ่ง unit of work"] --> B["workspace detection
+greenfield หรือ brownfield"]
+  B --> C["requirements analysis
+AI ถาม - คุณตอบ - requirements.md"]
+  C --> G1{"requirements
+แก้และอนุมัติแล้ว"}
+  G1 --> D["design, units of work, NFR
+ระบุ service, data, identity ที่ plan สมมติ"]
+  D --> G2{"acceptance tests
+ที่คนรีวิวแล้วมีอยู่"}
+  G2 --> E["code-generation plan
+ขั้นตอนมีเลขต่อ unit"]
+  E --> F["the bolt
+โค้ด + test + IaC"]
+  F --> G3{"named approver เซ็น
+เทียบ test ที่ตรึงและ steering"}
+  G3 --> H["build, test, integrate
+หนึ่ง change ticket"]
+  H --> I["deployment orchestration"]
+  I --> G4{"prod change
+อนุมัติแล้ว"}
+  G4 --> J["runtime monitor
+anomaly - defect-escape rate"]
+  J -->|"unit ถัดไป หรือ แก้"| A
+</pre>
+      <figcaption>หนึ่ง unit of work ตั้งแต่เข้าจนถึง production ข้าวหลามตัดคือด่าน — ไม่ผ่านจนกว่าเงื่อนไขจะเป็นจริง</figcaption>
+    </figure>
+    <table>
+      <tr><th>เฟส</th><th>stage</th><th>AI ผลิต</th><th>คุณทำ</th><th>ด่านที่ต้องผ่าน</th></tr>
+      <tr><td rowspan="4"><strong>Inception</strong></td><td>workspace detection</td><td>ตัดสิน greenfield / brownfield; สร้าง <code>aidlc-docs/</code> (state + audit log)</td><td>ชี้ไปที่ repo หรือ dir ว่างสำหรับ greenfield</td><td>—</td></tr>
+      <tr><td>requirements analysis</td><td><code>requirement-verification-questions.md</code> แล้วตามด้วย <code>requirements.md</code></td><td>ตอบในไฟล์ พิมพ์ <code>Done</code> แล้วแก้ผลลัพธ์</td><td>requirements ที่คุณรีวิวและอนุมัติจริง</td></tr>
+      <tr><td>user stories <em>(มักข้าม)</em></td><td>story + acceptance criteria</td><td>ตัด หรือข้ามด้วย <code>Continue</code></td><td>—</td></tr>
+      <tr><td>design · units of work · NFR</td><td>สถาปัตยกรรม, <code>design.md</code>, การแบ่ง unit, NFR assessment แล้วตามด้วย NFR design</td><td>รีวิวว่า plan สมมติ service, data, permission อะไร; <strong>เขียน acceptance tests</strong></td><td>acceptance tests ที่คนรีวิวแล้วมีอยู่ — Inception จบ</td></tr>
+      <tr><td rowspan="3"><strong>Construction</strong></td><td>code-generation planning</td><td>checklist ขั้นตอนมีเลขต่อ unit (<code>&lt;unit&gt;-code-generation-plan.md</code>)</td><td>อ่านและอนุมัติ plan</td><td>plan อนุมัติแล้ว</td></tr>
+      <tr><td>the bolt — code generation</td><td>โค้ด, test, IaC, CI config ต่อหนึ่ง unit — ชั่วโมง ไม่ใช่สัปดาห์</td><td>รีวิวที่ checkpoint เทียบ test ที่ตรึงและ steering files</td><td>named approver เซ็น — <em>ไม่ใช่</em> คนที่สั่ง</td></tr>
+      <tr><td>build and test</td><td>คำสั่ง build / test, integration, สรุป "พร้อมรัน"</td><td>รัน ยืนยัน acceptance tests เขียว เปิดหนึ่ง change ticket</td><td>test เขียว ผ่าน change process เดิม</td></tr>
+      <tr><td rowspan="2"><strong>Operations</strong></td><td>deployment orchestration</td><td>deploy config, rollout, เส้นทาง rollback</td><td>อนุมัติ production change</td><td>prod อนุมัติ — บันทึก "เครื่องเขียน vs คนอนุมัติ"</td></tr>
+      <tr><td>runtime monitoring</td><td>anomaly detection, alert</td><td>triage, escalate incident; ดู defect-escape rate คู่กับ cycle time</td><td>—</td></tr>
+    </table>
+    <p><strong>ส่วนอื่นของคอร์สอยู่ตรงไหนบนกระดูกสันหลังนี้:</strong> บทที่ 2 (vibe mode) คือทางลัดที่ <em>ข้าม</em> Inception — โอเคสำหรับของทิ้ง แต่เป็นภาระสำหรับอะไรที่ทีมเก็บไว้ บทที่ 3 คือกลไก spec ของ Inception ไปสู่ Construction บทที่ 4 (steering) คือ policy ที่ทุก stage อ่าน บทที่ 5–7 คือเครื่องมือช่วง Construction บทที่ 8 ห่อทั้ง loop ด้วย governance ที่ด่านข้างบนสมมติว่ามี</p>
+    <div class="callout tip">
+      <span class="label">ลิสต์นี้คือเพดาน ไม่ใช่ข้อบังคับ</span>
+      engine แบบ adaptive ข้าม stage ที่มันเห็นว่าไม่จำเป็น — ใน walkthrough ของบทที่ 3 มันข้ามไปราวครึ่งเพราะงานง่าย การย้ายแพลตฟอร์มจะรันครบทุกอัน ความลึกเป็นปุ่มหมุน (Minimal / Standard / Comprehensive) ตั้งต่อ unit of work
+    </div>
+
     <h2>คำศัพท์ใหม่</h2>
     <table>
       <tr><th>คำแบบ Agile</th><th>คำแบบ AI-DLC</th><th>อะไรเปลี่ยน</th></tr>
