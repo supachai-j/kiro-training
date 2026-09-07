@@ -261,6 +261,91 @@ figure.diagram figcaption {
 }
 .lab .check strong { color: var(--ok); }
 
+/* ---------- progress tracking ---------- */
+.btn-sm { padding: .28rem .6rem; font-size: .78rem; }
+
+.pbar {
+  height: 8px; border-radius: 999px; background: var(--border);
+  overflow: hidden; margin-top: .5rem;
+}
+.pbar > span {
+  display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2, #2563eb));
+  transition: width .35s ease;
+}
+
+.progress-panel {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-soft); padding: .9rem 1.1rem; margin: 0 0 2rem;
+  position: sticky; top: 64px; z-index: 20;
+}
+.progress-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.progress-head strong { font-size: .9rem; color: var(--text); }
+
+.module-done {
+  margin-top: 2rem; padding-top: 1.1rem; border-top: 1px dashed var(--border);
+}
+.module-done label {
+  display: inline-flex; align-items: center; gap: .55rem; cursor: pointer;
+  font-size: .95rem; font-weight: 600; color: var(--text-soft); user-select: none;
+}
+.module-done input { width: 1.05rem; height: 1.05rem; accent-color: var(--accent); }
+.module-done label:has(input:checked) { color: var(--ok); }
+
+.toc a.done::before { content: "✓ "; color: var(--ok); font-weight: 700; }
+
+.lab-guide-link {
+  display: inline-block; margin-top: .8rem; font-size: .88rem; font-weight: 600;
+}
+
+/* landing progress cards */
+.pnum { font-size: 2.2rem; font-weight: 800; color: var(--accent-text); line-height: 1; margin-bottom: .3rem; }
+.pnum.ok { color: var(--ok); }
+.pnum span { font-size: 1rem; font-weight: 600; color: var(--text-faint); margin-left: .3rem; }
+.pcap { margin: .5rem 0 0; font-size: .85rem; color: var(--text-soft); }
+
+/* ---------- labs workbook page ---------- */
+.page-labs .lab-workbook { max-width: 860px; margin: 0 auto; padding: 2rem clamp(1rem,4vw,2rem) 5rem; }
+.lab-progress-bar {
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-soft);
+  padding: .9rem 1.1rem; margin-bottom: 2.2rem;
+  position: sticky; top: 64px; z-index: 20;
+}
+.lab-progress-bar strong { font-size: .9rem; }
+
+article.lab-card {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.4rem 1.5rem; margin: 1.4rem 0; background: var(--surface); box-shadow: var(--shadow);
+  scroll-margin-top: 80px;
+}
+article.lab-card.done { border-color: var(--ok); }
+article.lab-card.done::after {
+  content: "✓"; float: right; color: var(--ok); font-weight: 800; font-size: 1.2rem;
+  margin-top: -2.6rem;
+}
+.lab-card .lab-tag {
+  font-family: var(--mono); font-size: .78rem; font-weight: 700; letter-spacing: .04em;
+  color: var(--accent-text); text-transform: uppercase;
+}
+.lab-card h2 { margin: .3rem 0 .8rem; font-size: 1.3rem; }
+.lab-meta {
+  display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; margin: 0 0 1rem;
+  font-size: .86rem; color: var(--text-soft);
+}
+.lab-meta b { color: var(--text); font-weight: 700; }
+.lab-card h3 { font-size: 1rem; margin: 1.3rem 0 .4rem; }
+.lab-card ol, .lab-card ul { padding-left: 1.3rem; }
+.lab-card ol li, .lab-card ul li { margin: .4rem 0; }
+.lab-card .done-row {
+  margin-top: 1.3rem; padding-top: 1rem; border-top: 1px dashed var(--border);
+}
+.lab-card .done-row label {
+  display: inline-flex; align-items: center; gap: .55rem; cursor: pointer;
+  font-weight: 700; font-size: .95rem; color: var(--text-soft); user-select: none;
+}
+.lab-card .done-row input { width: 1.1rem; height: 1.1rem; accent-color: var(--accent); }
+.lab-card .done-row label:has(input:checked) { color: var(--ok); }
+
 .lang-th [lang="en"], .lang-en [lang="th"] { display: none; }
 
 /* thai readability */

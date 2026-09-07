@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiro Training — Lab Guidelines (EN)</title>
+<meta name="description" content="Hands-on lab guidelines for the AWS Kiro internal course — one per module, with prerequisites, steps, expected results, and troubleshooting.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%91%BB%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="page-labs lang-en">
+
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="ghost">👻</span> Kiro Training</a>
+  <span class="spacer"></span>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="course-en.html">Course</a>
+    <a href="slides/training-en.html">Slides</a>
+    <a href="labs-th.html">ภาษาไทย</a>
+  </nav>
+  <button class="btn" onclick="toggleTheme()" aria-label="Toggle theme"><span id="theme-label">☾</span></button>
+</header>
+
+<div class="lab-workbook">
+  <span class="eyebrow">Hands-on · one lab per module</span>
+  <h1>Lab Guidelines</h1>
+  <p>Nine labs, one per module. Do them <strong>after</strong> reading the matching module — each lab turns that module's idea into something on your machine. They build on each other: Lab 1 finds problems in your steering files, Lab 4 fixes them, and so on.</p>
+  <p><strong>What you need for most labs:</strong> the Kiro IDE installed and signed in, and one <em>real</em> project you know well (not an empty folder). Lab 0 needs no tooling; Lab 8 is best done with your team in the room.</p>
+  <p>Tick a lab off when you finish — progress is saved in this browser and shows up on the <a href="index.html">home page</a> and next to each module in the <a href="course-en.html">course</a>.</p>
+
+  <div class="lab-progress-bar">
+    <div class="progress-head">
+      <span data-labs-progress><strong>Labs — 0 / 9 done</strong></span>
+      <button type="button" class="btn btn-sm" data-labs-reset>Reset lab progress</button>
+    </div>
+  </div>
+
+  <!-- LAB 0 -->
+  <article class="lab-card" id="lab0">
+    <span class="lab-tag">Module 0 · Lab 0</span>
+    <h2>Map a real PR onto AI-DLC</h2>
+    <div class="lab-meta">
+      <span>⏱ <b>20–30 min</b></span>
+      <span>🔧 <b>No tooling</b> — a recent PR you can read + a scratch file</span>
+      <span>🎯 Feel where the Inception / Construction line falls, and find one decision that leaked into code review</span>
+    </div>
+    <h3>Steps</h3>
+    <ol>
+      <li>Open the last non-trivial pull request you reviewed or authored. Read the description and skim the diff.</li>
+      <li>In a scratch file, make three headings: <strong>Inception</strong> (deciding <em>what</em> to build and the rules for it), <strong>Construction</strong> (how it's built), <strong>Operations</strong> (deploy / monitor).</li>
+      <li>List every distinct decision or change from the PR under the phase where it <em>should</em> have been settled. E.g. "export is admin-only" → Inception; "stream the CSV" → Construction; "add an export metric" → Operations.</li>
+      <li>Circle anything that was actually decided <em>during</em> review or in a follow-up fix commit. For each, write the single sentence that would have settled it in Inception.</li>
+      <li>Count: of the review comments, how many were really "missing Inception" rather than "missing code quality"?</li>
+    </ol>
+    <h3>Expected result</h3>
+    <p>A three-column list, at least one circled decision, and its one-sentence Inception form. That sentence is the shape of an EARS acceptance criterion — you'll write real ones in Lab 3.</p>
+    <h3>If you get stuck</h3>
+    <ul>
+      <li><strong>"Everything looks like Construction."</strong> Look for choices someone could have disagreed with: who's allowed, when it triggers, which format, what counts as done. Those are Inception.</li>
+      <li><strong>"No decisions leaked."</strong> Re-read the PR comments and any follow-up commits with messages like "fix", "actually", "per review". That's where they hide.</li>
+    </ul>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab0"> I completed Lab 0</label></div>
+  </article>
+
+  <!-- LAB 1 -->
+  <article class="lab-card" id="lab1">
+    <span class="lab-tag">Module 1 · Lab 1</span>
+    <h2>First contact — install and read the steering</h2>
+    <div class="lab-meta">
+      <span>⏱ <b>20 min</b></span>
+      <span>🔧 Kiro IDE · a small real repo · your VS Code settings</span>
+      <span>🎯 Get Kiro installed and see how it reads your project</span>
+    </div>
+    <h3>Steps</h3>
+    <ol>
+      <li>Install the Kiro IDE and sign in with the account the org uses. When prompted, import your VS Code settings.</li>
+      <li>Open a small real project you know well — not a fresh empty folder.</li>
+      <li>Run <strong>Generate Steering Docs</strong> (Agent Steering panel, or the command palette). Open the new <code>.kiro/steering/product.md</code>, <code>tech.md</code>, and <code>structure.md</code>.</li>
+      <li>Read all three. In each, mark one statement that is <em>wrong or vague</em> about your project.</li>
+      <li>In the chat panel (vibe mode) ask: <code>Summarise what this project does and its main entry points.</code> Compare the answer to reality.</li>
+    </ol>
+    <h3>Expected result</h3>
+    <p>Three files on disk and a written list of at least three things to correct in them. Keep that list — you fix it in Lab 4.</p>
+    <h3>If you get stuck</h3>
+    <ul>
+      <li><strong>No "Generate Steering Docs".</strong> Look in the Agent Steering section of the side panel, or search the command palette for "steering".</li>
+      <li><strong>The generated files feel generic.</strong> That's expected — the generator gives a draft. Making it true is exactly Lab 4.</li>
+    </ul>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab1"> I completed Lab 1</label></div>
+  </article>
+
+  <!-- LAB 2 -->
+  <article class="lab-card" id="lab2">
+    <span class="lab-tag">Module 2 · Lab 2</span>
+    <h2>Context is everything</h2>
+    <div class="lab-meta">
+      <span>⏱ <b>15–20 min</b></span>
+      <span>🔧 Kiro IDE · a "wiring-up" file in your project · a runnable test suite</span>
+      <span>🎯 See, measurably, how answer quality tracks the context you provide</span>
+    </div>
+    <h3>Steps</h3>
+    <ol>
+      <li>Pick a real file that wires things together — an app entry point, a router, a DI container.</li>
+      <li>Ask in vibe mode with <em>no</em> context provider: <code>What are the top 3 risks in this codebase's startup path?</code></li>
+      <li>Ask again, same question, adding: <code>#file:&lt;that file&gt; #folder:&lt;its directory&gt; #git diff</code></li>
+      <li>Run your tests so there's terminal output, then ask a third time adding <code>#problems</code> and <code>#terminal</code>.</li>
+      <li>Compare how specific and correct each answer is. Save the best prompt as a template.</li>
+    </ol>
+    <h3>Expected result</h3>
+    <p>You can point to a concrete claim in answer 3 that answer 1 got wrong or missed entirely.</p>
+    <h3>If you get stuck</h3>
+    <ul>
+      <li><strong>The three answers look the same.</strong> Your question is probably too generic — ask something the file you referenced actually determines.</li>
+      <li><strong><code>#terminal</code> is empty.</strong> Run the test suite (or any command) first so there's history to pull in.</li>
+    </ul>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab2"> I completed Lab 2</label></div>
+  </article>
+
+  <!-- LAB 3 -->
+  <article class="lab-card" id="lab3">
+    <span class="lab-tag">Module 3 · Lab 3</span>
+    <h2>Run a spec to the first gate</h2>
+    <div class="lab-meta">
+      <span>⏱ <b>25–35 min</b></span>
+      <span>🔧 Kiro IDE · a genuinely small feature you need</span>
+      <span>🎯 Experience the requirements gate and write real EARS criteria</span>
+    </div>
+    <h3>Steps</h3>
+    <ol>
+      <li>Pick a small feature you actually need — a filter, an export, a field on a form.</li>
+      <li>Start a <strong>Feature Spec</strong>. Give a one or two sentence description, no more.</li>
+      <li>When Kiro produces <code>requirements.md</code>, <strong>stop</strong>. Don't approve yet.</li>
+      <li>Rewrite at least two acceptance criteria into strict EARS form (<code>WHEN … THE SYSTEM SHALL …</code>). Add one <code>IF … THEN …</code> for an error case the draft missed.</li>
+      <li>Approve, and let Kiro produce <code>design.md</code>. Read it. Note one decision in the design you would not have thought to make explicit yourself.</li>
+    </ol>
+    <h3>Expected result</h3>
+    <p><code>.kiro/specs/&lt;your-feature&gt;/</code> contains a <code>requirements.md</code> you edited and a <code>design.md</code> you have read. Stop there — no need to implement.</p>
+    <h3>If you get stuck</h3>
+    <ul>
+      <li><strong>The spec won't start / asks endless questions.</strong> Check you chose "Feature", not "Bug". If it keeps asking, your description covered too much — pick a smaller feature.</li>
+      <li><strong>The requirements are huge.</strong> Same cause — scope down. One coherent feature per spec.</li>
+    </ul>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab3"> I completed Lab 3</label></div>
+  </article>
+
+  <!-- LAB 4 -->
+  <article class="lab-card" id="lab4">
+    <span class="lab-tag">Module 4 · Lab 4</span>
+    <h2>Teach Kiro one real rule</h2>
+    <div class="lab-meta">
+      <span>⏱ <b>25 min</b></span>
+      <span>🔧 Kiro IDE · the three foundation files from Lab 1</span>
+      <span>🎯 Prove steering changes behaviour, and fix the foundation files</span>
+    </div>
+    <h3>Steps</h3>
+    <ol>
+      <li>Correct the wrong / vague statements you found in <code>product.md</code>, <code>tech.md</code>, and <code>structure.md</code> in Lab 1.</li>
+      <li>Create <code>.kiro/steering/code-style.md</code> with <code>inclusion: always</code> and 5 real rules your team argues about in review. For at least two, add a short <em>before / after</em> snippet and one line of rationale.</li>
+      <li>In a fresh chat, ask: <code>Write a function that fetches a user by id and returns a typed result.</code></li>
+      <li>Check the output against all five rules. If it breaks one, tighten that rule's wording and try again.</li>
+      <li>Change one rule to its opposite, re-ask, confirm the output follows the new rule — then revert.</li>
+    </ol>
+    <h3>Expected result</h3>
+    <p>The same prompt produces different, rule-following code before and after your edit — that is steering working. Commit the corrected foundation files and <code>code-style.md</code> on a branch.</p>
+    <h3>If you get stuck</h3>
+    <ul>
+      <li><strong>The agent keeps ignoring a rule.</strong> Make it concrete — one sentence of rule, one before/after snippet, one line of "why".</li>
+      <li><strong>A rule fights your linter's autofix.</strong> Note it and reconcile — steering and lint should say the same thing, or the agent's output will bounce.</li>
+    </ul>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab4"> I completed Lab 4</label></div>
+  </article>
+
+  <!-- LAB 5 -->
+  <article class="lab-card" id="lab5">
+    <span class="lab-tag">Module 5 · Lab 5</span>
+    <h2>Ship a format-on-save hook</h2>
+    <div class="lab-meta">
+      <span>⏱ <b>15–20 min</b></span>
+      <span>🔧 Kiro IDE · a formatter on PATH (prettier, black, gofmt…)</span>
+      <span>🎯 Watch a hook fire on an agent edit — and stay silent on your own save</span>
+    </div>
+    <h3>Steps</h3>
+    <ol>
+      <li>In the Agent Hooks panel, click <strong>+</strong> → "Ask Kiro to create a hook" and describe: <em>run my formatter on TypeScript and JS files after the agent edits them</em>.</li>
+      <li>Check the generated JSON in <code>.kiro/hooks/</code>: <code>trigger</code> is <code>PostFileSave</code>, the <code>matcher</code> only matches your source extensions, the action is a <code>command</code>.</li>
+      <li>Ask the agent: <code>Add a small utility function to &lt;some .ts file&gt;, deliberately badly formatted.</code></li>
+      <li>Confirm the saved file comes back formatted, with no action from you.</li>
+      <li>Now hand-edit the same file with messy formatting and save it yourself. Confirm the hook does <strong>not</strong> run.</li>
+    </ol>
+    <h3>Expected result</h3>
+    <p>The hook runs on step 3 (agent edit) and stays silent on step 5 (your save). Commit the hook JSON on a branch.</p>
+    <h3>If you get stuck</h3>
+    <ul>
+      <li><strong>The hook didn't run.</strong> Check the <code>matcher</code> regex actually matches your file path, and read the <strong>Output</strong> tab for errors.</li>
+      <li><strong>"formatter not found".</strong> Use <code>npx &lt;tool&gt;</code> or an absolute path in the command.</li>
+    </ul>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab5"> I completed Lab 5</label></div>
+  </article>
+
+  <!-- LAB 6 -->
+  <article class="lab-card" id="lab6">
+    <span class="lab-tag">Module 6 · Lab 6</span>
+    <h2>Give the agent live AWS docs</h2>
+    <div class="lab-meta">
+      <span>⏱ <b>15 min</b></span>
+      <span>🔧 Kiro IDE · <code>uvx</code> installed · network access</span>
+      <span>🎯 See the agent call an MCP tool instead of guessing from training data</span>
+    </div>
+    <h3>Steps</h3>
+    <ol>
+      <li>Open the workspace MCP config: command palette → "Kiro: Open workspace MCP config (JSON)".</li>
+      <li>Add an <code>aws-docs</code> server:
+<pre><code>"aws-docs": {
+  "command": "uvx",
+  "args": ["awslabs.aws-documentation-mcp-server@latest"],
+  "disabled": false,
+  "autoApprove": ["search_documentation", "read_documentation"]
+}</code></pre></li>
+      <li>Check the <strong>MCP Servers</strong> tab shows it connected. If not, read the <strong>Output</strong> tab.</li>
+      <li>Ask a question that needs <em>current</em> AWS detail, e.g. <code>What are the current default quotas for Amazon SQS FIFO queues, with a source link?</code></li>
+      <li>Watch it call <code>search_documentation</code> / <code>read_documentation</code>. Then set <code>"disabled": true</code>, ask the same thing, and compare.</li>
+    </ol>
+    <h3>Expected result</h3>
+    <p>One answer backed by an MCP tool call with a doc link, and a visible difference in confidence when the server is off.</p>
+    <h3>If you get stuck</h3>
+    <ul>
+      <li><strong>Server won't connect.</strong> Confirm <code>uvx</code> is installed and on PATH; the <strong>Output</strong> tab shows the launch command and error.</li>
+      <li><strong>The agent doesn't call the tool.</strong> Make the question clearly need current docs — "current default quota", "latest supported version", "as of today".</li>
+    </ul>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab6"> I completed Lab 6</label></div>
+  </article>
+
+  <!-- LAB 7 -->
+  <article class="lab-card" id="lab7">
+    <span class="lab-tag">Module 7 · Lab 7</span>
+    <h2>Watch a Power activate</h2>
+    <div class="lab-meta">
+      <span>⏱ <b>15–20 min</b></span>
+      <span>🔧 Kiro IDE · one Power relevant to your stack</span>
+      <span>🎯 Confirm intelligent loading — the right Power turns on by itself</span>
+    </div>
+    <h3>Steps</h3>
+    <ol>
+      <li>From <code>kiro.dev/powers</code> or the IDE, install one Power that matches your stack (Supabase, AWS Aurora, Postman, Netlify…).</li>
+      <li>Start a task <em>unrelated</em> to it (e.g. "rename this variable everywhere"). Check the Powers indicator — the Power should be idle.</li>
+      <li>Start a task squarely in its domain. For Supabase: <code>add a row-level-security policy so users only read their own orders</code>. Watch the indicator show the Power active.</li>
+      <li>Inspect the output — does it reflect the Power's guidance (a real RLS policy, generated types) rather than generic advice?</li>
+      <li><em>Optional:</em> sketch a <code>plugin.json</code> keyword list for one thing your team re-explains constantly (a service scaffold, your logging conventions).</li>
+    </ol>
+    <h3>Expected result</h3>
+    <p>The Powers indicator changes between the unrelated task and the in-domain task, and the in-domain output clearly used the Power.</p>
+    <h3>If you get stuck</h3>
+    <ul>
+      <li><strong>The indicator never shows the Power.</strong> Your task wording may not match its keywords — name the tool or domain explicitly.</li>
+      <li><strong>The output still looks generic.</strong> Try a task only that Power would know how to do well, not one any agent could answer.</li>
+    </ul>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab7"> I completed Lab 7</label></div>
+  </article>
+
+  <!-- LAB 8 -->
+  <article class="lab-card" id="lab8">
+    <span class="lab-tag">Module 8 · Lab 8</span>
+    <h2>Draft your team's pilot</h2>
+    <div class="lab-meta">
+      <span>⏱ <b>30–40 min</b> — ideally with the team</span>
+      <span>🔧 Knowledge of your repos + who's available</span>
+      <span>🎯 Leave with a concrete, assignable plan — not a vague intention</span>
+    </div>
+    <h3>Steps</h3>
+    <ol>
+      <li>Name the <strong>pilot repo</strong> — one, active, with real conventions worth encoding — and the <strong>people</strong> (2–5). Write it down.</li>
+      <li>Write the first paragraph of <code>product.md</code> for that repo <em>by hand</em>: what it is, who uses it, the one business goal. This is what "Generate Steering Docs" should have said.</li>
+      <li>List the <strong>five rules</strong> your team argues about most in review. These become <code>code-style-*.md</code>.</li>
+      <li>List what goes in <code>.kiroignore</code> for this repo: secrets, fixtures, generated dirs, compliance-scoped paths.</li>
+      <li>Pick the <strong>first ticket</strong> you'll run through a spec, and who pairs on it. Put a date on the retro.</li>
+    </ol>
+    <h3>Expected result</h3>
+    <p>Every row of the Module 8 rollout checklist has a name next to it, and the retro has a date. Share it with the team.</p>
+    <h3>If you get stuck</h3>
+    <ul>
+      <li><strong>Can't pick one repo.</strong> Choose the one with the clearest conventions and an active backlog — not the biggest.</li>
+      <li><strong>The team isn't available.</strong> Do the draft solo, then book 15 minutes to confirm names and dates.</li>
+    </ul>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab8"> I completed Lab 8</label></div>
+  </article>
+
+  <div class="pager">
+    <a href="course-en.html">← Back to the course</a>
+    <a href="index.html">Home</a>
+  </div>
+</div>
+
+<footer class="site">
+  Internal training material · Built for the team · Not affiliated with AWS ·
+  Sourced from <a href="https://kiro.dev/docs/" target="_blank" rel="noopener">kiro.dev/docs</a>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

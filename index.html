@@ -15,7 +15,8 @@
   <span class="spacer"></span>
   <nav>
     <a href="#modules" lang="en">Modules</a><a href="#modules" lang="th">บทเรียน</a>
-    <a href="#how" lang="en">How to use</a><a href="#how" lang="th">วิธีใช้</a>
+    <a href="labs-en.html" lang="en">Labs</a><a href="labs-th.html" lang="th">แล็บ</a>
+    <a href="#progress" lang="en">My progress</a><a href="#progress" lang="th">ความคืบหน้า</a>
     <a href="course-en.html" lang="en">Open course →</a><a href="course-th.html" lang="th">เปิดคอร์ส →</a>
   </nav>
   <span class="lang-toggle">
@@ -34,8 +35,38 @@
   <div class="cta-row">
     <a class="btn btn-primary" href="course-en.html" lang="en">Start the course</a>
     <a class="btn btn-primary" href="course-th.html" lang="th">เริ่มเรียน</a>
+    <a class="btn" href="labs-en.html" lang="en">Lab guidelines</a>
+    <a class="btn" href="labs-th.html" lang="th">คู่มือแล็บ</a>
     <a class="btn" href="slides/training-en.html" lang="en">Slides (EN)</a>
     <a class="btn" href="slides/training-th.html" lang="th">สไลด์ (ไทย)</a>
+  </div>
+</section>
+
+<section class="section" id="progress">
+  <div class="wrap">
+    <h2 lang="en">Your progress</h2>
+    <h2 lang="th">ความคืบหน้าของคุณ</h2>
+    <p lang="en">Saved in this browser. Tick modules off in the course, and labs off in the lab guide — the counts update here.</p>
+    <p lang="th">บันทึกไว้บนเบราว์เซอร์นี้ ติ๊กบทเรียนในคอร์ส และติ๊กแล็บในคู่มือแล็บ — ตัวเลขจะอัปเดตตรงนี้</p>
+    <div class="grid" style="margin-top:1.4rem">
+      <div class="card">
+        <h3 lang="en">Modules read</h3><h3 lang="th">บทเรียนที่อ่านแล้ว</h3>
+        <div data-progress-modules><div class="pnum">0<span>/ 9</span></div><div class="pbar"><span style="width:0%"></span></div></div>
+        <p style="margin-top:.9rem"><a href="course-en.html" lang="en">Continue the course →</a><a href="course-th.html" lang="th">เรียนต่อ →</a></p>
+      </div>
+      <div class="card">
+        <h3 lang="en">Labs done</h3><h3 lang="th">แล็บที่ทำแล้ว</h3>
+        <div data-progress-labs><div class="pnum">0<span>/ 9</span></div><div class="pbar"><span style="width:0%"></span></div></div>
+        <p style="margin-top:.9rem"><a href="labs-en.html" lang="en">Open the lab guide →</a><a href="labs-th.html" lang="th">เปิดคู่มือแล็บ →</a></p>
+      </div>
+      <div class="card">
+        <h3 lang="en">Start fresh</h3><h3 lang="th">เริ่มใหม่</h3>
+        <p lang="en">Clears the saved ticks for modules and labs on this browser only.</p>
+        <p lang="th">ล้างการติ๊กบทเรียนและแล็บที่บันทึกไว้ เฉพาะบนเบราว์เซอร์นี้</p>
+        <button class="btn btn-sm" style="margin-top:.6rem" data-progress-reset lang="en">Reset progress</button>
+        <button class="btn btn-sm" style="margin-top:.6rem" data-progress-reset lang="th">ล้างความคืบหน้า</button>
+      </div>
+    </div>
   </div>
 </section>
 
