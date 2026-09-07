@@ -140,6 +140,47 @@ Deploy + monitor"]
       <tr><td>Solo work + async hand-offs</td><td><strong>Mob</strong> sessions</td><td>The team converges in real time to decide, while AI handles the routine execution between decisions</td></tr>
     </table>
 
+    <h2 id="m0-principles">The nine principles</h2>
+    <p>AWS Labs frames AI-DLC with a set of founding principles — the philosophy underneath the phases and the loop. They pull in three directions: <em>redesign rather than bolt on</em>, <em>AI drives while humans decide</em>, and <em>design-first with few, gated phases</em>.</p>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TB
+  subgraph A["Redesign, don't retrofit"]
+    a1["1 · Reimagine workflows for the AI era"]
+    a5["5 · Preserve proven practices, optimise for AI speed"]
+    a9["9 · Build on familiar concepts to ease transition"]
+  end
+  subgraph B["AI drives, humans decide"]
+    b2["2 · AI orchestrates; humans keep control"]
+    b4["4 · Balance AI capability with human expertise"]
+    b6["6 · Streamline roles to minimise hand-offs"]
+  end
+  subgraph C["Design-first, few gated phases"]
+    c3["3 · Integrate design techniques into the core"]
+    c7["7 · Three phases with strategic validation gates"]
+    c8["8 · Flexible, AI-recommended workflows"]
+  end
+  A --> B --> C
+</pre>
+      <figcaption>The nine principles, grouped by the pull they represent.</figcaption>
+    </figure>
+    <table>
+      <tr><th>Principle</th><th>What it means</th><th>Example</th></tr>
+      <tr><td><strong>1. Reimagine workflows for the AI era</strong> — don't retrofit</td><td>Redesign the process to run at AI speed instead of squeezing AI into old rituals like the two-week sprint.</td><td>Replace 2-week sprint planning with a <strong>bolt</strong> (hours–days): AI drafts the architecture and plan, the team validates on the spot.</td></tr>
+      <tr><td><strong>2. AI orchestrates; humans keep control</strong></td><td>AI proposes the plan and executes the steps; humans review, approve (human-in-the-loop), and own the direction.</td><td>Asked to build a payments flow, the agent doesn't write code — it produces a plan and questions first. Only after you approve does it start.</td></tr>
+      <tr><td><strong>3. Integrate design techniques into the core</strong></td><td>Design isn't an optional phase — it's how you build the context the AI needs to be accurate.</td><td>Before any code, the agent always produces a domain model, NFR design (performance, security), and a component breakdown.</td></tr>
+      <tr><td><strong>4. Balance AI capability with human expertise</strong></td><td>Lean on AI for the heavy lifting; stay honest about its limits and keep humans on the judgement calls.</td><td>AI writes the test suite and most of the code; the person who understands the business defines and approves the acceptance tests.</td></tr>
+      <tr><td><strong>5. Preserve proven practices, optimise for AI speed</strong></td><td>Keep what works — user stories, risk management — but adapt it to run smoothly at AI pace.</td><td>You still write user stories; the AI breaks them into <strong>units of work</strong> in minutes instead of a grooming meeting.</td></tr>
+      <tr><td><strong>6. Streamline roles to minimise hand-offs</strong></td><td>Flatten team roles and cut the document-passing between them, without losing the reviews that matter.</td><td><strong>Mob Elaboration / Mob Construction</strong>: product, dev and QA review the AI's plan and code together in one session instead of passing specs between departments.</td></tr>
+      <tr><td><strong>7. Three phases with strategic validation gates</strong></td><td>Collapse the lifecycle to Inception → Construction → Operations, with a validation gate in each.</td><td>In Inception, once the AI reverse-engineers the legacy code and plans the work, a human must clear the gate before Construction starts.</td></tr>
+      <tr><td><strong>8. Flexible, AI-recommended workflows</strong></td><td>Let the AI recommend the workflow depth for the task, instead of forcing every job through a rigid template.</td><td>A quick bug fix (minimal depth): the AI skips user stories and goes straight to root-cause + patch. A big migration (comprehensive depth): it runs every step.</td></tr>
+      <tr><td><strong>9. Build on familiar concepts to ease transition</strong></td><td>Extend tools and ideas developers already know, so a team can pick up AI-DLC fast.</td><td>Enforce the AI's rules through plain text files people already use — <code>CLAUDE.md</code>, <code>.cursor/rules/</code>, Kiro steering files — no new software to install.</td></tr>
+    </table>
+    <div class="callout warn">
+      <span class="label">Note on the list</span>
+      Different write-ups of AI-DLC give slightly different counts and wording (some say ten). Treat this as the shape of the philosophy, not a fixed catechism — the canonical source is Raja SP's method-definition paper (linked below).
+    </div>
+
     <h2>Where Kiro fits</h2>
     <p>Keep three levels straight:</p>
     <ul>
@@ -205,7 +246,9 @@ Deploy + monitor"]
     <ul>
       <li>Raja SP, <a href="https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/" target="_blank" rel="noopener">"AI-Driven Development Lifecycle (AI-DLC)"</a>, AWS DevOps Blog, 31 Jul 2025 — the founding description and method definition.</li>
       <li>Will Matos, Raj Jain, Siddhesh Jog, Raja SP, <a href="https://aws.amazon.com/blogs/devops/building-with-ai-dlc-using-amazon-q-developer/" target="_blank" rel="noopener">"Building with AI-DLC using Amazon Q Developer"</a>, AWS DevOps Blog, 29 Nov 2025 — a concrete end-to-end walkthrough (also notes the Kiro CLI runs AI-DLC with no extra setup).</li>
-      <li><a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">awslabs/aidlc-workflows</a> — AWS Labs' open-source AI-DLC workflow engine for coding agents (MIT-0 licence).</li>
+      <li><a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">awslabs/aidlc-workflows</a> — AWS Labs' open-source AI-DLC workflow engine for coding agents (MIT-0 licence); the principles and gates are encoded here.</li>
+      <li><a href="https://ai-dlc.dev/" target="_blank" rel="noopener">ai-dlc.dev</a> — community reference site for the methodology and its principles.</li>
+      <li><a href="https://dev.to/aws-heroes/why-ai-dlc-exists-reimagining-software-development-in-an-ai-first-world-4f20" target="_blank" rel="noopener">"Why AI-DLC Exists: Reimagining Software Development in an AI-First World"</a>, DEV / AWS Heroes — walks through the founding principles.</li>
       <li><a href="https://aws.amazon.com/blogs/industries/ai-driven-development-lifecycle-for-financial-services/" target="_blank" rel="noopener">"AI-Driven Development Lifecycle for Financial Services"</a>, AWS for Industries Blog — AI-DLC applied in a regulated context.</li>
       <li><a href="https://www.ibm.com/think/topics/ai-dlc" target="_blank" rel="noopener">IBM, "AI-DLC: The AI-Driven Development Lifecycle"</a> — a third-party explainer, useful as a cross-check on AWS's framing.</li>
       <li>Dirk Michel, <a href="https://towardsaws.com/on-kiro-and-the-ai-driven-development-lifecycle-3459c2c19751" target="_blank" rel="noopener">"On Kiro and the AI-Driven Development Lifecycle"</a>, Towards AWS — how Kiro's spec files map onto the AI-DLC phases.</li>

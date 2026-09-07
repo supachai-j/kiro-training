@@ -140,6 +140,47 @@ deploy + monitor"]
       <tr><td>งานเดี่ยว + ส่งต่อแบบ async</td><td>เซสชัน <strong>Mob</strong></td><td>ทีมมารวมกันแบบ real time เพื่อตัดสินใจ ระหว่างที่ AI จัดการงาน routine ระหว่างจุดตัดสินใจ</td></tr>
     </table>
 
+    <h2 id="m0-principles">หลักการทั้ง 9 ข้อ</h2>
+    <p><strong>AI-DLC Principles</strong> คือกรอบแนวคิดและปรัชญาพื้นฐานที่พัฒนาโดย AWS Labs เพื่อเปลี่ยนผ่านการพัฒนาซอฟต์แวร์จากการใช้ AI เป็นเพียงผู้ช่วยแคบ ๆ (AI-Assisted) ไปสู่การให้ AI เป็นเครื่องมือหลักในการขับเคลื่อนระบบ โดยมีมนุษย์เป็นผู้ควบคุมและตัดสินใจเชิงกลยุทธ์ หลักการทั้งเก้าดึงไปสามทิศทาง: <em>ออกแบบใหม่ ไม่ใช่แปะเพิ่ม</em>, <em>AI ขับเคลื่อน มนุษย์ตัดสินใจ</em>, และ <em>design มาก่อน เฟสน้อยและมีด่านตรวจ</em></p>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TB
+  subgraph A["ออกแบบใหม่ ไม่ใช่แปะเพิ่ม"]
+    a1["1 · Reimagine workflows for the AI era"]
+    a5["5 · Preserve proven practices, optimise for AI speed"]
+    a9["9 · Build on familiar concepts to ease transition"]
+  end
+  subgraph B["AI ขับเคลื่อน มนุษย์ตัดสินใจ"]
+    b2["2 · AI orchestrates; humans keep control"]
+    b4["4 · Balance AI capability with human expertise"]
+    b6["6 · Streamline roles to minimise hand-offs"]
+  end
+  subgraph C["design มาก่อน เฟสน้อยมีด่านตรวจ"]
+    c3["3 · Integrate design techniques into the core"]
+    c7["7 · Three phases with strategic validation gates"]
+    c8["8 · Flexible, AI-recommended workflows"]
+  end
+  A --> B --> C
+</pre>
+      <figcaption>หลักการทั้งเก้า จัดกลุ่มตามทิศทางที่มันดึงไป</figcaption>
+    </figure>
+    <table>
+      <tr><th>หลักการ</th><th>ความหมาย</th><th>ตัวอย่าง</th></tr>
+      <tr><td><strong>1. Reimagine workflows for the AI era</strong> — แทนที่จะ retrofit</td><td>ออกแบบกระบวนการทำงานใหม่หมดให้สอดรับกับความเร็วระดับ AI แทนที่จะนำ AI ไปแทรกไว้ในพิธีกรรมเดิม ๆ (เช่น สปรินต์ 2 สัปดาห์)</td><td>เปลี่ยนจากการวางแผน Sprint 2 สัปดาห์ มาใช้ <strong>Bolt</strong> (รอบการทำงานระดับชั่วโมงหรือวัน) โดย AI ร่างสถาปัตยกรรมและแผนงานให้ทีมตรวจสอบทันที</td></tr>
+      <tr><td><strong>2. AI orchestrates development while humans maintain control</strong></td><td>ให้ AI เป็นผู้เสนอแผนและลงมือปฏิบัติตามขั้นตอน ในขณะที่มนุษย์ทำหน้าที่ตรวจสอบ อนุมัติ (Human-in-the-loop) และควบคุมทิศทางสูงสุด</td><td>เมื่อสั่งให้สร้างระบบชำระเงิน AI จะไม่เขียนโค้ดทันที แต่จะสร้างแผนและตั้งคำถามถามมนุษย์ก่อน เมื่อมนุษย์อนุมัติ (Approve) AI จึงจะเริ่มลงมือ</td></tr>
+      <tr><td><strong>3. Integrate design techniques into the core</strong></td><td>การออกแบบระบบไม่ใช่ขั้นตอนเสริม แต่เป็นแกนหลักในการสร้างบริบท (Context) ที่สมบูรณ์เพื่อให้ AI นำไปพัฒนาต่อได้อย่างแม่นยำ</td><td>ก่อนลงมือเขียนโค้ด AI จะต้องผ่านขั้นตอนสร้าง Domain Model, NFR Design (การออกแบบประสิทธิภาพและความปลอดภัย) และโครงสร้างคอมโพเนนต์เสมอ</td></tr>
+      <tr><td><strong>4. Balance AI capabilities with human expertise</strong></td><td>ปรับการทำงานให้สอดคล้องกับความเป็นจริง ใช้ประโยชน์จากจุดแข็งของ AI ในการประมวลผลงานหนัก (Heavy Lifting) ขณะเดียวกันก็ตระหนักถึงข้อจำกัดของมัน</td><td>AI ทำหน้าที่เขียนชุดทดสอบและสร้างโค้ดส่วนใหญ่ แต่ให้มนุษย์ที่เข้าใจบริบทธุรกิจเป็นผู้กำหนดและอนุมัติ Acceptance Tests</td></tr>
+      <tr><td><strong>5. Preserve proven practices while optimizing for AI speed</strong></td><td>รักษาแนวปฏิบัติเดิมที่ดีและได้ผลไว้ (เช่น User Stories, Risk Management) แต่ปรับปรุงให้ทำงานร่วมกับความเร็วของ AI ได้อย่างราบรื่น</td><td>ยังคงใช้ User Stories ในการกำหนดความต้องการของลูกค้า แต่ให้ AI เป็นผู้ย่อยและวิเคราะห์ออกเป็นงานย่อย ๆ (Units of Work) ให้ในไม่กี่นาที</td></tr>
+      <tr><td><strong>6. Streamline roles to minimize handoffs</strong></td><td>ปรับลดความซับซ้อนของบทบาทในทีมและการส่งต่อไม้ (Handoffs) เพื่อให้กระบวนการไหลลื่น โดยที่ยังรักษาการตรวจสอบที่จำเป็นไว้</td><td>ใช้การทำงานแบบ <strong>Mob Elaboration / Mob Construction</strong> ที่ Product, Developer และ QA มารวมตัวกันตรวจสอบแผนและโค้ดของ AI พร้อมกันในเซสชันเดียว แทนการส่งเอกสารข้ามแผนก</td></tr>
+      <tr><td><strong>7. Simplify to three phases with strategic validation points</strong></td><td>ลดขั้นตอนให้เหลือเพียง 3 เฟสหลักที่ชัดเจน (Inception → Construction → Operations) พร้อมกำหนดจุดตรวจรับรอง (Validation Gates) ในทุก ๆ เฟส</td><td>ในเฟส Inception เมื่อ AI ทำ Reverse Engineering โค้ดเก่าและวางแผนเสร็จ มนุษย์ต้องกดยืนยันผ่าน Gate ก่อนที่จะหลุดไปสู่เฟส Construction</td></tr>
+      <tr><td><strong>8. Enable flexible, AI-recommended workflows</strong></td><td>ใช้เวิร์กโฟลว์ที่ยืดหยุ่น ปรับแต่งตามคำแนะนำของ AI และความเหมาะสมของแต่ละงาน แทนที่จะยึดติดกับเทมเพลตที่แข็งกระด้าง</td><td>ถ้าเป็นการแก้ Bug ด่วน (Minimal Depth) AI จะแนะนำให้ข้ามขั้นตอน User Stories ไปที่การวิเคราะห์สาเหตุและแก้โค้ดทันที แต่ถ้าเป็นการย้ายระบบใหญ่ (Comprehensive Depth) AI จะรันครบทุกขั้นตอน</td></tr>
+      <tr><td><strong>9. Build on familiar concepts to ease transition</strong></td><td>ต่อยอดจากแนวคิดและเครื่องมือที่นักพัฒนาคุ้นเคยอยู่แล้ว เพื่อให้ทีมเรียนรู้และปรับมาใช้ AI-DLC ได้อย่างรวดเร็ว</td><td>บังคับใช้กฎของ AI ผ่านไฟล์ข้อความธรรมดาที่คุ้นเคย (เช่น <code>CLAUDE.md</code>, <code>.cursor/rules/</code>, หรือไฟล์ Steering) โดยไม่ต้องติดตั้งซอฟต์แวร์ใหม่ซับซ้อน</td></tr>
+    </table>
+    <div class="callout warn">
+      <span class="label">หมายเหตุเรื่องรายการ</span>
+      บทความแต่ละที่สรุป AI-DLC ด้วยจำนวนและถ้อยคำที่ต่างกันเล็กน้อย (บางที่ว่ามีสิบข้อ) ให้มองเป็น "รูปทรง" ของปรัชญา ไม่ใช่คัมภีร์ตายตัว — แหล่งอ้างอิงหลักคือ whitepaper นิยาม method ของ Raja SP (ลิงก์ด้านล่าง)
+    </div>
+
     <h2>Kiro อยู่ตรงไหน</h2>
     <p>แยกสามระดับให้ชัด:</p>
     <ul>
@@ -205,7 +246,9 @@ deploy + monitor"]
     <ul>
       <li>Raja SP, <a href="https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/" target="_blank" rel="noopener">"AI-Driven Development Lifecycle (AI-DLC)"</a>, AWS DevOps Blog, 31 ก.ค. 2025 — คำอธิบายก่อตั้งและนิยาม method</li>
       <li>Will Matos, Raj Jain, Siddhesh Jog, Raja SP, <a href="https://aws.amazon.com/blogs/devops/building-with-ai-dlc-using-amazon-q-developer/" target="_blank" rel="noopener">"Building with AI-DLC using Amazon Q Developer"</a>, AWS DevOps Blog, 29 พ.ย. 2025 — เดินตัวอย่าง end-to-end (ระบุด้วยว่า Kiro CLI รัน AI-DLC ได้โดยไม่ต้องตั้งค่าเพิ่ม)</li>
-      <li><a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">awslabs/aidlc-workflows</a> — workflow engine AI-DLC แบบโอเพนซอร์สของ AWS Labs สำหรับ coding agents (สัญญาอนุญาต MIT-0)</li>
+      <li><a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">awslabs/aidlc-workflows</a> — workflow engine AI-DLC แบบโอเพนซอร์สของ AWS Labs สำหรับ coding agents (สัญญาอนุญาต MIT-0); หลักการและด่านตรวจถูกเข้ารหัสไว้ในนี้</li>
+      <li><a href="https://ai-dlc.dev/" target="_blank" rel="noopener">ai-dlc.dev</a> — เว็บอ้างอิงของชุมชนสำหรับ methodology และหลักการของมัน</li>
+      <li><a href="https://dev.to/aws-heroes/why-ai-dlc-exists-reimagining-software-development-in-an-ai-first-world-4f20" target="_blank" rel="noopener">"Why AI-DLC Exists: Reimagining Software Development in an AI-First World"</a>, DEV / AWS Heroes — เดินผ่านหลักการก่อตั้ง</li>
       <li><a href="https://aws.amazon.com/blogs/industries/ai-driven-development-lifecycle-for-financial-services/" target="_blank" rel="noopener">"AI-Driven Development Lifecycle for Financial Services"</a>, AWS for Industries Blog — AI-DLC ในบริบทที่มีการกำกับ</li>
       <li><a href="https://www.ibm.com/think/topics/ai-dlc" target="_blank" rel="noopener">IBM, "AI-DLC: The AI-Driven Development Lifecycle"</a> — คำอธิบายจากภายนอก ใช้ cross-check มุมมองของ AWS</li>
       <li>Dirk Michel, <a href="https://towardsaws.com/on-kiro-and-the-ai-driven-development-lifecycle-3459c2c19751" target="_blank" rel="noopener">"On Kiro and the AI-Driven Development Lifecycle"</a>, Towards AWS — ไฟล์ spec ของ Kiro แมปกับเฟส AI-DLC ยังไง</li>
