@@ -23,15 +23,15 @@
 </header>
 
 <div class="lab-workbook">
-  <span class="eyebrow">Hands-on · one lab per module</span>
+  <span class="eyebrow">Hands-on · one per module + a capstone</span>
   <h1>Lab Guidelines</h1>
-  <p>Nine labs, one per module. Do them <strong>after</strong> reading the matching module — each lab turns that module's idea into something on your machine. They build on each other: Lab 1 finds problems in your steering files, Lab 4 fixes them, and so on.</p>
-  <p><strong>What you need for most labs:</strong> the Kiro IDE installed and signed in, and one <em>real</em> project you know well (not an empty folder). Lab 0 needs no tooling; Lab 8 is best done with your team in the room.</p>
+  <p>Nine labs, one per module, plus a <strong>capstone</strong> that runs the whole loop end to end. Do the module labs <strong>after</strong> reading the matching module — each turns that module's idea into something on your machine, and they build on each other: Lab 1 finds problems in your steering files, Lab 4 fixes them, and so on. <strong>Lab 9</strong> ties it together: one feature from intent to reviewed code through every AI-DLC gate.</p>
+  <p><strong>What you need for most labs:</strong> the Kiro IDE installed and signed in, and one <em>real</em> project you know well (not an empty folder). Lab 0 needs no tooling; Lab 8 is best done with your team in the room; Lab 9 uses Claude Code and an empty directory — no Kiro IDE required.</p>
   <p>Tick a lab off when you finish — progress is saved in this browser and shows up on the <a href="index.html">home page</a> and next to each module in the <a href="course-en.html">course</a>.</p>
 
   <div class="lab-progress-bar">
     <div class="progress-head">
-      <span data-labs-progress><strong>Labs — 0 / 9 done</strong></span>
+      <span data-labs-progress><strong>Labs — 0 / 10 done</strong></span>
       <button type="button" class="btn btn-sm" data-labs-reset>Reset lab progress</button>
     </div>
   </div>
@@ -283,6 +283,45 @@
       <li><strong>The team isn't available.</strong> Do the draft solo, then book 15 minutes to confirm names and dates.</li>
     </ul>
     <div class="done-row"><label><input type="checkbox" data-lab-check="lab8"> I completed Lab 8</label></div>
+  </article>
+
+  <!-- LAB 9 -->
+  <article class="lab-card" id="lab9">
+    <span class="lab-tag">Capstone · Lab 9</span>
+    <h2>One feature end to end with AI-DLC + Claude Code</h2>
+    <div class="lab-meta">
+      <span>⏱ <b>60–90 min</b></span>
+      <span>🔧 Claude Code CLI · git · an empty directory · the <code>awslabs/aidlc-workflows</code> repo</span>
+      <span>🎯 Take one small feature from intent to reviewed code through every AI-DLC gate — and see the <code>aidlc-docs/</code> trail it leaves</span>
+    </div>
+    <p>This is the whole loop from Module 0, done once by hand. It uses the open-source AI-DLC workflow on <strong>Claude Code</strong> — not the Kiro IDE — which is the point: the process is harness-neutral (Module 7). You'll build a small Task Management API.</p>
+    <h3>Steps</h3>
+    <ol>
+      <li><strong>Install the workflow.</strong> New empty folder, <code>git init</code>. Clone <code>awslabs/aidlc-workflows</code>. Copy its core workflow in as your <code>CLAUDE.md</code>, and its rule details into <code>.aidlc-rule-details/</code>. Commit both — version the process like you version code. Start <code>claude</code> and ask <em>"What instructions are currently active in this project?"</em> to confirm they loaded.</li>
+      <li><strong>Kick off Inception</strong> with the mandatory trigger: <code>Using AI-DLC, build a REST API for task management with user authentication, task CRUD, priority levels, and due dates.</code> Without the <code>Using AI-DLC,</code> prefix the rules are ignored.</li>
+      <li><strong>Workspace detection.</strong> It sees an empty dir → greenfield, skips reverse-engineering, writes <code>aidlc-docs/inception/workspace-detection/workspace-analysis.md</code>, and waits. Approve.</li>
+      <li><strong>Requirements.</strong> It writes <code>requirement-verification-questions.md</code> — multiple choice: framework (Express / FastAPI / Spring / Django), database, auth (JWT vs OAuth2), deploy target. Answer <em>in the file</em>, and be specific — <code>JWT, RS256, 15-min access + 30-day refresh</code> beats <code>JWT</code>. Tell it you're done; it produces <code>requirements.md</code>. Ask it to add one requirement (e.g. "FR-011: task tags"), confirm the file changed, approve. Enable the Security Baseline extension if offered.</li>
+      <li><strong>User stories + execution plan.</strong> INVEST stories in <code>user-stories.md</code> plus an <code>execution-plan.md</code>. Don't skip — the stories become the acceptance criteria for the tests. Review, approve.</li>
+      <li><strong>Application design.</strong> <code>application-design.md</code> — architecture, components, data model — reviewed <em>before any code</em>. Approve; the sign-off is logged to <code>aidlc-docs/audit.md</code>.</li>
+      <li><strong>Units.</strong> It splits the design into <code>units/units-breakdown.md</code> (Unit 01 Auth, Unit 02 Task CRUD, …). Approve.</li>
+      <li><strong>Construction, per unit.</strong> For Unit 01 it writes <code>construction/unit-01/functional-design.md</code>, then <code>nfr-design.md</code>. <strong>Only after you approve both</strong> does it write source (<code>src/auth/…</code> + tests) and log them in <code>code-artifacts.md</code>. Do at least Unit 01 fully.</li>
+      <li><strong>Resume from the state file.</strong> Start a fresh session and type <code>Continue AI-DLC for this project. Check aidlc-docs/aidlc-state.md for current status.</code> It reads the state and picks up at the next gate — a teammate on another tool could take it from here.</li>
+      <li><strong>Read the trail.</strong> Open <code>aidlc-docs/audit.md</code> — every gate, approval, and cross-document consistency check, in order. That's what vibe coding never leaves behind.</li>
+    </ol>
+    <h3>Expected result</h3>
+    <p>Working code for at least Unit 01 that matches the approved requirements and design — no drift — and a fully populated <code>aidlc-docs/</code> tree: workspace analysis, requirements, stories, design, units, per-unit functional + NFR designs, code-artifacts, plus <code>audit.md</code> and <code>aidlc-state.md</code>. You never hand-wrote a spec; you answered a structured interview and approved plans.</p>
+    <h3>If you get stuck</h3>
+    <ul>
+      <li><strong>Claude Code just starts coding.</strong> You dropped the <code>Using AI-DLC,</code> prefix, or <code>CLAUDE.md</code> didn't load — re-check with the "what instructions are active" question.</li>
+      <li><strong>The requirements come back vague.</strong> Your answers in the questions file were vague. One concrete decision per line.</li>
+      <li><strong>Context window fills mid-build.</strong> Expected — start a fresh session with the "Continue AI-DLC … check aidlc-state.md" prompt.</li>
+      <li><strong>It wants 30 stages for a tiny feature.</strong> Set the depth lower or say which stages to skip — the adaptive engine takes the instruction (Module 0).</li>
+    </ul>
+    <div class="callout">
+      <span class="label">Source</span>
+      Based on Pravin Borate, <a href="https://pub.towardsai.net/ai-dlc-claude-code-the-end-of-vibe-coding-a-complete-hands-on-guide-7e6cf6e026a2" target="_blank" rel="noopener">"AI-DLC + Claude Code: The End of Vibe Coding — A Complete Hands-On Guide"</a> (Towards AI), run against <a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">awslabs/aidlc-workflows</a>.
+    </div>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab9"> I completed Lab 9</label></div>
   </article>
 
   <div class="pager">

@@ -23,15 +23,15 @@
 </header>
 
 <div class="lab-workbook">
-  <span class="eyebrow">ลงมือทำ · บทละหนึ่งแล็บ</span>
+  <span class="eyebrow">ลงมือทำ · บทละหนึ่งแล็บ + capstone</span>
   <h1>คู่มือแล็บ</h1>
-  <p>เก้าแล็บ บทละหนึ่งอัน ทำ <strong>หลัง</strong> อ่านบทที่ตรงกัน — แต่ละแล็บเปลี่ยนแนวคิดของบทนั้นให้เป็นของจริงบนเครื่องคุณ แล็บต่อยอดกัน: Lab 1 หาปัญหาในไฟล์ steering ของคุณ, Lab 4 แก้มัน ต่อ ๆ กันไป</p>
-  <p><strong>สิ่งที่ต้องมีสำหรับแล็บส่วนใหญ่:</strong> ติดตั้ง Kiro IDE และลงชื่อเข้าใช้แล้ว และมีโปรเจกต์ <em>จริง</em> หนึ่งอันที่คุณรู้จักดี (ไม่ใช่โฟลเดอร์เปล่า) Lab 0 ไม่ต้องมีเครื่องมือ; Lab 8 ทำกับทีมได้ผลดีที่สุด</p>
+  <p>เก้าแล็บ บทละหนึ่งอัน บวก <strong>capstone</strong> ที่รันทั้ง loop จบ end to end ทำแล็บประจำบท <strong>หลัง</strong> อ่านบทที่ตรงกัน — แต่ละอันเปลี่ยนแนวคิดของบทนั้นให้เป็นของจริงบนเครื่องคุณ และต่อยอดกัน: Lab 1 หาปัญหาในไฟล์ steering, Lab 4 แก้มัน ต่อ ๆ กันไป <strong>Lab 9</strong> ร้อยทุกอย่างเข้าด้วยกัน: หนึ่งฟีเจอร์จาก intent ถึงโค้ดที่รีวิวแล้ว ผ่านทุกด่านของ AI-DLC</p>
+  <p><strong>สิ่งที่ต้องมีสำหรับแล็บส่วนใหญ่:</strong> ติดตั้ง Kiro IDE และลงชื่อเข้าใช้แล้ว และมีโปรเจกต์ <em>จริง</em> หนึ่งอันที่คุณรู้จักดี (ไม่ใช่โฟลเดอร์เปล่า) Lab 0 ไม่ต้องมีเครื่องมือ; Lab 8 ทำกับทีมได้ผลดีที่สุด; Lab 9 ใช้ Claude Code กับโฟลเดอร์เปล่า — ไม่ต้องใช้ Kiro IDE</p>
   <p>ติ๊กแล็บเมื่อทำเสร็จ — ความคืบหน้าบันทึกไว้บนเบราว์เซอร์นี้ และแสดงที่<a href="index.html">หน้าแรก</a> และข้าง ๆ แต่ละบทใน<a href="course-th.html">คอร์ส</a></p>
 
   <div class="lab-progress-bar">
     <div class="progress-head">
-      <span data-labs-progress><strong>แล็บ — เสร็จ 0 / 9</strong></span>
+      <span data-labs-progress><strong>แล็บ — เสร็จ 0 / 10</strong></span>
       <button type="button" class="btn btn-sm" data-labs-reset>ล้างความคืบหน้าแล็บ</button>
     </div>
   </div>
@@ -283,6 +283,45 @@
       <li><strong>ทีมไม่ว่าง</strong> ทำร่างคนเดียวก่อน แล้วจอง 15 นาทีเพื่อยืนยันชื่อและวันที่</li>
     </ul>
     <div class="done-row"><label><input type="checkbox" data-lab-check="lab8"> ทำ Lab 8 เสร็จแล้ว</label></div>
+  </article>
+
+  <!-- LAB 9 -->
+  <article class="lab-card" id="lab9">
+    <span class="lab-tag">Capstone · Lab 9</span>
+    <h2>หนึ่งฟีเจอร์ end to end ด้วย AI-DLC + Claude Code</h2>
+    <div class="lab-meta">
+      <span>⏱ <b>60–90 นาที</b></span>
+      <span>🔧 Claude Code CLI · git · โฟลเดอร์เปล่า · repo <code>awslabs/aidlc-workflows</code></span>
+      <span>🎯 พาหนึ่งฟีเจอร์เล็ก ๆ จาก intent ถึงโค้ดที่รีวิวแล้ว ผ่านทุกด่านของ AI-DLC — และเห็น trail ใน <code>aidlc-docs/</code> ที่มันทิ้งไว้</span>
+    </div>
+    <p>นี่คือทั้ง loop จากบทที่ 0 ทำด้วยมือหนึ่งรอบ ใช้ AI-DLC โอเพนซอร์สบน <strong>Claude Code</strong> — ไม่ใช่ Kiro IDE — ซึ่งเป็นประเด็น: process นี้ไม่ผูก harness (บทที่ 7) คุณจะสร้าง Task Management API เล็ก ๆ</p>
+    <h3>ขั้นตอน</h3>
+    <ol>
+      <li><strong>ติดตั้ง workflow</strong> โฟลเดอร์เปล่าใหม่, <code>git init</code> clone <code>awslabs/aidlc-workflows</code> คัด core workflow ของมันมาเป็น <code>CLAUDE.md</code> ของคุณ และคัด rule details ไปที่ <code>.aidlc-rule-details/</code> commit ทั้งคู่ — version process เหมือน version โค้ด เปิด <code>claude</code> แล้วถาม <em>"What instructions are currently active in this project?"</em> เพื่อยืนยันว่าโหลดแล้ว</li>
+      <li><strong>เริ่ม Inception</strong> ด้วย trigger บังคับ: <code>Using AI-DLC, build a REST API for task management with user authentication, task CRUD, priority levels, and due dates.</code> ถ้าไม่มี prefix <code>Using AI-DLC,</code> กฎจะถูกเมิน</li>
+      <li><strong>workspace detection</strong> มันเห็นโฟลเดอร์เปล่า → greenfield ข้าม reverse-engineering เขียน <code>aidlc-docs/inception/workspace-detection/workspace-analysis.md</code> แล้วรอ อนุมัติ</li>
+      <li><strong>requirements</strong> มันเขียน <code>requirement-verification-questions.md</code> — multiple choice: framework (Express / FastAPI / Spring / Django), database, auth (JWT vs OAuth2), deploy target ตอบ <em>ในไฟล์</em> และตอบให้เจาะจง — <code>JWT, RS256, access 15 นาที + refresh 30 วัน</code> ดีกว่า <code>JWT</code> บอกว่าเสร็จ มันสร้าง <code>requirements.md</code> ขอให้มันเพิ่มหนึ่ง requirement (เช่น "FR-011: task tags") ยืนยันว่าไฟล์เปลี่ยน อนุมัติ เปิด Security Baseline extension ถ้ามันเสนอ</li>
+      <li><strong>user stories + execution plan</strong> story แบบ INVEST ใน <code>user-stories.md</code> พร้อม <code>execution-plan.md</code> อย่าข้าม — story กลายเป็น acceptance criteria ของ test รีวิว อนุมัติ</li>
+      <li><strong>application design</strong> <code>application-design.md</code> — สถาปัตยกรรม, component, data model — รีวิว <em>ก่อนมีโค้ด</em> อนุมัติ; การเซ็นถูก log ไปที่ <code>aidlc-docs/audit.md</code></li>
+      <li><strong>units</strong> มันแบ่ง design เป็น <code>units/units-breakdown.md</code> (Unit 01 Auth, Unit 02 Task CRUD, …) อนุมัติ</li>
+      <li><strong>Construction ต่อ unit</strong> สำหรับ Unit 01 มันเขียน <code>construction/unit-01/functional-design.md</code> แล้วตามด้วย <code>nfr-design.md</code> <strong>หลังคุณอนุมัติทั้งสองเท่านั้น</strong> มันถึงเขียน source (<code>src/auth/…</code> + test) และ log ไว้ใน <code>code-artifacts.md</code> ทำ Unit 01 ให้ครบอย่างน้อยหนึ่งอัน</li>
+      <li><strong>resume จาก state file</strong> เปิด session ใหม่แล้วพิมพ์ <code>Continue AI-DLC for this project. Check aidlc-docs/aidlc-state.md for current status.</code> มันอ่าน state แล้วทำต่อที่ด่านถัดไป — เพื่อนร่วมทีมบนเครื่องมืออื่นรับช่วงต่อจากตรงนี้ได้</li>
+      <li><strong>อ่าน trail</strong> เปิด <code>aidlc-docs/audit.md</code> — ทุกด่าน ทุกการอนุมัติ ทุก cross-document consistency check เรียงตามลำดับ นั่นคือสิ่งที่ vibe coding ไม่เคยทิ้งไว้</li>
+    </ol>
+    <h3>ผลลัพธ์ที่คาดหวัง</h3>
+    <p>โค้ดที่ทำงานได้อย่างน้อยของ Unit 01 ที่ตรงกับ requirements และ design ที่อนุมัติ — ไม่มี drift — และ <code>aidlc-docs/</code> tree ที่เต็ม: workspace analysis, requirements, stories, design, units, functional + NFR design ต่อ unit, code-artifacts บวก <code>audit.md</code> และ <code>aidlc-state.md</code> คุณไม่เคยเขียน spec ด้วยมือ คุณตอบการสัมภาษณ์ที่มีโครงสร้างและอนุมัติแผน</p>
+    <h3>ถ้าติด</h3>
+    <ul>
+      <li><strong>Claude Code เริ่มเขียนโค้ดเลย</strong> คุณลืม prefix <code>Using AI-DLC,</code> หรือ <code>CLAUDE.md</code> ไม่โหลด — เช็คซ้ำด้วยคำถาม "what instructions are active"</li>
+      <li><strong>requirements กลับมากว้าง ๆ</strong> คำตอบในไฟล์คำถามกว้างไป หนึ่งการตัดสินใจที่เจาะจงต่อบรรทัด</li>
+      <li><strong>context window เต็มกลางทาง</strong> ปกติ — เปิด session ใหม่ด้วย prompt "Continue AI-DLC … check aidlc-state.md"</li>
+      <li><strong>มันจะรัน 30 stage สำหรับฟีเจอร์เล็ก ๆ</strong> ตั้ง depth ให้ต่ำลงหรือบอกว่าจะข้าม stage ไหน — engine แบบ adaptive รับคำสั่ง (บทที่ 0)</li>
+    </ul>
+    <div class="callout">
+      <span class="label">ที่มา</span>
+      อิงจาก Pravin Borate, <a href="https://pub.towardsai.net/ai-dlc-claude-code-the-end-of-vibe-coding-a-complete-hands-on-guide-7e6cf6e026a2" target="_blank" rel="noopener">"AI-DLC + Claude Code: The End of Vibe Coding — A Complete Hands-On Guide"</a> (Towards AI) รันกับ <a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">awslabs/aidlc-workflows</a>
+    </div>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab9"> ทำ Lab 9 เสร็จแล้ว</label></div>
   </article>
 
   <div class="pager">
