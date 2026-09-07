@@ -1185,6 +1185,20 @@ HTTP endpoint"]
     </table>
     <p>Practical upshot: teammates can be on different tools on the same project. Dev A in Cursor, Dev B in Claude Code, Dev C in Amazon Q — they all read and write the same <code>aidlc-docs/aidlc-state.md</code>, and a bolt started in one IDE resumes in another. A private Power you package for your team travels the same way.</p>
 
+    <h2>A managed alternative — AIDLC Collaborative</h2>
+    <p>The CLI harnesses above are single-developer, git-native, and infrastructure-free — that's their whole appeal. AWS also ships a reference implementation that takes the opposite trade: <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/" target="_blank" rel="noopener"><strong>AIDLC Collaborative</strong></a>, a hosted, multi-user platform that runs the same upstream AI-DLC stages, personas, and sensors — imported unmodified, pinned to a ref — inside <strong>Amazon Bedrock AgentCore</strong> sessions, with a graph database behind every artifact instead of a folder of markdown.</p>
+    <p>Work is organised around an <strong>intent</strong> (a title + prompt, or an imported GitHub/GitLab/Jira issue) instead of a chat prompt. The orchestrator compiles it into a plan, walks Inception → Construction → Delivery, and pauses at human gates — but now several people and agents can watch and steer the same run at once, with live sensors for duration, token usage, and cost per stage.</p>
+    <table>
+      <tr><th>What the CLI harnesses leave informal</th><th>What the platform makes structural</th></tr>
+      <tr><td>Traceability lives in prose (<code>aidlc-docs/</code> markdown)</td><td>Every requirement → story → design → decision → code change is a typed edge in a graph database, traceable both ways</td></tr>
+      <tr><td>One developer, one working copy</td><td>Real-time multi-user collaboration over WebSocket + CRDT — a shared workbench, not a local session</td></tr>
+      <tr><td>"Verify and approve" is a convention, not a control</td><td>Structured approval gates with mandatory ambiguity detection before a stage can proceed</td></tr>
+      <tr><td>Context resets between sessions</td><td>Persistent team knowledge is injected back into each stage's prompt</td></tr>
+      <tr><td>Units of work run one after another</td><td>Parallel agent dispatch across independent units, fanned out by a dependency graph and fanned back in by the engine</td></tr>
+    </table>
+    <p>It's still the same methodology from Module 0 — same phases, same gates, same governance holes to watch for — just re-hosted for a team instead of a terminal. Treat it as the option to reach for once a pilot outgrows "one engineer, one repo, one CLI" and needs shared observability across a squad.</p>
+    <div class="callout"><span class="label">Source</span> <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/" target="_blank" rel="noopener">aws-samples/sample-collaborative-ai-dlc</a> documentation.</div>
+
     <h2>How intelligent loading decides</h2>
     <figure class="diagram">
 <pre class="mermaid">

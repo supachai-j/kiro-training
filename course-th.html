@@ -1182,6 +1182,20 @@ HTTP endpoint"]
     </table>
     <p>ผลในทางปฏิบัติ: เพื่อนร่วมทีมใช้เครื่องมือคนละตัวบนโปรเจกต์เดียวกันได้ Dev A ใน Cursor, Dev B ใน Claude Code, Dev C ใน Amazon Q — ทุกคนอ่านและเขียน <code>aidlc-docs/aidlc-state.md</code> เดียวกัน และ bolt ที่เริ่มใน IDE หนึ่งทำต่อในอีก IDE ได้ Power ส่วนตัวที่คุณแพ็กให้ทีมก็เดินทางแบบเดียวกัน</p>
 
+    <h2>ทางเลือกแบบ managed — AIDLC Collaborative</h2>
+    <p>harness แบบ CLI ข้างบนเป็นของนักพัฒนาคนเดียว, git-native, ไม่ต้องมี infrastructure — นั่นคือจุดขายทั้งหมดของมัน AWS ยังมี reference implementation อีกแบบที่เลือกสวนทาง: <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/" target="_blank" rel="noopener"><strong>AIDLC Collaborative</strong></a> แพลตฟอร์ม hosted แบบหลายผู้ใช้ที่รัน stage, persona และ sensor ของ AI-DLC ต้นทางตัวเดิม — import มาแบบไม่แก้ไข ปักหมุดที่ ref หนึ่ง — อยู่ใน session ของ <strong>Amazon Bedrock AgentCore</strong> โดยมี graph database อยู่หลัง artifact ทุกชิ้นแทนโฟลเดอร์ markdown</p>
+    <p>งานจัดกลุ่มรอบ <strong>intent</strong> (ชื่อเรื่อง + prompt หรือ import จาก issue ของ GitHub/GitLab/Jira) แทนที่จะเป็น chat prompt orchestrator คอมไพล์มันเป็นแผน เดินผ่าน Inception → Construction → Delivery แล้วหยุดที่ human gate — แต่ตอนนี้หลายคนและหลาย agent ดูและบังคับทิศทาง run เดียวกันพร้อมกันได้ พร้อม sensor แบบ live บอกเวลา, token ที่ใช้ และ cost ต่อ stage</p>
+    <table>
+      <tr><th>สิ่งที่ CLI harness ปล่อยให้เป็นเรื่องไม่เป็นทางการ</th><th>สิ่งที่แพลตฟอร์มทำให้เป็นโครงสร้าง</th></tr>
+      <tr><td>traceability อยู่ในรูปข้อความ (markdown ใน <code>aidlc-docs/</code>)</td><td>requirement → story → design → decision → code change ทุกอันเป็น edge ที่มี type ใน graph database สืบย้อนได้ทั้งสองทาง</td></tr>
+      <tr><td>นักพัฒนาคนเดียว working copy เดียว</td><td>ทำงานร่วมกันแบบ real-time หลายคนผ่าน WebSocket + CRDT — เป็น workbench ที่แชร์กัน ไม่ใช่ session เฉพาะเครื่อง</td></tr>
+      <tr><td>"verify and approve" เป็นแค่ธรรมเนียม ไม่ใช่ control</td><td>approval gate ที่มีโครงสร้าง พร้อม ambiguity detection ที่บังคับก่อน stage จะไปต่อได้</td></tr>
+      <tr><td>context รีเซตระหว่าง session</td><td>ความรู้ของทีมที่สะสมไว้ถูกฉีดกลับเข้า prompt ของแต่ละ stage</td></tr>
+      <tr><td>unit of work ทำทีละอันตามลำดับ</td><td>ส่ง agent ทำงานขนานกันข้าม unit ที่เป็นอิสระต่อกัน กระจายงานออกตาม dependency graph แล้ว engine รวมผลกลับเอง</td></tr>
+    </table>
+    <p>มันยังเป็นวิธีการเดียวกับใน Module 0 — phase เดิม, gate เดิม, governance hole เดิมที่ต้องระวัง — แค่ย้ายไปโฮสต์ให้ทั้งทีมแทนที่จะเป็น terminal เดียว มองมันเป็นตัวเลือกที่หยิบมาใช้ตอน pilot โตเกิน "วิศวกรคนเดียว repo เดียว CLI เดียว" แล้วต้องการ observability ที่แชร์กันทั้ง squad</p>
+    <div class="callout"><span class="label">ที่มา</span> เอกสารของ <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/" target="_blank" rel="noopener">aws-samples/sample-collaborative-ai-dlc</a></div>
+
     <h2>intelligent loading ตัดสินใจยังไง</h2>
     <figure class="diagram">
 <pre class="mermaid">
