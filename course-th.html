@@ -274,6 +274,7 @@ flowchart TB
       <li><a href="https://aws.amazon.com/blogs/industries/ai-driven-development-lifecycle-for-financial-services/" target="_blank" rel="noopener">"AI-Driven Development Lifecycle for Financial Services"</a>, AWS for Industries Blog — AI-DLC ในบริบทที่มีการกำกับ</li>
       <li><a href="https://www.ibm.com/think/topics/ai-dlc" target="_blank" rel="noopener">IBM, "AI-DLC: The AI-Driven Development Lifecycle"</a> — คำอธิบายจากภายนอก ใช้ cross-check มุมมองของ AWS</li>
       <li>Dirk Michel, <a href="https://towardsaws.com/on-kiro-and-the-ai-driven-development-lifecycle-3459c2c19751" target="_blank" rel="noopener">"On Kiro and the AI-Driven Development Lifecycle"</a>, Towards AWS — ไฟล์ spec ของ Kiro แมปกับเฟส AI-DLC ยังไง</li>
+      <li>Wiz, <a href="https://www.wiz.io/academy/ai-security/ai-driven-development-lifecycle-ai-dlc" target="_blank" rel="noopener">"AI-Driven Development Lifecycle (AI-DLC)"</a> — บทอ่านที่เน้นด้าน security: threat class เฉพาะของ AI-DLC และ control แบบ "security ด้วยความเร็ว bolt" ในบทที่ 8</li>
       <li>เรื่อง "vibe coding": Andrej Karpathy, โพสต์บน X, 2 ก.พ. 2025; ดู <a href="https://www.coderabbit.ai/blog/a-semantic-history-how-the-term-vibe-coding-went-from-a-tweet-to-prod" target="_blank" rel="noopener">"A semantic history of vibe coding" ของ CodeRabbit</a> สำหรับคำพูดต้นฉบับและ timeline</li>
     </ul>
   </article>
@@ -1254,6 +1255,34 @@ keyword ของ Power ที่ติดตั้งไว้"}
       <li><strong>track defect-escape rate คู่กับ cycle time</strong> ใน retro เร็ว 10 เท่าพร้อม escaped defect 3 เท่า ไม่ใช่เร็วขึ้น</li>
       <li>pilot บน service ภายในที่ blast radius ต่ำ — <em>ไม่ใช่</em> เส้นทางจ่ายเงิน — เพื่อให้ bolt ที่พลาดราคาเท่ากับความอาย ไม่ใช่รายงานเหตุการณ์</li>
     </ul>
+
+    <h2>security control ที่วิ่งด้วยความเร็ว bolt</h2>
+    <p>โค้ดที่พิมพ์มือไม่เคยถูก scanner จำกัดความเร็ว — คนพิมพ์ไม่ทัน SAST job ที่รันกลางคืน ภายใต้ AI-DLC สมมติฐานนั้นหายไป: <em>ความเร็วถูกจำกัดด้วยกำลัง review, security และ governance เท่านั้น</em> ถ้า scan รันเป็น cron กลางคืนแต่ agent ส่งงานทุกชั่วโมง ช่องว่างนั้น <strong>คือ</strong> หน้าต่างที่เปิดช่องโหว่ security ต้องวิ่งด้วยจังหวะเดียวกับ bolt</p>
+    <p>failure mode ที่ AI-DLC เพิ่มขึ้นมาจาก appsec ปกติ — เรียกชื่อไว้ให้ pilot เฝ้าระวัง:</p>
+    <ul>
+      <li><strong>โค้ดที่ผ่าน lint แต่ผิด</strong> syntax สะอาด ดูสมเหตุผล แต่มี default ที่ไม่ปลอดภัยหรือ logic flaw ซ่อนอยู่ การวิเคราะห์ครั้งหนึ่งนับได้ 4,241 CWE instance ในชุดไฟล์ที่ AI สร้าง</li>
+      <li><strong>dependency hallucination</strong> ราว 20% ของ package ที่ AI แนะนำชี้ไปที่ package ที่ไม่มีอยู่จริง ผู้โจมตีจดชื่อพวกนั้นไว้แล้วรอ — "slopsquatting" agent เลือก dependency โดยข้ามขั้นตอนที่คนเคยตรวจ</li>
+      <li><strong>secret รั่วเร็วขึ้น</strong> 4 ใน 5 ของ secret ที่ตรวจยืนยันแล้วซึ่งพบใน public repo เกี่ยวกับ AI — key ที่วางลงใน prompt แล้ว commit ไปพร้อมโค้ดที่ generate</li>
+      <li><strong>หนึ่ง misconfig หลาย deploy</strong> bucket ที่เป็น public หรือ IAM role ที่กว้างเกินใน IaC template ที่ generate ถูกทำซ้ำในทุก environment ที่ agent แตะ ก่อนใครจะทันสังเกต</li>
+      <li><strong>agent ใน pipeline มีสิทธิ์เกิน</strong> มันต้องมี credential เพื่อ build, test และ deploy ถ้ากว้างเกิน agent ที่ hallucinate หรือถูกยึดก็สร้างความเสียหายจริงทั่ว environment</li>
+      <li><strong>security config ที่ดูถูกแต่ผิด</strong> IAM policy หรือ security-group rule ที่อ่านแล้วดูถูกต้อง แต่เงียบ ๆ อนุญาตมากกว่าที่ตั้งใจ</li>
+    </ul>
+    <div class="example">
+      <span class="label">ทำไม "ทุก scan ผ่าน" ยังไม่พอ</span>
+      <p>agent สร้าง microservice เลือก base image ที่มี CVE ที่รู้กันอยู่ ตั้ง load balancer แบบ public แนบ service account ที่อ่าน data store ของ production ได้ แล้วส่งผ่าน pipeline อัตโนมัติ แต่ละ artifact ผ่าน scan แคบ ๆ ของตัวเอง แต่ <em>การรวมกัน</em> — เปิดสู่อินเทอร์เน็ต + มีช่องโหว่ + สิทธิ์เกิน + ห่างข้อมูลอ่อนไหวแค่ก้าวเดียว — คือ attack path ระดับวิกฤต และเห็นได้ก็ต่อเมื่อมองโค้ด, cloud, identity และ data พร้อมกัน</p>
+    </div>
+    <p>สิ่งที่เราวางไว้สำหรับ pilot:</p>
+    <ul>
+      <li><strong>scan ทุก stage ที่ agent แตะ ด้วยจังหวะของมัน</strong> SAST, SCA, secrets, IaC และ sensitive-data scan ใน IDE, ตอน PR, ใน CI และต่อเนื่องใน production — ไม่ใช่แค่กลางคืน</li>
+      <li><strong>least-privilege ที่ตัว agent เอง</strong> credential ของ CI/CD และ cloud ที่ scope แคบ พร้อมวิธีดูว่าแต่ละ agent <em>ทำอะไรได้</em> และ <em>กำลังทำอะไร</em> คือกฎ <code>.kiroignore</code> + permissions ข้างบน ขยายมาถึง pipeline</li>
+      <li><strong>triage ด้วย exploitability ไม่ใช่จำนวน</strong> finding เป็นแค่ทฤษฎีจนกว่าจะรู้ว่าโค้ด deploy แล้วไหม, เปิดสู่อินเทอร์เน็ตไหม, ถือ identity อะไร, แตะข้อมูลอะไรได้ เมื่อ agent สร้าง finding วันละหลายร้อย บริบทนั้นคือสิ่งที่ทำให้คิวยังไหวอยู่</li>
+      <li><strong>เก็บ trail ของ provenance</strong> ต้องย้อนจาก artifact ที่ deploy กลับไปที่ repo, agent ที่สร้าง, คนที่อนุมัติ และ steering / policy ที่กำกับได้ NIST AI RMF, EU AI Act และ SOC 2 Type II ต่างต้องการ audit trail แบบ "เครื่องเขียน vs คนอนุมัติ" — และ artifact ที่มีโครงสร้างของ AI-DLC (spec, plan, test, config) ให้เราแบบนั้นโดยปริยาย <em>ถ้าเราเก็บมันไว้</em></li>
+      <li><strong>ดันการตัดสินใจที่กำหนด attack surface เข้าไปใน Inception</strong> ใช้ cloud service ไหน, ข้อมูลอะไร, identity model แบบไหน — ตัดสินและ review ที่ Inception การ review security ตรงนั้นตัดความเสี่ยงทั้งกลุ่มออกก่อนที่โค้ดจะมี</li>
+    </ul>
+    <div class="callout">
+      <span class="label">ที่มา</span>
+      threat และ control ในส่วนนี้อิงตาม Wiz, <a href="https://www.wiz.io/academy/ai-security/ai-driven-development-lifecycle-ai-dlc" target="_blank" rel="noopener">"AI-Driven Development Lifecycle (AI-DLC)"</a> — บทอ่านที่เน้นด้าน security ของ methodology นี้
+    </div>
 
     <h2>MCP &amp; Powers ที่จะเริ่มด้วย</h2>
     <ul>

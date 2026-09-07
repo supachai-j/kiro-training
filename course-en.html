@@ -274,6 +274,7 @@ flowchart TB
       <li><a href="https://aws.amazon.com/blogs/industries/ai-driven-development-lifecycle-for-financial-services/" target="_blank" rel="noopener">"AI-Driven Development Lifecycle for Financial Services"</a>, AWS for Industries Blog — AI-DLC applied in a regulated context.</li>
       <li><a href="https://www.ibm.com/think/topics/ai-dlc" target="_blank" rel="noopener">IBM, "AI-DLC: The AI-Driven Development Lifecycle"</a> — a third-party explainer, useful as a cross-check on AWS's framing.</li>
       <li>Dirk Michel, <a href="https://towardsaws.com/on-kiro-and-the-ai-driven-development-lifecycle-3459c2c19751" target="_blank" rel="noopener">"On Kiro and the AI-Driven Development Lifecycle"</a>, Towards AWS — how Kiro's spec files map onto the AI-DLC phases.</li>
+      <li>Wiz, <a href="https://www.wiz.io/academy/ai-security/ai-driven-development-lifecycle-ai-dlc" target="_blank" rel="noopener">"AI-Driven Development Lifecycle (AI-DLC)"</a> — a security-focused read: the AI-DLC-specific threat classes and the "security at bolt speed" controls in Module 8.</li>
       <li>On "vibe coding": Andrej Karpathy, post on X, 2 Feb 2025; see CodeRabbit's <a href="https://www.coderabbit.ai/blog/a-semantic-history-how-the-term-vibe-coding-went-from-a-tweet-to-prod" target="_blank" rel="noopener">"A semantic history of vibe coding"</a> for the original quote and timeline.</li>
     </ul>
   </article>
@@ -1257,6 +1258,34 @@ each installed Power's keywords"}
       <li><strong>Track defect-escape rate next to cycle time</strong> in the retro. 10× speed with 3× escaped defects is not faster.</li>
       <li>Pilot on a low-blast-radius internal service — <em>not</em> the payments path — so a bad bolt costs embarrassment, not an incident report.</li>
     </ul>
+
+    <h2>Security controls that run at bolt speed</h2>
+    <p>Hand-typed code was never rate-limited by our scanners — a person can't out-type a nightly SAST job. Under AI-DLC that assumption is gone: <em>velocity is now limited only by review, security, and governance capacity</em>. If scanning runs on a nightly cron and the agent ships every hour, that gap <strong>is</strong> the exposure window. Security has to move at the cadence of the bolt.</p>
+    <p>The failure modes AI-DLC adds on top of ordinary appsec — name them so the pilot watches for them:</p>
+    <ul>
+      <li><strong>Code that passes lint but is wrong.</strong> Syntactically clean and plausible, with an insecure default or a hidden logic flaw. One analysis counted 4,241 CWE instances across a set of AI-generated files.</li>
+      <li><strong>Dependency hallucination.</strong> Roughly 20% of AI package suggestions name a package that doesn't exist. Attackers register those names and wait — "slopsquatting". The agent picks dependencies without the human vetting step we used to have.</li>
+      <li><strong>Secrets leak faster.</strong> Four of the five most common validated secrets found in public repos are AI-related — a key pasted into a prompt, then committed alongside the generated code.</li>
+      <li><strong>One misconfig, many deploys.</strong> A public bucket or an over-broad IAM role in a generated IaC template gets replicated across every environment the agent touches before anyone notices.</li>
+      <li><strong>The pipeline agent is over-privileged.</strong> It needs credentials to build, test and deploy; too broad, and a hallucinating or compromised agent does real damage across the environment.</li>
+      <li><strong>Plausible-but-wrong security config.</strong> An IAM policy or a security-group rule that reads as correct and quietly allows more than intended.</li>
+    </ul>
+    <div class="example">
+      <span class="label">Why "every scan passed" isn't enough</span>
+      <p>An agent generates a microservice, picks a base image with known CVEs, provisions a public load balancer, attaches a service account that can read a production data store, and ships it through the automated pipeline. Each artifact passes its own narrow scan. The <em>combination</em> — internet-exposed + vulnerable + over-permissioned + one hop from sensitive data — is a critical attack path, and it's only visible when you look at code, cloud, identity, and data together.</p>
+    </div>
+    <p>What we put in place for the pilot:</p>
+    <ul>
+      <li><strong>Scan every stage the agent touches, at its cadence.</strong> SAST, SCA, secrets, IaC and sensitive-data scanning in the IDE, at PR time, in CI, and continuously in production — not just nightly.</li>
+      <li><strong>Least-privilege the agents themselves.</strong> Tightly scoped CI/CD and cloud credentials, plus a way to see what each agent <em>can</em> do and what it <em>is</em> doing. This is the <code>.kiroignore</code> + permissions rule above, extended to the pipeline.</li>
+      <li><strong>Triage by exploitability, not by count.</strong> A finding is theoretical until you know whether the code is deployed, internet-exposed, what identity it holds, and what data it can reach. When the agent produces hundreds of findings a day, that context is what keeps the queue survivable.</li>
+      <li><strong>Keep the provenance trail.</strong> Be able to trace a deployed artifact back to its repo, the agent that generated it, the person who approved it, and the steering / policy that governed it. NIST AI RMF, the EU AI Act and SOC 2 Type II all want a "machine-authored vs human-approved" audit trail — and AI-DLC's structured artifacts (specs, plans, tests, configs) give us one by default <em>if we keep them</em>.</li>
+      <li><strong>Push the decisions that set the attack surface into Inception.</strong> Which cloud services, what data, which identity model — decided and reviewed at Inception. A security review there removes whole classes of risk before any code exists.</li>
+    </ul>
+    <div class="callout">
+      <span class="label">Source</span>
+      Threats and controls in this section follow Wiz, <a href="https://www.wiz.io/academy/ai-security/ai-driven-development-lifecycle-ai-dlc" target="_blank" rel="noopener">"AI-Driven Development Lifecycle (AI-DLC)"</a> — a security-focused read on the methodology.
+    </div>
 
     <h2>MCP &amp; Powers to start with</h2>
     <ul>
