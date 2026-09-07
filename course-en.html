@@ -178,8 +178,16 @@ flowchart TB
     </table>
     <div class="callout warn">
       <span class="label">Note on the list</span>
-      Different write-ups of AI-DLC give slightly different counts and wording (some say ten). Treat this as the shape of the philosophy, not a fixed catechism — the canonical source is Raja SP's method-definition paper (linked below).
+      The counts vary by write-up. The method-definition paper actually names a <strong>10th principle — "No Hard-Wired, Opinionated SDLC Workflows"</strong>: rather than prescribing a path for new builds vs refactors vs defect fixes, the AI recommends the top-level plan from your stated intent. And the open-source engine team describes a tighter set of five design drivers — <em>adaptive execution</em>, <em>human-in-the-loop</em>, <em>methodology-first (tool-agnostic)</em>, <em>reproducible</em>, <em>no duplication (one source of truth)</em>. Treat all of this as the shape of the philosophy, not a fixed catechism.
     </div>
+
+    <h2>Methodology vs the open-source engine</h2>
+    <p>Keep two things apart. The <strong>methodology</strong> is the 3 phases and the loop above. The <strong>open-source engine</strong> — <code>awslabs/aidlc-workflows</code>, which the Kiro CLI can run — turns that into an execution pipeline: <strong>5 phases and 33 stages</strong> (Initialization, Ideation, Inception, Construction, Operation), a 14-agent roster, and approval gates at every stage.</p>
+    <ul>
+      <li><strong>Stage selection is binary</strong> — each stage runs or is skipped based on the task. A known-cause bug fix skips user stories and application design; a new platform runs everything. <em>Reverse Engineering</em> only fires for brownfield (existing) code.</li>
+      <li><strong>Depth is elastic.</strong> Within the stages that do run, a depth level — <em>Minimal / Standard / Comprehensive</em> — scales how much detail and reasoning each artifact carries, triggered by complexity and risk.</li>
+      <li><strong>Test strategy is a separate dial.</strong> Also Minimal / Standard / Comprehensive, and independent of depth — so you can run a Minimal-depth bug fix while still demanding Comprehensive security and integration test coverage.</li>
+    </ul>
 
     <h2>Where Kiro fits</h2>
     <p>Keep three levels straight:</p>
@@ -206,11 +214,17 @@ flowchart TB
       <p><strong>The point:</strong> the rework-causing question ("just admins?") got asked in Inception, when the answer cost a sentence — not in code review, when it would have cost a rewrite of the endpoint and the button.</p>
     </div>
 
-    <h2>Honest caveats</h2>
+    <h2>Honest caveats — and the governance holes</h2>
+    <p>Most writing about AI-DLC so far is evangelism. The sharper critique: the classic SDLC quietly bakes in controls — peer review, audit trails, release gates — and running plan, code, and tests through in a single afternoon <em>dissolves those controls faster than it replaces them</em>. Two holes are worth naming.</p>
     <ul>
-      <li>AI-DLC is young (mid-2025) and still moving. The AWS blog and whitepaper are the canonical description; tooling and case studies are catching up.</li>
-      <li>"Mob" sessions assume a real cross-functional team available at the same time. Small or solo teams adapt the model rather than run it as written.</li>
-      <li>It is a vendor methodology — AWS benefits when you adopt it. The underlying principles (requirements before code, humans on the decisions, short loops, context in the repo) hold up regardless of which tool you use.</li>
+      <li><strong>"Verify and approve" is not a control.</strong> The methodology says humans approve at every gate, but doesn't say who, against what standard, recorded where. Fill it in: a <strong>named approver per unit of work</strong> — and not the person who prompted the plan — a one-page review checklist (data classifications touched, blast radius, rollback path, deviations from the steering files), and a decision log bound to the spec and steering-file versions. "The room agreed" satisfies no auditor.</li>
+      <li><strong>The self-grading problem.</strong> In Construction the same agent writes the code <em>and</em> its tests. A green suite written by the code's author proves consistency, not correctness — an agent that misread a requirement writes tests that faithfully verify the misreading. At bolt speed the error compounds silently until production finds it. The fix: human-reviewed <strong>acceptance tests, frozen during Inception</strong>, before Construction — the agent implements against a bar it did not set.</li>
+    </ul>
+    <ul>
+      <li><strong>Velocity is not stability.</strong> DORA's 2025 survey (AI-focused, ~5,000 respondents) found AI adoption now <em>positively</em> associated with delivery throughput but still <em>negatively</em> with delivery stability. Instrument only speed and you're measuring the axis that already turned in your favour. Track <strong>defect-escape rate next to cycle time</strong>, or you've just moved QA into production.</li>
+      <li><strong>The productivity numbers are AWS's, not yours.</strong> Unstructured AI-assistant adoption buys roughly 10–15%; the claimed 10–15× is, in AWS's telling, the methodology. Treat vendor benchmarks as directional — nobody has published the failure cases yet.</li>
+      <li><strong>Mob sessions cost senior attention.</strong> They demand your most senior people, synchronously, for hours. "The lifecycle spends less on typing and more on senior attention" — and rubber-stamp approval "decays into reflexive clicking within a week" without a real checklist.</li>
+      <li>AI-DLC is young (mid-2025) and still moving; it's a vendor methodology (AWS benefits when you adopt it). The underlying principles — requirements before code, humans on the decisions, short loops, context in the repo — hold up regardless of tool. Small or solo teams adapt the Mob model rather than run it as written.</li>
     </ul>
 
     <div class="key-takeaways">
@@ -222,6 +236,7 @@ flowchart TB
         <li>Vocabulary: Sprint → <strong>Bolt</strong>, Epic → <strong>Unit of work</strong>, solo/async → <strong>Mob</strong>.</li>
         <li>AI-DLC is the methodology; spec-driven development structures its artifacts; Kiro is the tool. This course's Specs and Steering modules <em>are</em> AI-DLC in practice.</li>
         <li>The 76-day / 100k-line-Rust story is a vendor anecdote — useful signal, not an audited result.</li>
+        <li>It removes SDLC controls faster than it replaces them — add a named approver per unit of work, freeze acceptance tests in Inception, and track defect-escape rate, not just speed.</li>
       </ul>
     </div>
     <div class="callout tip">
@@ -249,6 +264,8 @@ flowchart TB
       <li><a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">awslabs/aidlc-workflows</a> — AWS Labs' open-source AI-DLC workflow engine for coding agents (MIT-0 licence); the principles and gates are encoded here.</li>
       <li><a href="https://ai-dlc.dev/" target="_blank" rel="noopener">ai-dlc.dev</a> — community reference site for the methodology and its principles.</li>
       <li><a href="https://dev.to/aws-heroes/why-ai-dlc-exists-reimagining-software-development-in-an-ai-first-world-4f20" target="_blank" rel="noopener">"Why AI-DLC Exists: Reimagining Software Development in an AI-First World"</a>, DEV / AWS Heroes — walks through the founding principles.</li>
+      <li><a href="https://aws.amazon.com/blogs/devops/open-sourcing-adaptive-workflows-for-ai-driven-development-life-cycle-ai-dlc/" target="_blank" rel="noopener">"Open-Sourcing Adaptive Workflows for AI-DLC"</a>, AWS DevOps Blog — the 3 challenges (one-size-fits-all, fixed depth, over-automation), Principle 10, and the adaptive engine.</li>
+      <li><a href="https://www.exploreagentic.ai/insights/ai-dlc/" target="_blank" rel="noopener">"AI-DLC Explained: What It Changes — and What It Breaks in Your Governance Model"</a>, Explore Agentic — the operator's critical read: the two governance holes, the self-grading problem, velocity vs stability.</li>
       <li><a href="https://aws.amazon.com/blogs/industries/ai-driven-development-lifecycle-for-financial-services/" target="_blank" rel="noopener">"AI-Driven Development Lifecycle for Financial Services"</a>, AWS for Industries Blog — AI-DLC applied in a regulated context.</li>
       <li><a href="https://www.ibm.com/think/topics/ai-dlc" target="_blank" rel="noopener">IBM, "AI-DLC: The AI-Driven Development Lifecycle"</a> — a third-party explainer, useful as a cross-check on AWS's framing.</li>
       <li>Dirk Michel, <a href="https://towardsaws.com/on-kiro-and-the-ai-driven-development-lifecycle-3459c2c19751" target="_blank" rel="noopener">"On Kiro and the AI-Driven Development Lifecycle"</a>, Towards AWS — how Kiro's spec files map onto the AI-DLC phases.</li>
@@ -1173,6 +1190,18 @@ each installed Power's keywords"}
       <li>Hooks: non-blocking only until we trust them. No <code>PreToolUse</code> / <code>PromptSubmit</code> blockers early.</li>
     </ul>
 
+    <h2>Governance to write down before the first bolt</h2>
+    <p>AI-DLC removes the SDLC controls we rely on faster than it replaces them (Module 0). These are ours to add, and it's much cheaper to write them once, up front, than to retrofit onto a team already moving at bolt speed:</p>
+    <ul>
+      <li><strong>Named approver per unit of work.</strong> A specific person signs off on the AI-drafted plan — and it is <em>not</em> whoever prompted it. Recorded, not just spoken in the mob.</li>
+      <li><strong>One-page review standard.</strong> What the approver actually checks: data classifications touched, blast radius, rollback path, and any deviation from the steering files. Without a checklist, sign-off "decays into reflexive clicking within a week".</li>
+      <li><strong>Acceptance tests are an Inception exit criterion.</strong> Inception isn't done when requirements exist — it's done when the human-reviewed tests that will judge Construction exist. The agent then implements against a bar it did not set (kills the self-grading problem).</li>
+      <li><strong>One change ticket per unit of work.</strong> Run every unit through our existing change process; the artifact trail the spec produces becomes the ticket's evidence. Bolts compress dev time, not change control.</li>
+      <li><strong>Agent evals before scaling one team to more.</strong> A pilot team can cover a missing eval harness with attention; five teams can't, and by then agent-written code has outrun anyone's ability to read it.</li>
+      <li><strong>Track defect-escape rate next to cycle time</strong> in the retro. 10× speed with 3× escaped defects is not faster.</li>
+      <li>Pilot on a low-blast-radius internal service — <em>not</em> the payments path — so a bad bolt costs embarrassment, not an incident report.</li>
+    </ul>
+
     <h2>MCP &amp; Powers to start with</h2>
     <ul>
       <li><strong>AWS Documentation MCP server</strong> in the shared <code>mcp.json</code> — the common thread across our stacks.</li>
@@ -1188,8 +1217,9 @@ each installed Power's keywords"}
       <tr><td>Per-language <code>fileMatch</code> steering</td><td>Whoever owns that stack</td><td>Merged PR</td></tr>
       <tr><td><code>.kiroignore</code> + Permissions reviewed</td><td>Lead</td><td>Merged PR</td></tr>
       <tr><td>Workspace <code>mcp.json</code> (AWS docs, vetted only)</td><td>Lead</td><td>Merged PR</td></tr>
-      <tr><td>First ticket shipped via a spec</td><td>Pair</td><td>Spec folder + PR merged</td></tr>
-      <tr><td>2-week retro: keep / adjust / stop</td><td>All</td><td>Notes shared</td></tr>
+      <tr><td>One-page review-gate policy (named approver, checklist, decision log)</td><td>Whoever owns change process</td><td>Signed off, before bolt 1</td></tr>
+      <tr><td>First ticket shipped via a spec — acceptance tests frozen in Inception</td><td>Pair</td><td>Spec folder + PR merged</td></tr>
+      <tr><td>2-week retro: cycle time <em>and</em> defect-escape rate → keep / adjust / stop</td><td>All</td><td>Notes shared</td></tr>
     </table>
 
     <h2>The two-week pilot, on a timeline</h2>
@@ -1206,13 +1236,17 @@ Per-language fileMatch steering → PR"]
   end
   subgraph W2["Week 2"]
     direction TB
-    e1[".kiroignore + Permissions → PR"] --> e2["Vetted workspace mcp.json → PR"]
-    e2 --> e3["First real ticket shipped via a spec"]
-    e3 --> e4["Retro: keep / adjust / stop"]
+    e1[".kiroignore + Permissions → PR"] --> e0["Review-gate policy signed off
+(named approver · checklist · log)"]
+    e0 --> e2["Vetted workspace mcp.json → PR"]
+    e2 --> e3["First ticket via a spec
+acceptance tests frozen in Inception"]
+    e3 --> e4["Retro: cycle time + defect-escape rate
+→ keep / adjust / stop"]
   end
   W1 --> W2
 </pre>
-      <figcaption>Everything lands as a reviewed PR. The retro is a real decision point, not a formality.</figcaption>
+      <figcaption>Everything lands as a reviewed PR. The review-gate policy is written before bolt 1; the retro is a real decision point, not a formality.</figcaption>
     </figure>
 
     <h2>In practice — a 4-person team, weeks 1–2</h2>
@@ -1245,6 +1279,7 @@ Per-language fileMatch steering → PR"]
         <li>Every ticket gets a spec folder named after it; the spec ships in the code PR.</li>
         <li>Sensitive code: <code>.kiroignore</code> + Permissions + Supervised + vetted read-only MCP; keep sensitive work off Web/Mobile.</li>
         <li>Cost: short <code>always</code> steering, lean on compaction, don't let Autopilot run unwatched.</li>
+        <li>Governance: named approver per unit of work (not the prompter), a one-page review checklist, acceptance tests frozen in Inception, one change ticket per unit, defect-escape rate in the retro.</li>
       </ul>
     </div>
   </article>

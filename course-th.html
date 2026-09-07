@@ -178,8 +178,16 @@ flowchart TB
     </table>
     <div class="callout warn">
       <span class="label">หมายเหตุเรื่องรายการ</span>
-      บทความแต่ละที่สรุป AI-DLC ด้วยจำนวนและถ้อยคำที่ต่างกันเล็กน้อย (บางที่ว่ามีสิบข้อ) ให้มองเป็น "รูปทรง" ของปรัชญา ไม่ใช่คัมภีร์ตายตัว — แหล่งอ้างอิงหลักคือ whitepaper นิยาม method ของ Raja SP (ลิงก์ด้านล่าง)
+      จำนวนต่างกันตามบทความ whitepaper นิยาม method ระบุ <strong>ข้อที่ 10 — "No Hard-Wired, Opinionated SDLC Workflows"</strong>: แทนที่จะกำหนดเส้นทางตายตัวสำหรับงานสร้างใหม่ / refactor / แก้บั๊ก ให้ AI แนะนำแผนระดับบนจาก intent ที่คุณบอก ส่วนทีมที่ทำ engine โอเพนซอร์สสรุปเป็นตัวขับการออกแบบ 5 ข้อ — <em>adaptive execution</em>, <em>human-in-the-loop</em>, <em>methodology-first (ไม่ผูกเครื่องมือ)</em>, <em>reproducible</em>, <em>no duplication (แหล่งความจริงเดียว)</em> ให้มองทั้งหมดเป็น "รูปทรง" ของปรัชญา ไม่ใช่คัมภีร์ตายตัว
     </div>
+
+    <h2>methodology กับ engine โอเพนซอร์ส</h2>
+    <p>แยกสองอย่าง <strong>methodology</strong> คือ 3 เฟสและ loop ข้างบน ส่วน <strong>engine โอเพนซอร์ส</strong> — <code>awslabs/aidlc-workflows</code> ที่ Kiro CLI รันได้ — แปลงมันเป็น pipeline การรัน: <strong>5 เฟส 33 stages</strong> (Initialization, Ideation, Inception, Construction, Operation), agent 14 ตัว, และด่านอนุมัติทุก stage</p>
+    <ul>
+      <li><strong>การเลือก stage เป็นแบบ binary</strong> — แต่ละ stage รันหรือข้าม ตามงาน บั๊กที่รู้สาเหตุข้าม user stories และ application design; แพลตฟอร์มใหม่รันครบ <em>Reverse Engineering</em> จุดเฉพาะโค้ด brownfield (ที่มีอยู่แล้ว)</li>
+      <li><strong>depth ยืดหยุ่นได้</strong> ใน stage ที่รัน มีระดับ <em>Minimal / Standard / Comprehensive</em> คุมว่าแต่ละ artifact มีรายละเอียดและเหตุผลมากแค่ไหน ตามความซับซ้อนและความเสี่ยง</li>
+      <li><strong>กลยุทธ์ test เป็นปุ่มแยก</strong> Minimal / Standard / Comprehensive เหมือนกัน แต่แยกจาก depth — รัน bug fix แบบ depth Minimal ได้ พร้อมกับบังคับ test ความปลอดภัยและ integration แบบ Comprehensive</li>
+    </ul>
 
     <h2>Kiro อยู่ตรงไหน</h2>
     <p>แยกสามระดับให้ชัด:</p>
@@ -206,11 +214,17 @@ flowchart TB
       <p><strong>ประเด็น:</strong> คำถามที่ทำให้ต้องแก้งานซ้ำ ("แค่ admin?") ถูกถามใน Inception ตอนที่คำตอบราคาแค่หนึ่งประโยค — ไม่ใช่ตอน code review ที่จะราคาเท่ากับเขียน endpoint และปุ่มใหม่</p>
     </div>
 
-    <h2>ข้อควรระวังอย่างตรงไปตรงมา</h2>
+    <h2>ข้อควรระวังอย่างตรงไปตรงมา — และช่องโหว่ด้านการกำกับ</h2>
+    <p>งานเขียนเรื่อง AI-DLC ส่วนใหญ่ตอนนี้เป็นการโปรโมต คำวิจารณ์ที่คมกว่าคือ SDLC แบบเดิมฝัง control ไว้เงียบ ๆ — peer review, audit trail, release gate — และการรันแผน โค้ด และ test จบในบ่ายเดียว <em>ละลาย control พวกนั้นเร็วกว่าที่มันสร้างของมาแทน</em> มีสองช่องที่ควรพูดถึง</p>
     <ul>
-      <li>AI-DLC ยังใหม่ (กลางปี 2025) และยังขยับอยู่ AWS blog กับ whitepaper คือคำอธิบายมาตรฐาน; เครื่องมือและ case study ยังตามมา</li>
-      <li>เซสชัน "Mob" สมมติว่ามีทีม cross-functional จริงที่ว่างพร้อมกัน ทีมเล็กหรือทีมเดี่ยวปรับใช้แนวคิด ไม่ได้รันตามตัวอักษร</li>
-      <li>เป็น methodology ของ vendor — AWS ได้ประโยชน์เมื่อคุณรับมาใช้ หลักการพื้นฐาน (requirements ก่อนโค้ด, มนุษย์อยู่บนการตัดสินใจ, loop สั้น, context อยู่ใน repo) ยังใช้ได้ไม่ว่าจะใช้เครื่องมือไหน</li>
+      <li><strong>"verify and approve" ไม่ใช่ control</strong> methodology บอกว่ามนุษย์อนุมัติทุกด่าน แต่ไม่ได้บอกว่าใคร เทียบกับมาตรฐานอะไร บันทึกไว้ที่ไหน เติมให้ครบ: <strong>named approver ต่อหนึ่ง unit of work</strong> — และไม่ใช่คนที่สั่ง plan ออกมา — checklist หนึ่งหน้า (ระดับความลับข้อมูลที่แตะ, blast radius, เส้นทาง rollback, ส่วนที่เบี่ยงจาก steering files) และ decision log ที่ผูกกับเวอร์ชันของ spec และ steering file "ที่ประชุมเห็นด้วย" ไม่ผ่าน auditor คนไหน</li>
+      <li><strong>ปัญหา self-grading</strong> ในเฟส Construction agent ตัวเดียวกันเขียนทั้งโค้ด <em>และ</em> test ของมัน suite ที่เขียว ๆ ที่คนเขียนโค้ดเป็นคนเขียนเอง พิสูจน์ความสอดคล้อง ไม่ใช่ความถูกต้อง — agent ที่อ่าน requirement ผิด ก็เขียน test ที่ยืนยันความผิดนั้นอย่างซื่อสัตย์ ที่ความเร็ว bolt error สะสมเงียบ ๆ จนกว่า production จะเจอ วิธีแก้: <strong>acceptance tests ที่คนรีวิว แช่แข็งไว้ตั้งแต่เฟส Inception</strong> ก่อน Construction — agent ลงมือทำโดยเทียบกับเกณฑ์ที่มันไม่ได้ตั้งเอง</li>
+    </ul>
+    <ul>
+      <li><strong>ความเร็วไม่ใช่ความเสถียร</strong> ผลสำรวจ DORA 2025 (เน้น AI, ผู้ตอบ ~5,000 คน) พบว่าการรับ AI มาใช้ตอนนี้สัมพันธ์ <em>เชิงบวก</em> กับ throughput แต่ยัง <em>เชิงลบ</em> กับ delivery stability วัดแต่ความเร็วคือวัดแกนที่พลิกมาข้างเราแล้ว ให้ track <strong>defect-escape rate คู่กับ cycle time</strong> ไม่งั้นก็แค่ย้าย QA ไปไว้ที่ production</li>
+      <li><strong>ตัวเลข productivity เป็นของ AWS ไม่ใช่ของคุณ</strong> การรับ AI-assistant แบบไม่มีโครงสร้างได้ราว 10–15%; ตัวเลข 10–15 เท่าที่อ้าง ในคำบอกเล่าของ AWS คือ "methodology" มอง benchmark ของ vendor เป็นทิศทาง — ยังไม่มีใครเผยแพร่เคสที่ล้มเหลว</li>
+      <li><strong>เซสชัน Mob กิน senior attention</strong> มันต้องใช้คนซีเนียร์ที่สุดของคุณ พร้อมกัน เป็นชั่วโมง "lifecycle ใช้เวลาพิมพ์น้อยลง ใช้ความสนใจของซีเนียร์มากขึ้น" และการอนุมัติแบบตรายาง "เสื่อมเป็นการคลิกอัตโนมัติภายในสัปดาห์เดียว" ถ้าไม่มี checklist จริง</li>
+      <li>AI-DLC ยังใหม่ (กลางปี 2025) และยังขยับ; เป็น methodology ของ vendor (AWS ได้ประโยชน์เมื่อคุณรับมาใช้) หลักการพื้นฐาน — requirements ก่อนโค้ด, มนุษย์อยู่บนการตัดสินใจ, loop สั้น, context อยู่ใน repo — ยังใช้ได้ไม่ว่าจะใช้เครื่องมือไหน ทีมเล็กหรือทีมเดี่ยวปรับใช้โมเดล Mob ไม่ได้รันตามตัวอักษร</li>
     </ul>
 
     <div class="key-takeaways">
@@ -222,6 +236,7 @@ flowchart TB
         <li>คำศัพท์: Sprint → <strong>Bolt</strong>, Epic → <strong>Unit of work</strong>, งานเดี่ยว/async → <strong>Mob</strong></li>
         <li>AI-DLC คือ methodology; spec-driven development จัดโครงสร้าง artifacts; Kiro คือเครื่องมือ บท Specs และ Steering ของคอร์สนี้ <em>คือ</em> AI-DLC ในทางปฏิบัติ</li>
         <li>เรื่อง 76 วัน / Rust 100k บรรทัด เป็น anecdote ของ vendor — เป็นสัญญาณที่มีประโยชน์ ไม่ใช่ผลที่ตรวจสอบแล้ว</li>
+        <li>มันเอา control ของ SDLC ออกเร็วกว่าที่สร้างของมาแทน — เพิ่ม named approver ต่อ unit of work, แช่แข็ง acceptance tests ใน Inception, และ track defect-escape rate ไม่ใช่แค่ความเร็ว</li>
       </ul>
     </div>
     <div class="callout tip">
@@ -249,6 +264,8 @@ flowchart TB
       <li><a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">awslabs/aidlc-workflows</a> — workflow engine AI-DLC แบบโอเพนซอร์สของ AWS Labs สำหรับ coding agents (สัญญาอนุญาต MIT-0); หลักการและด่านตรวจถูกเข้ารหัสไว้ในนี้</li>
       <li><a href="https://ai-dlc.dev/" target="_blank" rel="noopener">ai-dlc.dev</a> — เว็บอ้างอิงของชุมชนสำหรับ methodology และหลักการของมัน</li>
       <li><a href="https://dev.to/aws-heroes/why-ai-dlc-exists-reimagining-software-development-in-an-ai-first-world-4f20" target="_blank" rel="noopener">"Why AI-DLC Exists: Reimagining Software Development in an AI-First World"</a>, DEV / AWS Heroes — เดินผ่านหลักการก่อตั้ง</li>
+      <li><a href="https://aws.amazon.com/blogs/devops/open-sourcing-adaptive-workflows-for-ai-driven-development-life-cycle-ai-dlc/" target="_blank" rel="noopener">"Open-Sourcing Adaptive Workflows for AI-DLC"</a>, AWS DevOps Blog — 3 ความท้าทาย (one-size-fits-all, depth ตายตัว, over-automation), หลักการข้อ 10 และ engine แบบ adaptive</li>
+      <li><a href="https://www.exploreagentic.ai/insights/ai-dlc/" target="_blank" rel="noopener">"AI-DLC Explained: What It Changes — and What It Breaks in Your Governance Model"</a>, Explore Agentic — มุมมองเชิงวิจารณ์ของผู้ปฏิบัติ: สองช่องโหว่ด้านการกำกับ, ปัญหา self-grading, ความเร็ว vs ความเสถียร</li>
       <li><a href="https://aws.amazon.com/blogs/industries/ai-driven-development-lifecycle-for-financial-services/" target="_blank" rel="noopener">"AI-Driven Development Lifecycle for Financial Services"</a>, AWS for Industries Blog — AI-DLC ในบริบทที่มีการกำกับ</li>
       <li><a href="https://www.ibm.com/think/topics/ai-dlc" target="_blank" rel="noopener">IBM, "AI-DLC: The AI-Driven Development Lifecycle"</a> — คำอธิบายจากภายนอก ใช้ cross-check มุมมองของ AWS</li>
       <li>Dirk Michel, <a href="https://towardsaws.com/on-kiro-and-the-ai-driven-development-lifecycle-3459c2c19751" target="_blank" rel="noopener">"On Kiro and the AI-Driven Development Lifecycle"</a>, Towards AWS — ไฟล์ spec ของ Kiro แมปกับเฟส AI-DLC ยังไง</li>
@@ -1170,6 +1187,18 @@ keyword ของ Power ที่ติดตั้งไว้"}
       <li>Hooks: ไม่บล็อกเท่านั้นจนกว่าจะไว้ใจ ยังไม่ใช้ <code>PreToolUse</code> / <code>PromptSubmit</code> แบบบล็อกในช่วงแรก</li>
     </ul>
 
+    <h2>governance ที่ต้องเขียนไว้ก่อน bolt แรก</h2>
+    <p>AI-DLC เอา control ของ SDLC ที่เราพึ่งพาออกเร็วกว่าที่สร้างของมาแทน (บทที่ 0) พวกนี้เป็นของเราที่ต้องเพิ่ม และเขียนไว้ล่วงหน้าครั้งเดียวถูกกว่าไปยัดใส่ทีมที่วิ่งด้วยความเร็ว bolt แล้วเยอะ:</p>
+    <ul>
+      <li><strong>named approver ต่อหนึ่ง unit of work</strong> คนหนึ่งเซ็นอนุมัติ plan ที่ AI ร่าง — และ <em>ไม่ใช่</em> คนที่สั่ง plan ออกมา บันทึกไว้ ไม่ใช่แค่พูดใน mob</li>
+      <li><strong>review standard หนึ่งหน้า</strong> ผู้อนุมัติเช็คอะไรจริง ๆ: ระดับความลับข้อมูลที่แตะ, blast radius, เส้นทาง rollback, ส่วนที่เบี่ยงจาก steering files ถ้าไม่มี checklist การเซ็นอนุมัติ "เสื่อมเป็นการคลิกอัตโนมัติภายในสัปดาห์เดียว"</li>
+      <li><strong>acceptance tests เป็นเกณฑ์ออกของ Inception</strong> Inception ไม่จบเมื่อมี requirements — จบเมื่อ test ที่คนรีวิวแล้วซึ่งจะตัดสิน Construction มีอยู่ agent ลงมือทำโดยเทียบเกณฑ์ที่มันไม่ได้ตั้งเอง (ปิดปัญหา self-grading)</li>
+      <li><strong>หนึ่ง change ticket ต่อหนึ่ง unit of work</strong> รันทุก unit ผ่าน change process เดิม; artifact trail ที่ spec สร้างกลายเป็นหลักฐานของ ticket bolt ย่นเวลาพัฒนา ไม่ได้ยกเว้น change control</li>
+      <li><strong>agent evals ก่อนขยายจากทีมเดียวไปหลายทีม</strong> ทีม pilot ครอบ eval harness ที่ขาดด้วยความใส่ใจได้ ห้าทีมทำไม่ได้ และตอนนั้นโค้ดที่ agent เขียนก็เกินกำลังคนอ่านแล้ว</li>
+      <li><strong>track defect-escape rate คู่กับ cycle time</strong> ใน retro เร็ว 10 เท่าพร้อม escaped defect 3 เท่า ไม่ใช่เร็วขึ้น</li>
+      <li>pilot บน service ภายในที่ blast radius ต่ำ — <em>ไม่ใช่</em> เส้นทางจ่ายเงิน — เพื่อให้ bolt ที่พลาดราคาเท่ากับความอาย ไม่ใช่รายงานเหตุการณ์</li>
+    </ul>
+
     <h2>MCP &amp; Powers ที่จะเริ่มด้วย</h2>
     <ul>
       <li><strong>AWS Documentation MCP server</strong> ใน <code>mcp.json</code> ที่ใช้ร่วมกัน — จุดร่วมของทุก stack ของเรา</li>
@@ -1185,8 +1214,9 @@ keyword ของ Power ที่ติดตั้งไว้"}
       <tr><td>steering <code>fileMatch</code> แยกภาษา</td><td>คนที่ดูแล stack นั้น</td><td>PR merge แล้ว</td></tr>
       <tr><td><code>.kiroignore</code> + Permissions ผ่านการรีวิว</td><td>Lead</td><td>PR merge แล้ว</td></tr>
       <tr><td><code>mcp.json</code> ระดับ workspace (AWS docs, ตรวจแล้วเท่านั้น)</td><td>Lead</td><td>PR merge แล้ว</td></tr>
-      <tr><td>ticket แรกส่งผ่าน spec</td><td>คู่</td><td>มีโฟลเดอร์ spec + PR merge</td></tr>
-      <tr><td>retro 2 สัปดาห์: ทำต่อ / ปรับ / หยุด</td><td>ทุกคน</td><td>แชร์บันทึกแล้ว</td></tr>
+      <tr><td>review-gate policy หนึ่งหน้า (named approver, checklist, decision log)</td><td>คนที่ดูแล change process</td><td>เซ็นแล้ว ก่อน bolt แรก</td></tr>
+      <tr><td>ticket แรกส่งผ่าน spec — acceptance tests แช่แข็งใน Inception</td><td>คู่</td><td>มีโฟลเดอร์ spec + PR merge</td></tr>
+      <tr><td>retro 2 สัปดาห์: cycle time <em>และ</em> defect-escape rate → ทำต่อ / ปรับ / หยุด</td><td>ทุกคน</td><td>แชร์บันทึกแล้ว</td></tr>
     </table>
 
     <h2>pilot สองสัปดาห์ บนไทม์ไลน์</h2>
@@ -1203,13 +1233,17 @@ steering fileMatch แยกภาษา → PR"]
   end
   subgraph W2["สัปดาห์ 2"]
     direction TB
-    e1[".kiroignore + Permissions → PR"] --> e2["mcp.json ระดับ workspace ที่ตรวจแล้ว → PR"]
-    e2 --> e3["ticket จริงแรกส่งผ่าน spec"]
-    e3 --> e4["retro: ทำต่อ / ปรับ / หยุด"]
+    e1[".kiroignore + Permissions → PR"] --> e0["review-gate policy เซ็นแล้ว
+(named approver · checklist · log)"]
+    e0 --> e2["mcp.json ระดับ workspace ที่ตรวจแล้ว → PR"]
+    e2 --> e3["ticket แรกส่งผ่าน spec
+acceptance tests แช่แข็งใน Inception"]
+    e3 --> e4["retro: cycle time + defect-escape rate
+→ ทำต่อ / ปรับ / หยุด"]
   end
   W1 --> W2
 </pre>
-      <figcaption>ทุกอย่างเข้ามาเป็น PR ที่รีวิวแล้ว retro คือจุดตัดสินใจจริง ไม่ใช่พิธี</figcaption>
+      <figcaption>ทุกอย่างเข้ามาเป็น PR ที่รีวิวแล้ว review-gate policy เขียนก่อน bolt แรก; retro คือจุดตัดสินใจจริง ไม่ใช่พิธี</figcaption>
     </figure>
 
     <h2>ในทางปฏิบัติ — ทีม 4 คน สัปดาห์ 1–2</h2>
@@ -1242,6 +1276,7 @@ steering fileMatch แยกภาษา → PR"]
         <li>ทุก ticket มีโฟลเดอร์ spec ตั้งชื่อตามมัน; spec ไปพร้อม PR ของโค้ด</li>
         <li>โค้ดอ่อนไหว: <code>.kiroignore</code> + Permissions + Supervised + MCP อ่านอย่างเดียวที่ตรวจแล้ว; เก็บงานอ่อนไหวออกจาก Web/Mobile</li>
         <li>ต้นทุน: steering <code>always</code> สั้น, พึ่ง compaction, อย่าปล่อย Autopilot รันโดยไม่ดู</li>
+        <li>governance: named approver ต่อ unit of work (ไม่ใช่คนสั่ง plan), review checklist หนึ่งหน้า, acceptance tests แช่แข็งใน Inception, หนึ่ง change ticket ต่อ unit, defect-escape rate ใน retro</li>
       </ul>
     </div>
   </article>
