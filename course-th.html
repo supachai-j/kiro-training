@@ -187,6 +187,7 @@ flowchart TB
       <li><strong>การเลือก stage เป็นแบบ binary</strong> — แต่ละ stage รันหรือข้าม ตามงาน บั๊กที่รู้สาเหตุข้าม user stories และ application design; แพลตฟอร์มใหม่รันครบ <em>Reverse Engineering</em> จุดเฉพาะโค้ด brownfield (ที่มีอยู่แล้ว)</li>
       <li><strong>depth ยืดหยุ่นได้</strong> ใน stage ที่รัน มีระดับ <em>Minimal / Standard / Comprehensive</em> คุมว่าแต่ละ artifact มีรายละเอียดและเหตุผลมากแค่ไหน ตามความซับซ้อนและความเสี่ยง</li>
       <li><strong>กลยุทธ์ test เป็นปุ่มแยก</strong> Minimal / Standard / Comprehensive เหมือนกัน แต่แยกจาก depth — รัน bug fix แบบ depth Minimal ได้ พร้อมกับบังคับ test ความปลอดภัยและ integration แบบ Comprehensive</li>
+      <li><strong>state อยู่ในไฟล์ธรรมดา</strong> engine เขียนโฟลเดอร์ <code>aidlc-docs/</code> ที่มี <code>aidlc-state.md</code> (ความจำ session) และ <code>audit.md</code> (ร่องรอยทีละขั้น) เพราะเป็นแค่ไฟล์ใน repo คุณเริ่ม bolt ใน IDE หนึ่งแล้วทำต่อในอีก IDE ได้ — agent อ่าน state เดียวกัน</li>
     </ul>
 
     <h2>Kiro อยู่ตรงไหน</h2>
@@ -529,6 +530,13 @@ Recent changes: #git diff</code></pre>
       แก้ความเข้าใจผิดใน <code>requirements.md</code> ราคาแค่หนึ่งประโยค แต่แก้หลังจาก agent เขียนไป 12 ไฟล์ราคาทั้งบ่าย ด่านอนุมัติมีไว้บังคับให้คุยเรื่องถูก ๆ ก่อน
     </div>
 
+    <h2>ด่าน requirements แบบใกล้ ๆ</h2>
+    <p>ใน AI-DLC ขั้น requirements มีรูปแบบเฉพาะที่ควรลอกไปใช้ แม้จะทำงานในโหมด vibe ก็ตาม agent ถูกสั่งว่า <em>อย่าเดา</em> แต่ให้เขียนไฟล์ <code>requirement-verification-questions.md</code> ที่มีคำถามค้างเป็น <strong>ตัวเลือก multiple-choice พร้อมตัวเลือก "Other" ทุกข้อ</strong> คุณตอบในไฟล์ตรงนั้น แล้วพิมพ์ <code>Done</code> agent เช็คคำตอบของคุณหาความขัดแย้งและช่องว่าง ถามเพิ่มถ้าจำเป็น แล้วค่อยสร้าง <code>requirements.md</code> คุณไม่เคยเขียน spec ละเอียดเอง — คุณตอบการซักถามที่มีโครงสร้าง และยังคุมว่าจะสร้างอะไร</p>
+    <div class="callout tip">
+      <span class="label">ทำใน Kiro</span>
+      เมื่อ requirements ของ spec กลับมาบาง ๆ อย่าอนุมัติ ตอบว่า: <code>List every assumption you made as a multiple-choice question with an "Other" option. Don't proceed until I've answered.</code>
+    </div>
+
     <h2>EARS notation สำหรับ requirements</h2>
     <p>Kiro เขียน acceptance criteria แบบ <strong>EARS</strong> (Easy Approach to Requirements Syntax) — ชุดเทมเพลตประโยคเล็ก ๆ ที่ทำให้ requirement ทดสอบได้และไม่กำกวม:</p>
     <pre><code>WHEN &lt;trigger&gt; THE SYSTEM SHALL &lt;response&gt;
@@ -536,6 +544,17 @@ WHILE &lt;state&gt; THE SYSTEM SHALL &lt;response&gt;
 WHERE &lt;feature is included&gt; THE SYSTEM SHALL &lt;response&gt;
 IF &lt;condition&gt; THEN THE SYSTEM SHALL &lt;response&gt;</code></pre>
     <p>ตัวอย่าง: <em>WHEN a user submits the checkout form with an expired card THE SYSTEM SHALL reject the payment and display "Your card has expired".</em> แต่ละบรรทัดกลายเป็น test ได้</p>
+
+    <h2>design ครอบทั้ง "อะไร" และ "ดีแค่ไหน"</h2>
+    <p><code>design.md</code> ที่ดีแยก <strong>functional</strong> (พฤติกรรม) ออกจาก <strong>non-functional</strong> (คุณภาพ) — แบบเดียวกับที่ AI-DLC ทำให้ชัด ด้วยขั้น requirements แล้วตามด้วยขั้น design สำหรับฝั่ง non-functional:</p>
+    <table>
+      <tr><th>ด้าน</th><th>Functional — <em>อะไร</em></th><th>Non-functional — <em>ดีแค่ไหน</em></th></tr>
+      <tr><td>Performance</td><td>ผู้ใช้ค้นหาสินค้าได้</td><td>ค้นหาคืนผลภายใน 200&nbsp;ms ที่ p99</td></tr>
+      <tr><td>Security</td><td>ผู้ใช้ล็อกอินได้</td><td>hash รหัสผ่านด้วย bcrypt; session หมดอายุใน 24&nbsp;ชม.</td></tr>
+      <tr><td>Scalability</td><td>ระบบประมวลผลออเดอร์</td><td>รองรับออเดอร์พร้อมกัน 10k ตอน peak</td></tr>
+      <tr><td>Reliability</td><td>ข้อมูลถูกจัดเก็บ</td><td>ไม่มีข้อมูลสูญหาย; RPO ต่ำกว่า 1 นาที</td></tr>
+    </table>
+    <p>AI-DLC รันเป็นสองขั้นต่อหนึ่ง unit of work: <strong>NFR Requirements Assessment</strong> (ระบุ benchmark, security posture, ขอบเขต compliance) แล้ว <strong>NFR Design</strong> (แปลงแต่ละข้อเป็นการตัดสินใจรูปธรรม — Redis cache กับ CDN, multi-AZ พร้อม health check, encrypt S3 at rest และ tokenize เลขบัตร) ตอนรีวิว <code>design.md</code> ของ Kiro เช็คว่ามีครบทั้งสองฝั่ง — ฝั่ง non-functional คือฝั่งที่มักถูกข้ามเงียบ ๆ</p>
 
     <h2>การรัน task แบบ waves</h2>
     <p>Kiro วิเคราะห์ dependency ระหว่าง task แล้วสร้าง dependency graph จากนั้นรันเป็น <strong>waves</strong>:</p>
@@ -682,6 +701,15 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
       <li>อธิบาย <em>เหตุผล</em> ไม่ใช่แค่กฎ ใส่ตัวอย่างโค้ด before/after</li>
       <li>ห้ามใส่ secret, key หรือ password ในไฟล์ steering</li>
       <li>รีวิวการแก้ steering เหมือนรีวิวโค้ด — มันเปลี่ยนพฤติกรรม agent ของทั้งทีม</li>
+    </ul>
+
+    <h2>steering ในฐานะนโยบายวิศวกรรมที่บังคับใช้ได้</h2>
+    <p>steering คือชื่อของ Kiro สำหรับสิ่งที่โลก AI-DLC เรียกว่า <strong>rules file</strong> และกรอบคิดนี้มีประโยชน์: มันไม่ใช่เอกสารที่ agent อาจอ่าน แต่เป็นนโยบายที่ agent ต้องทำตาม</p>
+    <ul>
+      <li><strong>กฎเดียวกัน หลายเครื่องมือ</strong> <em>เนื้อหา</em> ของ rules file พกพาข้าม coding agent ได้ — เปลี่ยนแค่ path: <code>.kiro/steering/</code> สำหรับ Kiro, <code>.cursor/rules/</code> สำหรับ Cursor, <code>CLAUDE.md</code> สำหรับ Claude Code เขียน convention ครั้งเดียว มันเดินทางไปด้วย</li>
+      <li><strong>เข้ารหัสนโยบายก่อน generate ไม่ใช่หลัง</strong> แนวทาง financial-services ของ AWS ใส่กฎความปลอดภัยและ regulatory ลง steering <em>ล่วงหน้า</em> agent จึง generate โค้ดที่ compliant ตั้งแต่ครั้งแรก พร้อม traceability จาก requirement ถึง test แบบ end-to-end "left-shifted QA": จับก่อนมันสะสม</li>
+      <li><strong>ข้อจำกัดแบบบล็อก ไม่ใช่แค่เตือน</strong> นอกจาก steering ปกติ AI-DLC รองรับ extension ที่ <em>หยุด</em> workflow เมื่อมีการฝ่าฝืน — HIPAA / PCI DSS / SOC 2, threshold coverage บังคับ, กฎ microservice boundary linter ส่วนใหญ่เตือนแล้วถูกเมิน กฎแบบบล็อกหยุด bolt</li>
+      <li><strong>learning loop</strong> เมื่อคุณแก้ agent การแก้นั้นถูกเก็บเป็นกฎถาวรได้ ความผิดเดิมจะได้ไม่กลับมาใน session ถัดไป</li>
     </ul>
 
     <h2>เลือกโหมดไหน — decision tree</h2>

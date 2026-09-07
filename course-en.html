@@ -187,6 +187,7 @@ flowchart TB
       <li><strong>Stage selection is binary</strong> — each stage runs or is skipped based on the task. A known-cause bug fix skips user stories and application design; a new platform runs everything. <em>Reverse Engineering</em> only fires for brownfield (existing) code.</li>
       <li><strong>Depth is elastic.</strong> Within the stages that do run, a depth level — <em>Minimal / Standard / Comprehensive</em> — scales how much detail and reasoning each artifact carries, triggered by complexity and risk.</li>
       <li><strong>Test strategy is a separate dial.</strong> Also Minimal / Standard / Comprehensive, and independent of depth — so you can run a Minimal-depth bug fix while still demanding Comprehensive security and integration test coverage.</li>
+      <li><strong>State lives in plain files.</strong> The engine writes an <code>aidlc-docs/</code> folder with <code>aidlc-state.md</code> (session memory) and <code>audit.md</code> (a step-by-step trail). Because it's just files in the repo, you can start a bolt in one IDE and resume it in another — the agent reads the same state.</li>
     </ul>
 
     <h2>Where Kiro fits</h2>
@@ -531,6 +532,13 @@ Recent changes: #git diff</code></pre>
       Fixing a misunderstanding in <code>requirements.md</code> costs a sentence. Fixing it after the agent has written 12 files costs an afternoon. The approval gates exist to force the cheap conversation first.
     </div>
 
+    <h2>The requirements gate, up close</h2>
+    <p>In AI-DLC the requirements step has a specific shape that's worth copying even if you're just using vibe mode. The agent is told <em>not to assume</em>. Instead it writes a <code>requirement-verification-questions.md</code> with its open questions as <strong>multiple-choice, each with an "Other" option</strong>. You answer them inline, in the file, then type <code>Done</code>. The agent then checks your answers for contradictions and gaps, asks follow-ups if needed, and only then generates <code>requirements.md</code>. You never wrote the detailed spec — you answered a structured interrogation, and kept control of what gets built.</p>
+    <div class="callout tip">
+      <span class="label">Do this in Kiro</span>
+      When a spec's requirements come back thin, don't approve. Reply: <code>List every assumption you made as a multiple-choice question with an "Other" option. Don't proceed until I've answered.</code>
+    </div>
+
     <h2>EARS notation for requirements</h2>
     <p>Kiro writes acceptance criteria in <strong>EARS</strong> (Easy Approach to Requirements Syntax) — a small set of sentence templates that keep requirements testable and unambiguous:</p>
     <pre><code>WHEN &lt;trigger&gt; THE SYSTEM SHALL &lt;response&gt;
@@ -538,6 +546,17 @@ WHILE &lt;state&gt; THE SYSTEM SHALL &lt;response&gt;
 WHERE &lt;feature is included&gt; THE SYSTEM SHALL &lt;response&gt;
 IF &lt;condition&gt; THEN THE SYSTEM SHALL &lt;response&gt;</code></pre>
     <p>Example: <em>WHEN a user submits the checkout form with an expired card THE SYSTEM SHALL reject the payment and display "Your card has expired".</em> Each line becomes a test.</p>
+
+    <h2>Design covers "what" and "how well"</h2>
+    <p>A good <code>design.md</code> separates <strong>functional</strong> behaviour from <strong>non-functional</strong> qualities — the same split AI-DLC makes explicit, with a requirements pass and then a design pass for the non-functional side:</p>
+    <table>
+      <tr><th>Aspect</th><th>Functional — <em>what</em></th><th>Non-functional — <em>how well</em></th></tr>
+      <tr><td>Performance</td><td>Users can search products</td><td>Search returns under 200&nbsp;ms at p99</td></tr>
+      <tr><td>Security</td><td>Users can log in</td><td>Passwords hashed with bcrypt; sessions expire in 24&nbsp;h</td></tr>
+      <tr><td>Scalability</td><td>System processes orders</td><td>Handles 10k concurrent orders at peak</td></tr>
+      <tr><td>Reliability</td><td>Data is stored</td><td>Zero data loss; RPO under 1 minute</td></tr>
+    </table>
+    <p>AI-DLC runs this as two steps per unit of work: <strong>NFR Requirements Assessment</strong> (name the benchmarks, the security posture, the compliance boundary) then <strong>NFR Design</strong> (turn each into a concrete decision — a Redis cache and a CDN, multi-AZ with health checks, encrypt S3 at rest and tokenise card numbers). When you review a Kiro <code>design.md</code>, check both halves are there — the non-functional half is the one that quietly gets skipped.</p>
 
     <h2>Task execution in waves</h2>
     <p>Kiro analyses dependencies between tasks and builds a dependency graph, then runs them in <strong>waves</strong>:</p>
@@ -684,6 +703,15 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
       <li>Explain the <em>reasoning</em>, not just the rule. Include before/after code snippets.</li>
       <li>Never put secrets, keys, or passwords in steering files.</li>
       <li>Review steering changes like code — they change agent behaviour for the whole team.</li>
+    </ul>
+
+    <h2>Steering as executable engineering policy</h2>
+    <p>Steering is Kiro's name for something the wider AI-DLC world calls a <strong>rules file</strong>, and the framing is useful: it's not documentation the agent might read, it's policy the agent must follow.</p>
+    <ul>
+      <li><strong>The same rules, many tools.</strong> The <em>content</em> of a rules file is portable across coding agents — only the path changes: <code>.kiro/steering/</code> for Kiro, <code>.cursor/rules/</code> for Cursor, <code>CLAUDE.md</code> for Claude Code. Write your conventions once; they travel.</li>
+      <li><strong>Encode policy before generation, not after.</strong> AWS's financial-services guidance puts security and regulatory rules into steering <em>up front</em>, so the agent generates compliant code the first time — plus end-to-end traceability from requirement to test. "Left-shifted QA": catch it before it compounds.</li>
+      <li><strong>Blocking constraints, not warnings.</strong> Beyond plain steering, AI-DLC supports extensions that <em>halt</em> the workflow on a violation — HIPAA / PCI DSS / SOC 2 controls, mandatory coverage thresholds, microservice-boundary rules. Most linters warn and get ignored; a blocking rule stops the bolt.</li>
+      <li><strong>A learning loop.</strong> When you correct the agent, that correction can be captured as a persistent rule, so the same mistake doesn't come back next session.</li>
     </ul>
 
     <h2>Which mode? — a decision tree</h2>
