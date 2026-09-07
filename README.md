@@ -9,12 +9,13 @@ Bilingual (EN / TH) self-paced course + slide decks on **AWS Kiro**, for interna
 | File | What |
 |------|------|
 | `index.html` | Landing page (EN/TH toggle) — module list, how to use |
-| `course-en.html` | Full self-paced course, English — 8 modules + `.kiro/` cheat sheet |
+| `course-en.html` | Full self-paced course, English — 9 modules (0–8) + `.kiro/` cheat sheet, per-module progress toggles |
 | `course-th.html` | Thai mirror of the course |
+| `labs-en.html` / `labs-th.html` | Standalone **Lab Guidelines** — the 9 labs expanded (time, prerequisites, steps, expected result, troubleshooting) with per-lab completion tracking |
 | `slides/training-en.html` | reveal.js deck, English — 31 slides, narrated (audio bar + captions + transcript) |
 | `slides/training-th.html` | Thai mirror of the deck, narrated |
 | `audio/en/`, `audio/th/` | Per-slide narration MP3s (edge-tts) |
-| `assets/styles.css`, `assets/app.js` | Shared design + theme/lang/scroll-spy behaviour |
+| `assets/styles.css`, `assets/app.js` | Shared design + theme/lang/scroll-spy + progress tracking (localStorage `kiro-modules` / `kiro-labs`, per browser, shared EN/TH) |
 
 Modules: 1) What is Kiro & why · 2) Vibe / Chat mode · 3) Specs · 4) Agent Steering ·
 5) Agent Hooks · 6) MCP · 7) Kiro Powers · 8) Team adoption playbook.
