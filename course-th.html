@@ -1427,6 +1427,24 @@ acceptance tests แช่แข็งใน Inception"]
     <p>harness ทุกตัวใน Module 7 เป็นของนักพัฒนาคนเดียว, git-native, ไม่ต้องมี infrastructure — แค่วาง rules file ลง repo ก็ใช้ได้ AWS ยังมีอีกทางเลือกที่สวนทาง: <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/" target="_blank" rel="noopener"><strong>AIDLC Collaborative</strong></a> reference implementation แบบ hosted ของวิธีการ AI-DLC เดียวกัน สร้างมาให้คนมากกว่าหนึ่งคน — และ agent มากกว่าหนึ่งตัว — ทำงาน intent เดียวกันพร้อมกันได้</p>
     <p>มัน import stage, persona และ sensor ของ AI-DLC ต้นทางมาแบบ<strong>ไม่แก้ไข</strong> ปักหมุดที่ ref หนึ่ง แล้วรันอยู่ใน session ของ <strong>Amazon Bedrock AgentCore</strong> แทนที่จะเป็น terminal ของคุณ phase และ gate จาก Module 0 ไม่เปลี่ยน สิ่งที่เปลี่ยนคือ state อยู่ที่ไหนและใครเห็นมันได้บ้าง</p>
 
+    <h2>คำศัพท์ AI-DLC เทียบกับแพลตฟอร์ม</h2>
+    <p>ถ้าคำศัพท์ใน Module 0 อยู่ในหัวคุณแล้ว นี่คือคำนามเดิมแค่ใส่ label ของ UI แพลตฟอร์ม ไม่มีอะไรต้องเรียนใหม่ — แค่รู้ว่าแต่ละแนวคิดโผล่ตรงไหนบนหน้าจอ</p>
+    <table>
+      <tr><th>คำศัพท์ AI-DLC</th><th>บนแพลตฟอร์ม</th></tr>
+      <tr><td>Bolt / unit of work</td><td><strong>Unit lane</strong></td></tr>
+      <tr><td>Walking skeleton</td><td><strong>Walking skeleton lane</strong></td></tr>
+      <tr><td>Scope grid (stage ไหนรันบ้าง)</td><td><strong>"Stages to run"</strong> — stage grid ที่ uncheck ได้</td></tr>
+      <tr><td>Approval gate</td><td><strong>Gate</strong> — คำถามหรือจุดตรวจ validation</td></tr>
+      <tr><td>Rewind</td><td><strong>Rewind</strong> — คำเดิม บวกตัวเลือก "skip to stage X" ที่ gate</td></tr>
+      <tr><td>Autonomy mode (gated vs autonomous)</td><td><strong>Autonomy choice</strong> ตั้งต่อ run</td></tr>
+      <tr><td>Sensor / reviewer</td><td><strong>Sensor</strong> / <strong>Reviewer</strong> — แนวคิดเดียวกัน</td></tr>
+      <tr><td>Steering / memory rules (org, team, project)</td><td><strong>Rule blocks</strong> แบบเป็นชั้น</td></tr>
+      <tr><td>Workspace detection</td><td><strong>Initialization stages</strong></td></tr>
+      <tr><td>Conductor / state file (<code>aidlc-state.md</code>)</td><td><strong>The execution engine</strong> — ตัว orchestrator เอง ไม่ใช่ไฟล์ที่อ่านได้</td></tr>
+      <tr><td>Mob elaboration / mob construction</td><td><strong>Real-time collaboration</strong> — พิธีกรรมเดิม แต่ทำใน shared workbench แทนหน้าจอเดียว</td></tr>
+    </table>
+    <p>แถวที่ควรหยุดดู: <strong>conductor / state file</strong> ใน harness ของ Module 7 มันคือไฟล์ markdown ที่ <code>cat</code> ได้ ที่นี่มัน opaque — เป็น orchestration state ของ engine เอง ไม่ใช่สิ่งที่อ่านตรง ๆ ได้ คุณได้คำตอบ "ตอนนี้อยู่ตรงไหน" แบบเดียวกันผ่าน UI แทนไฟล์</p>
+
     <h2>หลักการก่อตั้ง 5 ข้อ</h2>
     <table>
       <tr><th>หลักการ</th><th>ความหมายในทางปฏิบัติ</th></tr>
@@ -1437,13 +1455,41 @@ acceptance tests แช่แข็งใน Inception"]
       <tr><td>tool-agnostic architecture</td><td>เลเยอร์แนวคิด (structured data, traceability, collaboration) คงที่ แม้ CLI, model หรือ git host ข้างใต้จะเปลี่ยนไป</td></tr>
     </table>
 
+    <h2>building block ไม่ใช่ process ตายตัว</h2>
+    <p>Principle 10 ของ Module 0 — "ไม่ hard-wire SDLC workflow ให้เป็นความเห็นตายตัว" — เป็นข้อบังคับด้านออกแบบที่นี่ด้วย ไม่ใช่แค่ต้นทาง แพลตฟอร์ม import วิธีการมา<strong>เป็นข้อมูล</strong>: library ของ block 9 ประเภทที่ประกอบกันเป็น workflow แทนที่จะ bake process ไว้ในตัวโปรดักต์</p>
+    <table>
+      <tr><th>ประเภท block</th><th>คืออะไร</th></tr>
+      <tr><td>Stage</td><td>work unit หลัก — phase, execution mode, สมาชิกทีม, artifact, sensor, reviewer และ gate ของมัน</td></tr>
+      <tr><td>Agent</td><td>persona ผู้เชี่ยวชาญเฉพาะด้าน (lead / support / reviewer) ปักหมุด model เฉพาะได้ถ้าต้องการ</td></tr>
+      <tr><td>Scope</td><td>run profile — <code>feature</code>, <code>bugfix</code>, <code>greenfield</code> — ตัดสินว่า stage ไหนรัน</td></tr>
+      <tr><td>Rule</td><td>guardrail แบบเป็นชั้น: ระดับ organization, team หรือ project</td></tr>
+      <tr><td>Sensor</td><td>การตรวจแบบ deterministic ที่มี script รองรับ รันหลัง stage จบ</td></tr>
+      <tr><td>Artifact</td><td>output ที่มีชื่อ เชื่อม stage เข้าด้วยกันผ่าน produce / consume</td></tr>
+      <tr><td>Knowledge</td><td>องค์ความรู้ด้าน methodology ที่แนบกับ agent</td></tr>
+      <tr><td>Skill</td><td>runner pack ที่ user เรียกใช้เองได้</td></tr>
+      <tr><td>Template</td><td>scaffold ที่เขียนไว้ล่วงหน้า</td></tr>
+    </table>
+    <p>สอง namespace ที่ทำให้ปลอดภัย: <strong>SYSTEM</strong> คือ baseline ของ vendor import มาจาก repo <code>awslabs/aidlc-workflows</code> ต้นทางที่ commit หนึ่งปักหมุดไว้ อ่านอย่างเดียว; <strong>library</strong> ของคุณเองเก็บ customization คุณไม่ต้อง fork ทั้งวิธีการเพื่อเปลี่ยน rule เดียว — แค่ shadow SYSTEM block อันที่อยากให้ต่าง ที่เหลือยังอยู่บน baseline ของ vendor ทุก stage ยังได้รับการตรวจสามแกนเหมือนกัน ไม่ว่าใครเขียน block: deterministic sensor, LLM-judged reviewer และ human gate</p>
+
     <h2>สร้างขึ้นมายังไง</h2>
     <p>React SPA อยู่หลัง CloudFront คุยกับ API Gateway + Lambda ผ่าน REST และ WebSocket สองช่อง — ช่องหนึ่งบอกความคืบหน้าของ agent อีกช่องเป็น Yjs server ทำ real-time collaborative editing ของ spec <strong>Neptune</strong> (graph database) เก็บ requirement, story, task, review และ agent run เป็น vertex ที่เชื่อมกันและมี provenance ประทับไว้ ส่วน <strong>DynamoDB</strong> เก็บ execution state ที่ใช้ขับ orchestration และการ recovery</p>
     <p>แต่ละ stage สร้าง headless agent CLI — Kiro, Claude Code หรือแบบอื่น — ขึ้นมาใน <strong>Bedrock AgentCore</strong> microVM เฉพาะของมันเอง มี filesystem ของตัวเอง คุยกับ Neptune และ DynamoDB ผ่าน stdio MCP server เท่านั้น และต่างจาก CLI harness ตรงที่ <strong>agent ไม่แตะ git เลย</strong>: engine เป็นคน clone repo, เป็นเจ้าของ branch <code>aidlc/&lt;title-slug&gt;</code> และ commit ทุกครั้งที่ stage จบ — สำเร็จ, park หรือ fail ก็ตาม</p>
 
+    <h2>เก็บอะไรไว้จริง ๆ</h2>
+    <p>graph ของ Neptune ไม่ใช่ document store ทั่วไป — มันมีความเห็นว่าโปรเจกต์ซอฟต์แวร์ประกอบด้วยอะไรบ้าง vertex แบบ <strong>authored</strong> มาจากงานของคุณตรง ๆ: <code>Project</code>, <code>Intent</code>, <code>Artifact</code> (markdown ต้นฉบับที่ stage ผลิตออกมา) พร้อม snapshot <code>ArtifactVersion</code> ที่แก้ไขไม่ได้, <code>Question</code>, <code>Steering</code> (การแก้ทิศทางของคุณ), <code>Discussion</code>, <code>PullRequest</code> และ node <code>TeamKnowledge</code> / <code>LearningRule</code> ที่ใช้ซ้ำได้ vertex แบบ <strong>derived</strong> ถูกดึงออกมาอัตโนมัติจากการ parse markdown นั้น: <code>Section</code> จาก heading, <code>Requirement</code>, <code>Story</code> (พร้อม persona และ acceptance criteria), <code>Persona</code>, <code>Component</code>, <code>Decision</code>, <code>Contract</code> และ <code>UnitOfWork</code></p>
+    <p>edge แบ่งเป็นสามกลุ่ม — ownership (<code>CONTAINS</code>, <code>HAS_SECTION</code>, …), artifact flow (<code>PRODUCES</code>, <code>CONSUMES</code>, <code>DEPENDS_ON</code>, …) และ traceability จริง ๆ (<code>COVERS</code>, <code>IMPLEMENTS</code>, <code>FOR_PERSONA</code>, …) — ซึ่งทำให้ "โค้ดไหนตอบ requirement นี้" เป็น graph query แทนที่จะเป็นการ grep ทุก write มี provenance กำกับ: execution ไหน, stage instance ไหน, parallel lane ไหน และเมื่อไหร่</p>
+
     <h2>execution model</h2>
     <p>intent หนึ่งเดินผ่าน <code>DRAFT → CREATED → RUNNING ↔ WAITING → SUCCEEDED / FAILED / CANCELLED</code> <code>WAITING</code> แปลว่าจอดอยู่ที่ human gate — หลังจากช่วง grace period สั้น ๆ session เองจะหยุด run ที่รอคุณอยู่จึงใช้ compute <strong>เป็นศูนย์</strong> และกลับมาทำงานต่อพร้อม context การสนทนาเต็มทันทีที่คุณตอบ</p>
     <p>หลังจาก unit "walking skeleton" ตัวแรกได้รับอนุมัติ unit of work ที่เป็นอิสระต่อกันจะ <strong>fan out</strong> ไปเป็น AgentCore session ขนานกัน แต่ละอันมี branch ของตัวเอง unit ที่ fail จะหยุดแล้วถามแทนที่จะไล่พังต่อ fan-in คือการ merge แบบเรียงตาม dependency กลับเข้า branch ของ intent คุณ course-correct คำตอบที่ gate, แก้ decision ก่อนหน้า, rewind กลับไป stage ไหนก็ได้พร้อมคำแนะนำใหม่ หรือ retry ตรง ๆ ก็ได้ — ทุก action พวกนี้ถูกเติมเข้าไปใน timeline ที่ตรวจสอบได้เต็มรูปแบบและแก้ไขย้อนหลังไม่ได้</p>
+
+    <h2>real-time collaboration ในเชิงกลไก</h2>
+    <p>ระบบ sync สองตัวทำงานนี้: WebSocket channel กระจายความคืบหน้าของ agent และ discussion ส่วน <strong>Yjs</strong> (CRDT) จัดการแก้ spec พร้อมกันหลายคน แต่ละคนมีสำเนาของตัวเองที่ merge อัตโนมัติ — แก้บรรทัดเดียวกันพร้อมกัน<em>ทั้งสองฝั่ง</em>ถูกเก็บไว้ ไม่ใช่ last-write-wins — และทุกคนเห็น cursor ของกันและกันพร้อม label ชื่อ เหมือน doc ที่แชร์กัน</p>
+    <p>การเข้าถึงผูกกับ session: HMAC-signed token อยู่ได้ 10 นาที ดังนั้นเอาคนออกจาก project ไม่ได้ตัดการเชื่อมต่อทันที — connection ที่เปิดค้างไว้ยังใช้ได้จนหมดอายุ token ที่เหลือก่อน server จะปิดมัน discussion เป็นแบบ thread เปิดให้สมาชิกทุกคน; มีแค่ Owner กับ Admin ที่ redact ข้อความได้</p>
+
+    <h2>Git และ tracker integration</h2>
+    <p>สองแกนที่แยกจากกัน: <strong>code host</strong> (GitHub, GitLab, Bitbucket) สำหรับ clone และเปิด PR/MR และ <strong>issue tracker</strong> (GitHub Issues, GitLab Issues, Jira Cloud) สำหรับเริ่ม intent จาก ticket ที่มีอยู่แล้ว — "เลือก issue ก็ seed intent" ด้วย title, body และ comment ของมันเป็น prompt admin ลงทะเบียน OAuth app ครั้งเดียวต่อ provider จากนั้น user แต่ละคนเชื่อม account ของตัวเอง (GitHub ขอ scope <code>repo</code>, <code>workflow</code>, <code>read:user</code>; scope <code>api</code> ของ GitLab ครอบคลุม repo write รวม CI config; token refresh อัตโนมัติ) แต่ละ project เลือก auth ของตัวเองอิสระต่อกัน — ทีมหนึ่งอยู่บน GitHub อีกทีมอยู่บน GitLab ก็ได้</p>
+    <p>delivery มีสองโหมดเหมือน engine ใน Module 0: <strong>Intent PR</strong> (engine merge ทุก unit เข้า branch ของ intent แล้วเปิด PR เดียวตอนจบ) หรือ <strong>PR ต่อ unit</strong> (draft review ต่อ repository เลื่อนเป็น mergeable ตามลำดับ dependency) agent ยังไม่ถือ git credential เลย — engine เป็นเจ้าของ branch, commit และ PR</p>
 
     <h2>วิธีการเดียวกัน trade-off ต่างกัน</h2>
     <table>

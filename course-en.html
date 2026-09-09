@@ -1430,6 +1430,24 @@ acceptance tests frozen in Inception"]
     <p>Every harness in Module 7 is single-developer, git-native, and needs zero infrastructure — you drop a rules file into a repo and go. AWS also ships the opposite trade: <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/" target="_blank" rel="noopener"><strong>AIDLC Collaborative</strong></a>, a hosted reference implementation of the same AI-DLC methodology, built so more than one person — and more than one agent — can work the same intent at once.</p>
     <p>It imports the upstream AI-DLC stages, personas, and sensors <strong>unmodified</strong>, pinned to a ref, and runs them inside <strong>Amazon Bedrock AgentCore</strong> sessions instead of your terminal. The phases and gates from Module 0 don't change; what changes is where the state lives and who can see it.</p>
 
+    <h2>AI-DLC terms, mapped to the platform</h2>
+    <p>If Module 0's vocabulary is already in your head, here's the same nouns wearing the platform's UI labels. Nothing new to learn — just where each concept surfaces on screen.</p>
+    <table>
+      <tr><th>AI-DLC term</th><th>On the platform</th></tr>
+      <tr><td>Bolt / unit of work</td><td><strong>Unit lane</strong></td></tr>
+      <tr><td>Walking skeleton</td><td><strong>Walking skeleton lane</strong></td></tr>
+      <tr><td>Scope grid (which stages run)</td><td><strong>"Stages to run"</strong> — a stage grid you can uncheck</td></tr>
+      <tr><td>Approval gate</td><td><strong>Gate</strong> — a question or a validation checkpoint</td></tr>
+      <tr><td>Rewind</td><td><strong>Rewind</strong> — same word, plus a "skip to stage X" gate option</td></tr>
+      <tr><td>Autonomy mode (gated vs autonomous)</td><td><strong>Autonomy choice</strong>, set per run</td></tr>
+      <tr><td>Sensor / reviewer</td><td><strong>Sensor</strong> / <strong>Reviewer</strong> — identical concepts</td></tr>
+      <tr><td>Steering / memory rules (org, team, project)</td><td><strong>Rule blocks</strong>, layered</td></tr>
+      <tr><td>Workspace detection</td><td><strong>Initialization stages</strong></td></tr>
+      <tr><td>Conductor / state file (<code>aidlc-state.md</code>)</td><td><strong>The execution engine</strong> — the durable orchestrator itself, not a file you read</td></tr>
+      <tr><td>Mob elaboration / mob construction</td><td><strong>Real-time collaboration</strong> — the same ritual, in the shared workbench instead of one screen</td></tr>
+    </table>
+    <p>The one row worth pausing on: <strong>conductor / state file</strong>. In Module 7's harnesses that's a markdown file you can <code>cat</code>. Here it's opaque — the engine's own orchestration state, not something you read directly. You get the same "where are we" answer through the UI instead of a file.</p>
+
     <h2>Five founding principles</h2>
     <table>
       <tr><th>Principle</th><th>What it means in practice</th></tr>
@@ -1440,13 +1458,41 @@ acceptance tests frozen in Inception"]
       <tr><td>Tool-agnostic architecture</td><td>The conceptual layers (structured data, traceability, collaboration) stay fixed even as the CLI, model, or git host underneath changes</td></tr>
     </table>
 
+    <h2>Building blocks, not a hard-coded process</h2>
+    <p>Module 0's Principle 10 — "no hard-wired, opinionated SDLC workflow" — is a design constraint here too, not just upstream. The platform imports the methodology <strong>as data</strong>: a library of nine block types that compose into a workflow, instead of a process baked into the product.</p>
+    <table>
+      <tr><th>Block type</th><th>What it is</th></tr>
+      <tr><td>Stage</td><td>The core work unit — phase, execution mode, team members, artifacts, sensors, reviewers, and its validation gate</td></tr>
+      <tr><td>Agent</td><td>A domain-expert persona (lead / support / reviewer), optionally pinned to a specific model</td></tr>
+      <tr><td>Scope</td><td>A run profile — <code>feature</code>, <code>bugfix</code>, <code>greenfield</code> — that decides which stages execute</td></tr>
+      <tr><td>Rule</td><td>A layered guardrail: organization, team, or project level</td></tr>
+      <tr><td>Sensor</td><td>A deterministic, script-backed check that runs after a stage</td></tr>
+      <tr><td>Artifact</td><td>A named output that wires stages together via produce / consume</td></tr>
+      <tr><td>Knowledge</td><td>Methodology corpus attached to an agent</td></tr>
+      <tr><td>Skill</td><td>A user-invocable runner pack</td></tr>
+      <tr><td>Template</td><td>An authored scaffold</td></tr>
+    </table>
+    <p>Two namespaces keep this safe: <strong>SYSTEM</strong> is the vendor baseline, imported from the upstream <code>awslabs/aidlc-workflows</code> repo at a pinned commit and read-only; your own <strong>library</strong> holds customizations. You don't fork the whole methodology to change one rule — you shadow the one SYSTEM block you want different, and everything else stays on the vendor baseline. Every stage still gets the same three-axis check no matter who authored the block: a deterministic sensor, an LLM-judged reviewer, and a human gate.</p>
+
     <h2>How it's built</h2>
     <p>A React single-page app behind CloudFront talks to API Gateway + Lambda over REST and two WebSocket channels — one for agent progress, one for a Yjs server doing real-time collaborative editing of specs. <strong>Neptune</strong> (graph database) stores requirements, stories, tasks, reviews, and agent runs as connected, provenance-stamped vertices; <strong>DynamoDB</strong> holds the operational execution state that drives orchestration and recovery.</p>
     <p>Each stage spawns a headless agent CLI — Kiro, Claude Code, or similar — inside a dedicated <strong>Bedrock AgentCore</strong> microVM with its own filesystem, talking to Neptune and DynamoDB only through a stdio MCP server. And unlike the CLI harnesses, <strong>the agent never touches git</strong>: the engine clones the repo, owns the <code>aidlc/&lt;title-slug&gt;</code> branch, and commits after every stage exit — success, park, or failure.</p>
 
+    <h2>What's actually stored</h2>
+    <p>The Neptune graph isn't a generic document store — it has an opinion about what a software project is made of. <strong>Authored</strong> vertices come straight from your work: <code>Project</code>, <code>Intent</code>, <code>Artifact</code> (the canonical markdown a stage produces) with immutable <code>ArtifactVersion</code> snapshots, <code>Question</code>, <code>Steering</code> (your course corrections), <code>Discussion</code>, <code>PullRequest</code>, and reusable <code>TeamKnowledge</code> / <code>LearningRule</code> nodes. <strong>Derived</strong> vertices are extracted automatically by parsing that markdown: <code>Section</code> from headings, <code>Requirement</code>, <code>Story</code> (with its persona and acceptance criteria), <code>Persona</code>, <code>Component</code>, <code>Decision</code>, <code>Contract</code>, and <code>UnitOfWork</code>.</p>
+    <p>Edges fall into three families — ownership (<code>CONTAINS</code>, <code>HAS_SECTION</code>, …), artifact flow (<code>PRODUCES</code>, <code>CONSUMES</code>, <code>DEPENDS_ON</code>, …), and traceability proper (<code>COVERS</code>, <code>IMPLEMENTS</code>, <code>FOR_PERSONA</code>, …) — which is what makes "which code answers this requirement" a graph query instead of a grep. Every write carries provenance: which execution, which stage instance, which parallel lane, and when.</p>
+
     <h2>The execution model</h2>
     <p>An intent moves through <code>DRAFT → CREATED → RUNNING ↔ WAITING → SUCCEEDED / FAILED / CANCELLED</code>. <code>WAITING</code> means it's parked at a human gate — after a short grace period the session itself stops, so a run waiting on you costs <strong>zero compute</strong>, and resumes with full conversation context the moment you answer.</p>
     <p>After the first "walking skeleton" unit is approved, independent units of work <strong>fan out</strong> into parallel AgentCore sessions, each on its own branch; a failed unit halts and asks rather than cascading. Fan-in is a dependency-ordered, serialised merge back onto the intent branch. You can course-correct a gate answer, revise an earlier decision, rewind to any stage with new guidance, or retry a failure outright — every one of those actions is appended to an immutable, fully audited timeline, never edited in place.</p>
+
+    <h2>Real-time collaboration, mechanically</h2>
+    <p>Two sync systems do the work: a WebSocket channel broadcasts agent progress and discussion updates, and a <strong>Yjs</strong> (CRDT) layer handles simultaneous spec editing. Each teammate keeps a local copy that merges automatically — concurrent edits to the same line are <em>both</em> preserved, not last-write-wins — and everyone sees everyone else's cursor with a name label, like a shared doc.</p>
+    <p>Access is session-scoped: HMAC-signed tokens last 10 minutes, so removing someone from a project doesn't cut them off instantly — their open connection stays valid for at most the remaining token lifetime before the server closes it. Discussions are threaded and open to any member; only Owners and Admins can redact a message.</p>
+
+    <h2>Git and tracker integration</h2>
+    <p>Two independent axes: <strong>code hosts</strong> (GitHub, GitLab, Bitbucket) for cloning and opening PRs/MRs, and <strong>issue trackers</strong> (GitHub Issues, GitLab Issues, Jira Cloud) for starting an intent from an existing ticket — "selecting an issue seeds the intent" with its title, body, and comments as the prompt. An admin registers the OAuth app once per provider; each user then connects their own account (GitHub asks for <code>repo</code>, <code>workflow</code>, <code>read:user</code>; GitLab's <code>api</code> scope covers repo writes including CI config; tokens refresh automatically). Each project picks its own auth independently — one team can be on GitHub while another is on GitLab.</p>
+    <p>Delivery has the same two modes Module 0's engine offers: <strong>Intent PR</strong> (the engine merges every unit into the intent branch, one PR at the end) or <strong>PR per unit</strong> (draft reviews per repository, promoted to mergeable in dependency order). The agent still never holds git credentials — the engine owns the branch, the commits, and the PR.</p>
 
     <h2>Same methodology, different trade-offs</h2>
     <table>
