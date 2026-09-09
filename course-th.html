@@ -36,6 +36,7 @@
     <a href="#m6">6 · MCP</a>
     <a href="#m7">7 · Kiro Powers</a>
     <a href="#m8">8 · แผนนำไปใช้ในทีม</a>
+    <a href="#m9">9 · AIDLC Collaborative</a>
     <strong>เพิ่มเติม</strong>
     <a href="#cheatsheet">สรุป <code>.kiro/</code></a>
     <a href="labs-th.html">คู่มือแล็บ ↗</a>
@@ -177,7 +178,7 @@ anomaly - defect-escape rate"]
       <tr><td rowspan="2"><strong>Operations</strong></td><td>deployment orchestration</td><td>deploy config, rollout, เส้นทาง rollback</td><td>อนุมัติ production change</td><td>prod อนุมัติ — บันทึก "เครื่องเขียน vs คนอนุมัติ"</td></tr>
       <tr><td>runtime monitoring</td><td>anomaly detection, alert</td><td>triage, escalate incident; ดู defect-escape rate คู่กับ cycle time</td><td>—</td></tr>
     </table>
-    <p><strong>ส่วนอื่นของคอร์สอยู่ตรงไหนบนกระดูกสันหลังนี้:</strong> บทที่ 2 (vibe mode) คือทางลัดที่ <em>ข้าม</em> Inception — โอเคสำหรับของทิ้ง แต่เป็นภาระสำหรับอะไรที่ทีมเก็บไว้ บทที่ 3 คือกลไก spec ของ Inception ไปสู่ Construction บทที่ 4 (steering) คือ policy ที่ทุก stage อ่าน บทที่ 5–7 คือเครื่องมือช่วง Construction บทที่ 8 ห่อทั้ง loop ด้วย governance ที่ด่านข้างบนสมมติว่ามี <strong>Lab 9</strong> พาเดินเส้นทางนี้ทั้งเส้นหนึ่งรอบ แบบลงมือทำ ด้วย Claude Code</p>
+    <p><strong>ส่วนอื่นของคอร์สอยู่ตรงไหนบนกระดูกสันหลังนี้:</strong> บทที่ 2 (vibe mode) คือทางลัดที่ <em>ข้าม</em> Inception — โอเคสำหรับของทิ้ง แต่เป็นภาระสำหรับอะไรที่ทีมเก็บไว้ บทที่ 3 คือกลไก spec ของ Inception ไปสู่ Construction บทที่ 4 (steering) คือ policy ที่ทุก stage อ่าน บทที่ 5–7 คือเครื่องมือช่วง Construction บทที่ 8 ห่อทั้ง loop ด้วย governance ที่ด่านข้างบนสมมติว่ามี <strong>Lab 10</strong> พาเดินเส้นทางนี้ทั้งเส้นหนึ่งรอบ แบบลงมือทำ ด้วย Claude Code</p>
     <div class="callout tip">
       <span class="label">ลิสต์นี้คือเพดาน ไม่ใช่ข้อบังคับ</span>
       engine แบบ adaptive ข้าม stage ที่มันเห็นว่าไม่จำเป็น — ใน walkthrough ของบทที่ 3 มันข้ามไปราวครึ่งเพราะงานง่าย การย้ายแพลตฟอร์มจะรันครบทุกอัน ความลึกเป็นปุ่มหมุน (Minimal / Standard / Comprehensive) ตั้งต่อ unit of work
@@ -1180,21 +1181,7 @@ HTTP endpoint"]
       <tr><th>สิ่งที่เหมือนกัน</th><th>สิ่งที่ต่างต่อเครื่องมือ</th></tr>
       <tr><td>เนื้อหาของ rule / steering และ workflow artifacts ใน <code>aidlc-docs/</code> (requirements, design, plans, state)</td><td>ที่อยู่ของ rules file: <code>.kiro/steering/</code>, <code>.cursor/rules/</code>, <code>.amazonq/rules/</code>, <code>.github/copilot-instructions.md</code>, <code>CLAUDE.md</code> บวก hooks / permissions / sub-agent adapter ของ host นั้น</td></tr>
     </table>
-    <p>ผลในทางปฏิบัติ: เพื่อนร่วมทีมใช้เครื่องมือคนละตัวบนโปรเจกต์เดียวกันได้ Dev A ใน Cursor, Dev B ใน Claude Code, Dev C ใน Amazon Q — ทุกคนอ่านและเขียน <code>aidlc-docs/aidlc-state.md</code> เดียวกัน และ bolt ที่เริ่มใน IDE หนึ่งทำต่อในอีก IDE ได้ Power ส่วนตัวที่คุณแพ็กให้ทีมก็เดินทางแบบเดียวกัน</p>
-
-    <h2>ทางเลือกแบบ managed — AIDLC Collaborative</h2>
-    <p>harness แบบ CLI ข้างบนเป็นของนักพัฒนาคนเดียว, git-native, ไม่ต้องมี infrastructure — นั่นคือจุดขายทั้งหมดของมัน AWS ยังมี reference implementation อีกแบบที่เลือกสวนทาง: <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/" target="_blank" rel="noopener"><strong>AIDLC Collaborative</strong></a> แพลตฟอร์ม hosted แบบหลายผู้ใช้ที่รัน stage, persona และ sensor ของ AI-DLC ต้นทางตัวเดิม — import มาแบบไม่แก้ไข ปักหมุดที่ ref หนึ่ง — อยู่ใน session ของ <strong>Amazon Bedrock AgentCore</strong> โดยมี graph database อยู่หลัง artifact ทุกชิ้นแทนโฟลเดอร์ markdown</p>
-    <p>งานจัดกลุ่มรอบ <strong>intent</strong> (ชื่อเรื่อง + prompt หรือ import จาก issue ของ GitHub/GitLab/Jira) แทนที่จะเป็น chat prompt orchestrator คอมไพล์มันเป็นแผน เดินผ่าน Inception → Construction → Delivery แล้วหยุดที่ human gate — แต่ตอนนี้หลายคนและหลาย agent ดูและบังคับทิศทาง run เดียวกันพร้อมกันได้ พร้อม sensor แบบ live บอกเวลา, token ที่ใช้ และ cost ต่อ stage</p>
-    <table>
-      <tr><th>สิ่งที่ CLI harness ปล่อยให้เป็นเรื่องไม่เป็นทางการ</th><th>สิ่งที่แพลตฟอร์มทำให้เป็นโครงสร้าง</th></tr>
-      <tr><td>traceability อยู่ในรูปข้อความ (markdown ใน <code>aidlc-docs/</code>)</td><td>requirement → story → design → decision → code change ทุกอันเป็น edge ที่มี type ใน graph database สืบย้อนได้ทั้งสองทาง</td></tr>
-      <tr><td>นักพัฒนาคนเดียว working copy เดียว</td><td>ทำงานร่วมกันแบบ real-time หลายคนผ่าน WebSocket + CRDT — เป็น workbench ที่แชร์กัน ไม่ใช่ session เฉพาะเครื่อง</td></tr>
-      <tr><td>"verify and approve" เป็นแค่ธรรมเนียม ไม่ใช่ control</td><td>approval gate ที่มีโครงสร้าง พร้อม ambiguity detection ที่บังคับก่อน stage จะไปต่อได้</td></tr>
-      <tr><td>context รีเซตระหว่าง session</td><td>ความรู้ของทีมที่สะสมไว้ถูกฉีดกลับเข้า prompt ของแต่ละ stage</td></tr>
-      <tr><td>unit of work ทำทีละอันตามลำดับ</td><td>ส่ง agent ทำงานขนานกันข้าม unit ที่เป็นอิสระต่อกัน กระจายงานออกตาม dependency graph แล้ว engine รวมผลกลับเอง</td></tr>
-    </table>
-    <p>มันยังเป็นวิธีการเดียวกับใน Module 0 — phase เดิม, gate เดิม, governance hole เดิมที่ต้องระวัง — แค่ย้ายไปโฮสต์ให้ทั้งทีมแทนที่จะเป็น terminal เดียว มองมันเป็นตัวเลือกที่หยิบมาใช้ตอน pilot โตเกิน "วิศวกรคนเดียว repo เดียว CLI เดียว" แล้วต้องการ observability ที่แชร์กันทั้ง squad</p>
-    <div class="callout"><span class="label">ที่มา</span> เอกสารของ <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/" target="_blank" rel="noopener">aws-samples/sample-collaborative-ai-dlc</a></div>
+    <p>ผลในทางปฏิบัติ: เพื่อนร่วมทีมใช้เครื่องมือคนละตัวบนโปรเจกต์เดียวกันได้ Dev A ใน Cursor, Dev B ใน Claude Code, Dev C ใน Amazon Q — ทุกคนอ่านและเขียน <code>aidlc-docs/aidlc-state.md</code> เดียวกัน และ bolt ที่เริ่มใน IDE หนึ่งทำต่อในอีก IDE ได้ Power ส่วนตัวที่คุณแพ็กให้ทีมก็เดินทางแบบเดียวกัน harness ทุกตัวในนี้เป็นของนักพัฒนาคนเดียวและไม่ต้องมี infrastructure — <a href="#m9">บทที่ 9</a> พูดถึง reference implementation อีกตัวของ AI-DLC จาก AWS ซึ่งเป็นแพลตฟอร์ม hosted แบบหลายผู้ใช้ที่เลือกสวนทาง</p>
 
     <h2>intelligent loading ตัดสินใจยังไง</h2>
     <figure class="diagram">
@@ -1429,6 +1416,111 @@ acceptance tests แช่แข็งใน Inception"]
         <li>governance: named approver ต่อ unit of work (ไม่ใช่คนสั่ง plan), review checklist หนึ่งหน้า, acceptance tests แช่แข็งใน Inception, หนึ่ง change ticket ต่อ unit, defect-escape rate ใน retro</li>
       </ul>
     </div>
+  </article>
+
+  <!-- ================= MODULE 9 ================= -->
+  <article id="m9">
+    <span class="module-tag">บทที่ 9</span>
+    <h1>AIDLC Collaborative — เอนจิน managed แบบหลายผู้ใช้</h1>
+
+    <h2>มันคืออะไร</h2>
+    <p>harness ทุกตัวใน Module 7 เป็นของนักพัฒนาคนเดียว, git-native, ไม่ต้องมี infrastructure — แค่วาง rules file ลง repo ก็ใช้ได้ AWS ยังมีอีกทางเลือกที่สวนทาง: <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/" target="_blank" rel="noopener"><strong>AIDLC Collaborative</strong></a> reference implementation แบบ hosted ของวิธีการ AI-DLC เดียวกัน สร้างมาให้คนมากกว่าหนึ่งคน — และ agent มากกว่าหนึ่งตัว — ทำงาน intent เดียวกันพร้อมกันได้</p>
+    <p>มัน import stage, persona และ sensor ของ AI-DLC ต้นทางมาแบบ<strong>ไม่แก้ไข</strong> ปักหมุดที่ ref หนึ่ง แล้วรันอยู่ใน session ของ <strong>Amazon Bedrock AgentCore</strong> แทนที่จะเป็น terminal ของคุณ phase และ gate จาก Module 0 ไม่เปลี่ยน สิ่งที่เปลี่ยนคือ state อยู่ที่ไหนและใครเห็นมันได้บ้าง</p>
+
+    <h2>หลักการก่อตั้ง 5 ข้อ</h2>
+    <table>
+      <tr><th>หลักการ</th><th>ความหมายในทางปฏิบัติ</th></tr>
+      <tr><td>structured data แทน context window</td><td>requirement, story, task, code และ decision อยู่ใน graph database — agent อ่านแค่ส่วนที่ต้องใช้ ไม่ใช่ 200k token ของทุกอย่าง</td></tr>
+      <tr><td>traceability ในตัว</td><td>artifact ทุกชิ้นเป็น node ที่มี type และเชื่อมกัน: โค้ดบรรทัดหนึ่งตอบ requirement ไหน และเปลี่ยนแล้วอะไรพัง คือ graph query ไม่ใช่งานขุดค้น</td></tr>
+      <tr><td>human observability</td><td>คุณเห็นสรุปที่ abstract แล้วและเกี่ยวกับธุรกิจในแต่ละ gate — ไม่ใช่ transcript ดิบของ agent ความสนใจของคนก็เป็นทรัพยากรจำกัดเหมือนกัน</td></tr>
+      <tr><td>ทำงานร่วมกันแบบ real-time</td><td>state ที่แชร์กัน, agent รันขนาน, เห็นพร้อมกันทั้งทีม — ไม่ใช่ session เฉพาะเครื่องของคนคนเดียว</td></tr>
+      <tr><td>tool-agnostic architecture</td><td>เลเยอร์แนวคิด (structured data, traceability, collaboration) คงที่ แม้ CLI, model หรือ git host ข้างใต้จะเปลี่ยนไป</td></tr>
+    </table>
+
+    <h2>สร้างขึ้นมายังไง</h2>
+    <p>React SPA อยู่หลัง CloudFront คุยกับ API Gateway + Lambda ผ่าน REST และ WebSocket สองช่อง — ช่องหนึ่งบอกความคืบหน้าของ agent อีกช่องเป็น Yjs server ทำ real-time collaborative editing ของ spec <strong>Neptune</strong> (graph database) เก็บ requirement, story, task, review และ agent run เป็น vertex ที่เชื่อมกันและมี provenance ประทับไว้ ส่วน <strong>DynamoDB</strong> เก็บ execution state ที่ใช้ขับ orchestration และการ recovery</p>
+    <p>แต่ละ stage สร้าง headless agent CLI — Kiro, Claude Code หรือแบบอื่น — ขึ้นมาใน <strong>Bedrock AgentCore</strong> microVM เฉพาะของมันเอง มี filesystem ของตัวเอง คุยกับ Neptune และ DynamoDB ผ่าน stdio MCP server เท่านั้น และต่างจาก CLI harness ตรงที่ <strong>agent ไม่แตะ git เลย</strong>: engine เป็นคน clone repo, เป็นเจ้าของ branch <code>aidlc/&lt;title-slug&gt;</code> และ commit ทุกครั้งที่ stage จบ — สำเร็จ, park หรือ fail ก็ตาม</p>
+
+    <h2>execution model</h2>
+    <p>intent หนึ่งเดินผ่าน <code>DRAFT → CREATED → RUNNING ↔ WAITING → SUCCEEDED / FAILED / CANCELLED</code> <code>WAITING</code> แปลว่าจอดอยู่ที่ human gate — หลังจากช่วง grace period สั้น ๆ session เองจะหยุด run ที่รอคุณอยู่จึงใช้ compute <strong>เป็นศูนย์</strong> และกลับมาทำงานต่อพร้อม context การสนทนาเต็มทันทีที่คุณตอบ</p>
+    <p>หลังจาก unit "walking skeleton" ตัวแรกได้รับอนุมัติ unit of work ที่เป็นอิสระต่อกันจะ <strong>fan out</strong> ไปเป็น AgentCore session ขนานกัน แต่ละอันมี branch ของตัวเอง unit ที่ fail จะหยุดแล้วถามแทนที่จะไล่พังต่อ fan-in คือการ merge แบบเรียงตาม dependency กลับเข้า branch ของ intent คุณ course-correct คำตอบที่ gate, แก้ decision ก่อนหน้า, rewind กลับไป stage ไหนก็ได้พร้อมคำแนะนำใหม่ หรือ retry ตรง ๆ ก็ได้ — ทุก action พวกนี้ถูกเติมเข้าไปใน timeline ที่ตรวจสอบได้เต็มรูปแบบและแก้ไขย้อนหลังไม่ได้</p>
+
+    <h2>วิธีการเดียวกัน trade-off ต่างกัน</h2>
+    <table>
+      <tr><th>สิ่งที่ CLI harness ปล่อยให้เป็นเรื่องไม่เป็นทางการ</th><th>สิ่งที่แพลตฟอร์มทำให้เป็นโครงสร้าง</th></tr>
+      <tr><td>traceability อยู่ในรูปข้อความ (markdown ใน <code>aidlc-docs/</code>)</td><td>requirement → story → design → decision → code change ทุกอันเป็น edge ที่มี type ใน graph database สืบย้อนได้ทั้งสองทาง</td></tr>
+      <tr><td>นักพัฒนาคนเดียว working copy เดียว</td><td>ทำงานร่วมกันแบบ real-time หลายคนผ่าน WebSocket + CRDT — เป็น workbench ที่แชร์กัน ไม่ใช่ session เฉพาะเครื่อง</td></tr>
+      <tr><td>"verify and approve" เป็นแค่ธรรมเนียม ไม่ใช่ control</td><td>approval gate ที่มีโครงสร้าง พร้อม ambiguity detection ที่บังคับก่อน stage จะไปต่อได้</td></tr>
+      <tr><td>context รีเซตระหว่าง session</td><td>session storage คงอยู่ข้าม park/resume — stage ที่ถามคำถามค้างไว้คุยต่อพร้อม context เต็มทันทีที่คุณตอบ</td></tr>
+      <tr><td>unit of work ทำทีละอันตามลำดับ</td><td>ส่ง agent ทำงานขนานกันข้าม unit ที่เป็นอิสระต่อกัน กระจายงานออกตาม dependency graph แล้ว engine รวมผลกลับเอง</td></tr>
+    </table>
+    <p>มันยังเป็นวิธีการเดียวกับใน Module 0 — phase เดิม, gate เดิม, governance hole เดิมที่ต้องระวัง (Module 8) — แค่ย้ายไปโฮสต์ให้ทั้งทีมแทนที่จะเป็น terminal เดียว มองมันเป็นตัวเลือกที่หยิบมาใช้ตอน pilot โตเกิน "วิศวกรคนเดียว repo เดียว CLI เดียว" แล้วต้องการ observability ที่แชร์กันทั้ง squad ไม่ใช่ตัวมาแทน harness ใน Module 7 ตั้งแต่วันแรก</p>
+
+    <h2>intent หนึ่งไหลผ่านเอนจินยังไง</h2>
+    <figure class="diagram">
+<pre class="mermaid">
+flowchart TD
+  U["คุณสร้าง intent
+ชื่อเรื่อง + prompt หรือ import จาก issue"] --> O["Durable orchestrator
+คอมไพล์ workflow ที่ปักหมุดไว้เป็นแผน"]
+  O --> S1["Inception stage
+requirements, user stories, unit plan"]
+  S1 --> G1{"Human gate
+WAITING - ใช้ compute เป็นศูนย์"}
+  G1 -->|"อนุมัติ walking skeleton"| FO["Fan-out
+หนึ่ง AgentCore session ต่อหนึ่ง unit"]
+  FO --> L1["Unit 01 lane"]
+  FO --> L2["Unit 02 lane"]
+  FO --> L3["Unit 03 lane"]
+  L1 --> FI["Fan-in
+merge ตามลำดับ dependency"]
+  L2 --> FI
+  L3 --> FI
+  FI --> PR["Pull request
+พร้อม graph trace เต็มรูปแบบ"]
+  G1 -->|"steer / rewind"| S1
+</pre>
+      <figcaption>ทุกอย่างซ้ายของ gate รันเรียงลำดับใน Inception ทุกอย่างขวาของ gate รันขนานกันได้เมื่อ unit เป็นอิสระต่อกันแล้ว</figcaption>
+    </figure>
+
+    <h2>ตัวอย่างจริง — intent แรกของคุณ</h2>
+    <div class="example">
+      <span class="label">เดินตามคู่มือ "first intent" ของแพลตฟอร์มเอง แบบย่อ</span>
+      <ol>
+        <li>ล็อกอินด้วย Cognito credentials ที่ URL ของ CloudFront ที่ deploy ไว้ แล้วสร้าง <strong>project</strong> — repo หนึ่ง, code host หนึ่ง (GitHub หรือ GitLab), เชื่อม issue tracker ได้ถ้าต้องการ</li>
+        <li>สร้าง <strong>intent</strong>: ชื่อเรื่อง (ตั้งชื่อ branch <code>aidlc/&lt;title&gt;</code> ด้วย), prompt แบบ free-form บอกว่าอะไร/ใคร/ข้อจำกัด/ขอบเขต, scope (<code>feature</code>, <code>bugfix</code>, …) และจะรันด้วย agent CLI ตัวไหน</li>
+        <li>เริ่มมัน orchestrator checkout repo, สร้าง branch แล้ว pipeline bar เริ่มเติมเต็ม พร้อม activity panel สตรีม output ของ agent แบบ live</li>
+        <li>ตอบคำถามที่ agent ถามมาเรื่อย ๆ — เป็นปุ่มที่มีโครงสร้างบน workbench ไม่ใช่ chat ที่ต้องตีความเอง — แล้วอนุมัติหรือปรับทิศทางในแต่ละ stage review</li>
+        <li>อนุมัติ unit walking-skeleton ที่เหลือ fan out ขนานกัน ดู stage duration, token ที่ใช้ และ cost ต่อ stage ใน observability view แล้วสืบ requirement ไหนก็ได้ลงไปถึง unit ที่ implement มันใน graph</li>
+        <li>execution จบด้วย pull request รีวิวโค้ดคู่กับ artifact และ metric ของ intent เอง — ไม่ใช่ diff เปล่า ๆ</li>
+      </ol>
+    </div>
+
+    <div class="lab">
+      <span class="label">🧪 Lab 9 — วาง feature จริงลงบน AIDLC Collaborative</span>
+      <p class="goal">เป้าหมาย: ตัดสินใจบนกระดาษว่าเอนจิน hosted แบบหลายผู้ใช้คุ้มสำหรับทีมคุณไหม — ใช้ ticket จริงหนึ่งอันเป็นเคสทดสอบ ไม่ใช่สมมติ</p>
+      <ol>
+        <li>เลือก feature หรือ bugfix จริงหนึ่งอันที่ทีมคุณเพิ่ง ship หรือกำลังทำอยู่ บน repo จริงของคุณ</li>
+        <li>อ่านหน้า <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/concepts/architecture/" target="_blank" rel="noopener">architecture</a> และ <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/concepts/execution/" target="_blank" rel="noopener">execution model</a> ของแพลตฟอร์ม</li>
+        <li>ร่าง ticket นั้นเป็น intent: scope อะไร (<code>feature</code>/<code>bugfix</code>), prompt จะเขียนว่าอะไร, จะแตกเป็น unit of work กี่อัน และ gate ทั้งสอง (อนุมัติ fan-out, รีวิว PR) จะอยู่ตรงไหน</li>
+        <li>ตัดสินใจ delivery mode ให้มัน — PR เดียวจากทั้ง intent หรือ PR ต่อ unit — แล้วบอกว่าทำไม</li>
+        <li>บอกคำถามด้าน traceability หนึ่งข้อเกี่ยวกับ ticket นั้นที่ <code>aidlc-docs/</code> markdown trail ปัจจุบันของทีมคุณ (Module 0) ตอบเร็ว ๆ ไม่ได้ แต่ graph query ตอบได้</li>
+        <li>เขียนหนึ่งย่อหน้า: adopt, pilot บน repo เดียว หรือข้ามไปก่อน — พร้อมสิ่งเดียวที่จะเปลี่ยนคำตอบของคุณ (ขนาดทีม, ค่าใช้จ่าย AWS, จำนวน repo)</li>
+      </ol>
+      <p class="check"><strong>เสร็จเมื่อ</strong> คุณมีข้อเสนอ go / pilot / no-go เป็นลายลักษณ์อักษรให้ทีม อ้างอิงจาก ticket ที่เดินผ่านมา</p>
+    </div>
+
+    <div class="key-takeaways">
+      <span class="label">สรุปประเด็นสำคัญ</span>
+      <ul>
+        <li>AIDLC Collaborative คือ reference implementation อีกตัวของ AI-DLC จาก AWS — วิธีการเดียวกัน แต่ hosted ให้หลายคนและหลาย agent ทำงาน intent เดียวกันพร้อมกันได้</li>
+        <li>มัน import stage/persona/sensor ต้นทางมาแบบไม่แก้ไข รันใน Bedrock AgentCore session ที่แยกจากกัน; engine เป็นเจ้าของ git ไม่ใช่ agent</li>
+        <li>structured data อยู่ใน graph database (Neptune) แทน markdown ได้ traceability สองทางและ context ของ agent ที่มีขอบเขต แม้โปรเจกต์ใหญ่ขึ้น</li>
+        <li>run ที่ park (<code>WAITING</code>) ใช้ compute เป็นศูนย์; steering (course-correct / revise / rewind / retry) เป็นแบบ append-only ตรวจสอบได้เต็มรูปแบบ</li>
+        <li>phase และ gate เดียวกับ Module 0 — นี่คือการตัดสินใจเรื่อง hosting ไม่ใช่การเปลี่ยนวิธีการ หยิบมาใช้ตอน pilot โตเกินวิศวกรคนเดียวบน CLI เดียว</li>
+      </ul>
+    </div>
+    <div class="callout"><span class="label">ที่มา</span> เอกสารของ <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/" target="_blank" rel="noopener">aws-samples/sample-collaborative-ai-dlc</a></div>
   </article>
 
   <!-- ================= CHEAT SHEET ================= -->

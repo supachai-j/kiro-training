@@ -25,13 +25,13 @@
 <div class="lab-workbook">
   <span class="eyebrow">Hands-on · one per module + a capstone</span>
   <h1>Lab Guidelines</h1>
-  <p>Nine labs, one per module, plus a <strong>capstone</strong> that runs the whole loop end to end. Do the module labs <strong>after</strong> reading the matching module — each turns that module's idea into something on your machine, and they build on each other: Lab 1 finds problems in your steering files, Lab 4 fixes them, and so on. <strong>Lab 9</strong> ties it together: one feature from intent to reviewed code through every AI-DLC gate.</p>
-  <p><strong>What you need for most labs:</strong> the Kiro IDE installed and signed in, and one <em>real</em> project you know well (not an empty folder). Lab 0 needs no tooling; Lab 8 is best done with your team in the room; Lab 9 uses Claude Code and an empty directory — no Kiro IDE required.</p>
+  <p>Ten labs, one per module, plus a <strong>capstone</strong> that runs the whole loop end to end. Do the module labs <strong>after</strong> reading the matching module — each turns that module's idea into something on your machine, and they build on each other: Lab 1 finds problems in your steering files, Lab 4 fixes them, and so on. <strong>Lab 10</strong> ties it together: one feature from intent to reviewed code through every AI-DLC gate.</p>
+  <p><strong>What you need for most labs:</strong> the Kiro IDE installed and signed in, and one <em>real</em> project you know well (not an empty folder). Lab 0 needs no tooling; Lab 8 is best done with your team in the room; Lab 9 is a paper exercise against one real ticket — no tooling required; Lab 10 uses Claude Code and an empty directory — no Kiro IDE required.</p>
   <p>Tick a lab off when you finish — progress is saved in this browser and shows up on the <a href="index.html">home page</a> and next to each module in the <a href="course-en.html">course</a>.</p>
 
   <div class="lab-progress-bar">
     <div class="progress-head">
-      <span data-labs-progress><strong>Labs — 0 / 10 done</strong></span>
+      <span data-labs-progress><strong>Labs — 0 / 11 done</strong></span>
       <button type="button" class="btn btn-sm" data-labs-reset>Reset lab progress</button>
     </div>
   </div>
@@ -287,7 +287,35 @@
 
   <!-- LAB 9 -->
   <article class="lab-card" id="lab9">
-    <span class="lab-tag">Capstone · Lab 9</span>
+    <span class="lab-tag">Module 9 · Lab 9</span>
+    <h2>Map a real feature onto AIDLC Collaborative</h2>
+    <div class="lab-meta">
+      <span>⏱ <b>30–45 min</b></span>
+      <span>🔧 One real, recently-shipped or in-flight ticket · the platform's architecture and execution-model docs</span>
+      <span>🎯 Decide, on paper, whether a hosted multi-user engine is worth it for your team</span>
+    </div>
+    <h3>Steps</h3>
+    <ol>
+      <li>Pick one real feature or bugfix your team recently shipped, or has in flight, on your actual repo.</li>
+      <li>Read the platform's <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/concepts/architecture/" target="_blank" rel="noopener">architecture</a> and <a href="https://aws-samples.github.io/sample-collaborative-ai-dlc/concepts/execution/" target="_blank" rel="noopener">execution model</a> pages.</li>
+      <li>Sketch that ticket as an intent: what scope (<code>feature</code>/<code>bugfix</code>), what the prompt would say, which units of work it would split into, and where the two gates (fan-out approval, PR review) would land.</li>
+      <li>Decide a delivery mode for it — one PR from the whole intent, or one PR per unit — and say why.</li>
+      <li>Name one traceability question about that ticket your team's current <code>aidlc-docs/</code> markdown trail (Module 0) can't answer quickly, that a graph query could.</li>
+      <li>Write one paragraph: adopt, pilot on one repo, or skip for now — and the one thing that would change your answer (team size, AWS spend, repo count).</li>
+    </ol>
+    <h3>Expected result</h3>
+    <p>A short written go / pilot / no-go recommendation for your team, backed by the one real ticket you walked through — not a generic opinion about the platform.</p>
+    <h3>If you get stuck</h3>
+    <ul>
+      <li><strong>The ticket feels too small to fan out.</strong> Good data point — note that in your recommendation; not every ticket needs parallel units.</li>
+      <li><strong>You can't tell if the graph buys you anything.</strong> Compare it to the last time someone asked "what does this code implement" and you had to go read three files to answer.</li>
+    </ul>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab9"> I completed Lab 9</label></div>
+  </article>
+
+  <!-- LAB 10 (CAPSTONE) -->
+  <article class="lab-card" id="lab10">
+    <span class="lab-tag">Capstone · Lab 10</span>
     <h2>One feature end to end with AI-DLC + Claude Code</h2>
     <div class="lab-meta">
       <span>⏱ <b>60–90 min</b></span>
@@ -321,7 +349,7 @@
       <span class="label">Source</span>
       Based on Pravin Borate, <a href="https://pub.towardsai.net/ai-dlc-claude-code-the-end-of-vibe-coding-a-complete-hands-on-guide-7e6cf6e026a2" target="_blank" rel="noopener">"AI-DLC + Claude Code: The End of Vibe Coding — A Complete Hands-On Guide"</a> (Towards AI), run against <a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">awslabs/aidlc-workflows</a>.
     </div>
-    <div class="done-row"><label><input type="checkbox" data-lab-check="lab9"> I completed Lab 9</label></div>
+    <div class="done-row"><label><input type="checkbox" data-lab-check="lab10"> I completed Lab 10</label></div>
   </article>
 
   <div class="pager">

@@ -29,10 +29,10 @@
     }
   };
 
-  var MODULES_KEY = 'kiro-modules';   // ids: m0..m8
-  var LABS_KEY = 'kiro-labs';         // ids: lab0..lab8 + lab9 (capstone)
-  var TOTAL_MODULES = 9;
-  var TOTAL_LABS = 10;
+  var MODULES_KEY = 'kiro-modules';   // ids: m0..m9
+  var LABS_KEY = 'kiro-labs';         // ids: lab0..lab9 + lab10 (capstone)
+  var TOTAL_MODULES = 10;
+  var TOTAL_LABS = 11;
 
   var T = {
     en: {
