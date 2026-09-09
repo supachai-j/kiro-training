@@ -411,6 +411,12 @@ flowchart TD
       <figcaption>ทุกช่องทางขับ agent ตัวเดียวกัน; พฤติกรรมของ agent มาจาก <code>.kiro/</code> ที่ติดไปกับ repository</figcaption>
     </figure>
 
+    <h2>นอกเหนือจากโค้ด — Kiro CLI สำหรับงานออกแบบ</h2>
+    <p>agent แบบ spec-first ตัวเดียวกันนี้ไปโผล่นอกโค้ดแอปด้วย <a href="https://open-design.ai/agents/kiro-design/" target="_blank" rel="noopener"><strong>OpenDesign</strong></a> เวิร์กโฟลว์ออกแบบแบบ open-source, local-first ที่ห่อ Kiro CLI ไว้เป็น "first-party adapter" สำหรับแปลง visual reference ให้เป็น UI ที่ implement แล้ว — ใช้วินัยแบบ requirements → design → tasks เดียวกับในบทนี้ แค่เล็งไปที่ pixel แทน business logic</p>
+    <p>loop ของมัน: ป้อน screenshot ของ state ที่ต้องการ (desktop, mobile, หลาย scenario); มันเขียน spec และ design doc ให้รีวิว<em>ก่อน</em>จะ render อะไร; token และ convention ของ design system อยู่ในไฟล์ steering ทำให้ทุก run ตรงแบรนด์; แล้ว output ถูกตรวจในเบราว์เซอร์จริงข้าม breakpoint ทำซ้ำเทียบกับ reference hooks และ MCP ทำงานแบบเดียวกับตอนใช้กับโค้ด — automate ตอน save, เชื่อมเครื่องมือภายนอก</p>
+    <p>ข้อควรระวังหนึ่งข้อที่โปรเจกต์บอกตรง ๆ: <strong>"Kiro CLI ไม่มี taste ให้โดย default"</strong> ถ้าไม่มี design system และรูป reference ในไฟล์ steering output จะดูทั่วไป เวิร์กโฟลว์นี้ไม่ได้แทน design judgment — มันแค่ให้ judgment นั้นมีที่อยู่ถาวร แทนที่จะอยู่แค่ในประวัติแชต</p>
+    <div class="callout"><span class="label">ที่มา</span> <a href="https://open-design.ai/agents/kiro-design/" target="_blank" rel="noopener">open-design.ai/agents/kiro-design</a></div>
+
     <h2>ในทางปฏิบัติ — เริ่มใน IDE จบใน CI</h2>
     <div class="example">
       <span class="label">โจทย์: แก้บั๊กที่ CI เป็นคนตรวจ</span>

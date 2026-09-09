@@ -411,6 +411,12 @@ flowchart TD
       <figcaption>Every surface drives the same agent; the agent's behaviour comes from <code>.kiro/</code>, which travels with the repository.</figcaption>
     </figure>
 
+    <h2>Beyond code — Kiro CLI for design</h2>
+    <p>The same spec-first agent shows up outside application code too. <a href="https://open-design.ai/agents/kiro-design/" target="_blank" rel="noopener"><strong>OpenDesign</strong></a>, an open-source, local-first design workflow, wraps the Kiro CLI as a "first-party adapter" for turning visual references into implemented UI — the same requirements → design → tasks discipline from this module, aimed at pixels instead of business logic.</p>
+    <p>The loop: hand it screenshots of the states you want (desktop, mobile, a few scenarios); it writes a spec and design doc you review <em>before</em> anything renders; your design-system tokens and conventions live in a steering file so every run stays on-brand; and the output gets checked in a real browser across breakpoints, iterated against the references. Hooks and MCP work the same way they do for code — automate on save, connect an external tool.</p>
+    <p>One caveat the project is upfront about: <strong>"Kiro CLI does not have taste by default."</strong> Without a design system and reference images in the steering files, output is generic. The workflow doesn't replace design judgment — it gives that judgment somewhere durable to live, instead of a chat transcript.</p>
+    <div class="callout"><span class="label">Source</span> <a href="https://open-design.ai/agents/kiro-design/" target="_blank" rel="noopener">open-design.ai/agents/kiro-design</a>.</div>
+
     <h2>In practice — start in the IDE, finish in CI</h2>
     <div class="example">
       <span class="label">Scenario: a bug fix that CI verifies</span>
