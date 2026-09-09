@@ -242,6 +242,43 @@ flowchart TB
       <li><strong>State lives in plain files.</strong> The engine writes an <code>aidlc-docs/</code> folder with <code>aidlc-state.md</code> (session memory) and <code>audit.md</code> (a step-by-step trail). Because it's just files in the repo, you can start a bolt in one IDE and resume it in another — the agent reads the same state.</li>
     </ul>
 
+    <h2>Who does the work — the agent roster</h2>
+    <p>"14-agent roster" isn't a marketing number — eleven of them are named, domain-specific agents you'll see cited in stage tables throughout the engine's own docs; the rest of the count is the orchestrator, review-only agents, and an adaptive-workflow composer that proposes a custom stage grid for ambiguous requests.</p>
+    <table>
+      <tr><th>Agent</th><th>Domain</th></tr>
+      <tr><td>Product</td><td>Requirements, scope, user stories, market research</td></tr>
+      <tr><td>Design</td><td>UX/UI, wireframes, interaction design, accessibility</td></tr>
+      <tr><td>Delivery</td><td>Team formation, capacity planning, delivery sequencing</td></tr>
+      <tr><td>Architect</td><td>Domain design and modelling, NFRs, decomposition</td></tr>
+      <tr><td>AWS Platform</td><td>Infrastructure, IaC, FinOps, environment provisioning</td></tr>
+      <tr><td>Compliance</td><td>GRC, regulatory mapping, data classification, risk</td></tr>
+      <tr><td>DevSecOps</td><td>Threat modelling, security pipeline, secure design review</td></tr>
+      <tr><td>Developer</td><td>Code generation, reverse engineering, implementation guidance</td></tr>
+      <tr><td>Quality</td><td>Test strategy, acceptance criteria, performance validation</td></tr>
+      <tr><td>Pipeline &amp; Deploy</td><td>CI/CD pipelines, deployment strategy, release execution</td></tr>
+      <tr><td>Operations</td><td>Observability, incident response, feedback loops</td></tr>
+    </table>
+    <p>Most stages have a <strong>lead</strong> agent and one or more <strong>supporting</strong> agents — Domain Design in Inception is led by Architect with AWS Platform and Design supporting; Build and Test in Construction is led by Quality with DevSecOps supporting. The 33 stages aren't one generalist agent working alone 33 times — they're a roster handing off, the same "streamline roles, minimise hand-offs" principle from earlier in this module, made literal.</p>
+
+    <h2>Named scopes, not just a slider</h2>
+    <p>"Stage selection is binary" undersells it — the engine ships <strong>eleven named scopes</strong>, each a pre-picked stage set plus a default depth and test-strategy level, so "run the lightweight path" is a word, not a manual checklist:</p>
+    <table>
+      <tr><th>Scope</th><th>Stages</th><th>For</th></tr>
+      <tr><td><code>poc</code></td><td>8</td><td>Rapid feasibility check — skips ideation and most design</td></tr>
+      <tr><td><code>bugfix</code></td><td>9</td><td>A specific, known-cause defect</td></tr>
+      <tr><td><code>express</code></td><td>10</td><td>Lightweight requirements-to-conditional-deploy path</td></tr>
+      <tr><td><code>refactor</code></td><td>10</td><td>Code cleanup, no behaviour change</td></tr>
+      <tr><td><code>security-patch</code></td><td>10</td><td>CVE response, accelerated security review</td></tr>
+      <tr><td><code>infra</code></td><td>13</td><td>Infrastructure / deployment focus, no user-facing design</td></tr>
+      <tr><td><code>classic</code></td><td>26</td><td>v1-style lifecycle, explicitly skips ideation</td></tr>
+      <tr><td><code>workshop</code></td><td>26</td><td>Teaching-oriented, minimal test floor</td></tr>
+      <tr><td><code>mvp</code></td><td>23</td><td>Greenfield build, skips all 7 operational stages</td></tr>
+      <tr><td><code>feature</code></td><td>33</td><td>The standard full lifecycle</td></tr>
+      <tr><td><code>enterprise</code></td><td>33</td><td>Full lifecycle plus mandatory audit trail and compliance review</td></tr>
+    </table>
+    <p>Depth (<em>Minimal / Standard / Comprehensive</em>) and test strategy are separate dials layered on top of whichever scope you pick — a <code>workshop</code>-scoped run defaults to Standard-depth artifacts but Minimal testing, deliberately, because the point is teaching the shape of the process, not shipping production coverage. Don't know the scope? Say what you're doing in plain language — keywords like "fix", "refactor", "poc" auto-select one — or describe something genuinely novel and the <strong>Adaptive Composer</strong> estimates the task's complexity and proposes a custom grid with stage-by-stage reasoning before anything runs.</p>
+    <div class="callout"><span class="label">Source</span> <a href="https://awslabs.github.io/aidlc-workflows/" target="_blank" rel="noopener">awslabs.github.io/aidlc-workflows</a> — the engine's own user guide (Agents, Phases and Stages, Scopes and Depth).</div>
+
     <h2>Where Kiro fits</h2>
     <p>Keep three levels straight:</p>
     <ul>
@@ -319,6 +356,7 @@ flowchart TB
       <li>Raja SP, <a href="https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/" target="_blank" rel="noopener">"AI-Driven Development Lifecycle (AI-DLC)"</a>, AWS DevOps Blog, 31 Jul 2025 — the founding description and method definition.</li>
       <li>Will Matos, Raj Jain, Siddhesh Jog, Raja SP, <a href="https://aws.amazon.com/blogs/devops/building-with-ai-dlc-using-amazon-q-developer/" target="_blank" rel="noopener">"Building with AI-DLC using Amazon Q Developer"</a>, AWS DevOps Blog, 29 Nov 2025 — a concrete end-to-end walkthrough (also notes the Kiro CLI runs AI-DLC with no extra setup).</li>
       <li><a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">awslabs/aidlc-workflows</a> — AWS Labs' open-source AI-DLC workflow engine for coding agents (MIT-0 licence); the principles and gates are encoded here.</li>
+      <li><a href="https://awslabs.github.io/aidlc-workflows/" target="_blank" rel="noopener">awslabs.github.io/aidlc-workflows</a> — the engine's own documentation site: the full 5-phase / 33-stage breakdown, the 11 domain agents, the 11 named scopes, the rules and learning-loop mechanics, and per-harness setup notes.</li>
       <li><a href="https://ai-dlc.dev/" target="_blank" rel="noopener">ai-dlc.dev</a> — community reference site for the methodology and its principles.</li>
       <li><a href="https://dev.to/aws-heroes/why-ai-dlc-exists-reimagining-software-development-in-an-ai-first-world-4f20" target="_blank" rel="noopener">"Why AI-DLC Exists: Reimagining Software Development in an AI-First World"</a>, DEV / AWS Heroes — walks through the founding principles.</li>
       <li><a href="https://aws.amazon.com/blogs/devops/open-sourcing-adaptive-workflows-for-ai-driven-development-life-cycle-ai-dlc/" target="_blank" rel="noopener">"Open-Sourcing Adaptive Workflows for AI-DLC"</a>, AWS DevOps Blog — the 3 challenges (one-size-fits-all, fixed depth, over-automation), Principle 10, and the adaptive engine.</li>
@@ -793,6 +831,12 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
       <li><strong>A learning loop.</strong> When you correct the agent, that correction can be captured as a persistent rule, so the same mistake doesn't come back next session.</li>
     </ul>
 
+    <h2>The learning loop, mechanically</h2>
+    <p>"A learning loop" is easy to say and vague to picture. AWS's open-source engine (Module 0, Module 9's terminology table) implements it as four concrete moments — worth studying even if your team only ever uses Kiro's own steering files, because it's the clearest picture of what "capture a correction as a rule" actually means underneath.</p>
+    <p>Rules live as plain markdown across four files, resolved <strong>strict-additive</strong> — <code>org.md → team.md → project.md → phases/*.md</code> — so "every applicable rule appears in the agent's context; nothing is silently dropped or overridden at runtime." Corrections don't edit those files directly. During a run, observations pile up in a per-stage <code>memory.md</code> diary under four headings — <em>Interpretations, Deviations, Tradeoffs, Open questions</em>. At the next approval gate, the framework surfaces those diary entries plus anything you type, checks each candidate against <code>org.md</code> for conflicts, and only on your confirmation installs it into <code>project.md</code> — with a one-click option to promote it further to <code>team.md</code>.</p>
+    <p>The detail worth remembering for Module 8's governance discussion: <strong>"a learning captured at one gate does not change the rules for the rest of the current workflow."</strong> Rules are compiled once at the start of a run and held fixed for reproducibility — a correction protects the <em>next</em> bolt, not a mid-flight rewrite of the one you're in.</p>
+    <div class="callout"><span class="label">Source</span> <a href="https://awslabs.github.io/aidlc-workflows/guide/09-rules-and-the-learning-loop/" target="_blank" rel="noopener">awslabs.github.io/aidlc-workflows — Rules & the Learning Loop</a>.</div>
+
     <h2>Which mode? — a decision tree</h2>
     <figure class="diagram">
 <pre class="mermaid">
@@ -1191,6 +1235,19 @@ HTTP endpoint"]
       <tr><td>The rule / steering content. The workflow artifacts in <code>aidlc-docs/</code> (requirements, design, plans, state).</td><td>Where the rules file lives: <code>.kiro/steering/</code>, <code>.cursor/rules/</code>, <code>.amazonq/rules/</code>, <code>.github/copilot-instructions.md</code>, <code>CLAUDE.md</code>. Plus the hooks / permissions / sub-agent adapter for that host.</td></tr>
     </table>
     <p>Practical upshot: teammates can be on different tools on the same project. Dev A in Cursor, Dev B in Claude Code, Dev C in Amazon Q — they all read and write the same <code>aidlc-docs/aidlc-state.md</code>, and a bolt started in one IDE resumes in another. A private Power you package for your team travels the same way. Every harness here is single-developer and infrastructure-free; <a href="#m9">Module 9</a> covers AWS's other AI-DLC reference implementation — a hosted, multi-user platform that takes the opposite trade.</p>
+
+    <h2>Getting a harness actually installed</h2>
+    <p>Each harness has its own minimum bar before the engine runs on it — worth checking before you promise a teammate "just install it":</p>
+    <table>
+      <tr><th>Harness</th><th>Requirement</th></tr>
+      <tr><td>Claude Code</td><td>Primary harness — documented first throughout the engine's own guide</td></tr>
+      <tr><td>Kiro IDE / CLI</td><td>Claude Opus 4.8 and a paid Kiro plan</td></tr>
+      <tr><td>Codex CLI</td><td>v0.145.0+, and a git repository (hooks are discovered from it)</td></tr>
+      <tr><td>Cursor</td><td>One install covers IDE and CLI; uses Cursor's native sub-agents</td></tr>
+      <tr><td>opencode</td><td>v1.17+; config splits across <code>.aidlc/</code> and <code>.opencode/</code></td></tr>
+      <tr><td>GitHub Copilot</td><td>CLI v1.0.74+ and VS Code v1.130+</td></tr>
+    </table>
+    <p>Install itself is one checksum-verified native installer (macOS, Linux, WSL, Windows — <code>install.ps1</code> on Windows) bundling every harness runtime, followed by <code>aidlc config</code>. The engine's own docs put the harness-neutral claim plainly: <strong>"the methodology — the phases and stages, the agents, the scopes, the approval gates — is identical on every harness."</strong> What varies is only "how gates render, how subagents are dispatched, which session events fire, where config lives."</p>
 
     <h2>How intelligent loading decides</h2>
     <figure class="diagram">

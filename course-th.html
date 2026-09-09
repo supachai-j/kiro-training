@@ -242,6 +242,43 @@ flowchart TB
       <li><strong>state อยู่ในไฟล์ธรรมดา</strong> engine เขียนโฟลเดอร์ <code>aidlc-docs/</code> ที่มี <code>aidlc-state.md</code> (ความจำ session) และ <code>audit.md</code> (ร่องรอยทีละขั้น) เพราะเป็นแค่ไฟล์ใน repo คุณเริ่ม bolt ใน IDE หนึ่งแล้วทำต่อในอีก IDE ได้ — agent อ่าน state เดียวกัน</li>
     </ul>
 
+    <h2>ใครทำงานบ้าง — agent roster</h2>
+    <p>"agent 14 ตัว" ไม่ใช่ตัวเลขทางการตลาด — สิบเอ็ดตัวเป็น agent เฉพาะด้านที่มีชื่อ ปรากฏอยู่ในตาราง stage ทั่วเอกสารของ engine เอง ที่เหลือคือ orchestrator, agent แบบ review-only และ adaptive-workflow composer ที่เสนอ stage grid แบบ custom ให้กับ request ที่กำกวม</p>
+    <table>
+      <tr><th>Agent</th><th>ด้านที่รับผิดชอบ</th></tr>
+      <tr><td>Product</td><td>Requirements, scope, user stories, market research</td></tr>
+      <tr><td>Design</td><td>UX/UI, wireframe, interaction design, accessibility</td></tr>
+      <tr><td>Delivery</td><td>การจัดทีม, capacity planning, ลำดับการส่งมอบ</td></tr>
+      <tr><td>Architect</td><td>Domain design และ modelling, NFR, การแตก decomposition</td></tr>
+      <tr><td>AWS Platform</td><td>Infrastructure, IaC, FinOps, การจัดเตรียม environment</td></tr>
+      <tr><td>Compliance</td><td>GRC, regulatory mapping, data classification, risk</td></tr>
+      <tr><td>DevSecOps</td><td>Threat modelling, security pipeline, secure design review</td></tr>
+      <tr><td>Developer</td><td>สร้างโค้ด, reverse engineering, แนะแนวการ implement</td></tr>
+      <tr><td>Quality</td><td>test strategy, acceptance criteria, performance validation</td></tr>
+      <tr><td>Pipeline &amp; Deploy</td><td>CI/CD, deployment strategy, การ release</td></tr>
+      <tr><td>Operations</td><td>Observability, incident response, feedback loop</td></tr>
+    </table>
+    <p>stage ส่วนใหญ่มี agent <strong>lead</strong> หนึ่งตัวและ agent <strong>supporting</strong> อีกอย่างน้อยหนึ่งตัว — Domain Design ใน Inception นำโดย Architect มี AWS Platform และ Design ช่วย; Build and Test ใน Construction นำโดย Quality มี DevSecOps ช่วย 33 stage ไม่ใช่ agent generalist ตัวเดียวทำงานคนเดียวซ้ำ 33 รอบ — มันคือ roster ที่ส่งไม้ต่อกัน หลักการ "streamline roles ลด hand-off" ที่พูดไปก่อนหน้าในบทนี้ ทำให้เห็นเป็นรูปธรรม</p>
+
+    <h2>scope ที่มีชื่อ ไม่ใช่แค่ตัวเลื่อน</h2>
+    <p>"การเลือก stage เป็นแบบ binary" พูดน้อยไป — engine มี <strong>scope ที่ตั้งชื่อไว้ 11 แบบ</strong> แต่ละอันคือชุด stage ที่เลือกไว้ล่วงหน้าบวก depth และ test-strategy ระดับ default ทำให้ "รันเส้นทางแบบเบา" เป็นแค่คำเดียว ไม่ใช่ checklist ที่ต้องเลือกเอง:</p>
+    <table>
+      <tr><th>Scope</th><th>จำนวน stage</th><th>ใช้เมื่อ</th></tr>
+      <tr><td><code>poc</code></td><td>8</td><td>เช็ค feasibility เร็ว ๆ — ข้าม ideation และ design ส่วนใหญ่</td></tr>
+      <tr><td><code>bugfix</code></td><td>9</td><td>defect เฉพาะที่รู้สาเหตุ</td></tr>
+      <tr><td><code>express</code></td><td>10</td><td>เส้นทาง requirements ไป deploy แบบมีเงื่อนไข น้ำหนักเบา</td></tr>
+      <tr><td><code>refactor</code></td><td>10</td><td>เก็บกวาดโค้ด ไม่เปลี่ยนพฤติกรรม</td></tr>
+      <tr><td><code>security-patch</code></td><td>10</td><td>ตอบสนอง CVE รีวิวความปลอดภัยแบบเร่ง</td></tr>
+      <tr><td><code>infra</code></td><td>13</td><td>เน้น infrastructure/deployment ไม่มี design ที่ผู้ใช้เห็น</td></tr>
+      <tr><td><code>classic</code></td><td>26</td><td>lifecycle สไตล์ v1 ข้าม ideation ชัดเจน</td></tr>
+      <tr><td><code>workshop</code></td><td>26</td><td>เน้นสอน มี test floor ต่ำสุด</td></tr>
+      <tr><td><code>mvp</code></td><td>23</td><td>สร้างแบบ greenfield ข้าม operational stage ทั้ง 7</td></tr>
+      <tr><td><code>feature</code></td><td>33</td><td>lifecycle เต็มมาตรฐาน</td></tr>
+      <tr><td><code>enterprise</code></td><td>33</td><td>lifecycle เต็ม บวก audit trail และ compliance review บังคับ</td></tr>
+    </table>
+    <p>depth (<em>Minimal / Standard / Comprehensive</em>) และ test strategy เป็นปุ่มแยกที่วางทับบน scope ที่เลือก — run ที่ scope เป็น <code>workshop</code> ค่า default คือ artifact แบบ Standard-depth แต่ test แบบ Minimal โดยตั้งใจ เพราะจุดประสงค์คือสอนรูปร่างของ process ไม่ใช่ ship coverage ระดับ production ไม่รู้จะใช้ scope ไหน? บอกสิ่งที่กำลังทำเป็นภาษาธรรมดา — คำอย่าง "fix", "refactor", "poc" เลือก scope ให้อัตโนมัติ — หรืออธิบายงานที่แปลกใหม่จริง ๆ แล้ว <strong>Adaptive Composer</strong> จะประเมินความซับซ้อนของงานแล้วเสนอ grid แบบ custom พร้อมเหตุผลทีละ stage ก่อนจะรันอะไร</p>
+    <div class="callout"><span class="label">ที่มา</span> <a href="https://awslabs.github.io/aidlc-workflows/" target="_blank" rel="noopener">awslabs.github.io/aidlc-workflows</a> — user guide ของ engine เอง (Agents, Phases and Stages, Scopes and Depth)</div>
+
     <h2>Kiro อยู่ตรงไหน</h2>
     <p>แยกสามระดับให้ชัด:</p>
     <ul>
@@ -319,6 +356,7 @@ flowchart TB
       <li>Raja SP, <a href="https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/" target="_blank" rel="noopener">"AI-Driven Development Lifecycle (AI-DLC)"</a>, AWS DevOps Blog, 31 ก.ค. 2025 — คำอธิบายก่อตั้งและนิยาม method</li>
       <li>Will Matos, Raj Jain, Siddhesh Jog, Raja SP, <a href="https://aws.amazon.com/blogs/devops/building-with-ai-dlc-using-amazon-q-developer/" target="_blank" rel="noopener">"Building with AI-DLC using Amazon Q Developer"</a>, AWS DevOps Blog, 29 พ.ย. 2025 — เดินตัวอย่าง end-to-end (ระบุด้วยว่า Kiro CLI รัน AI-DLC ได้โดยไม่ต้องตั้งค่าเพิ่ม)</li>
       <li><a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">awslabs/aidlc-workflows</a> — workflow engine AI-DLC แบบโอเพนซอร์สของ AWS Labs สำหรับ coding agents (สัญญาอนุญาต MIT-0); หลักการและด่านตรวจถูกเข้ารหัสไว้ในนี้</li>
+      <li><a href="https://awslabs.github.io/aidlc-workflows/" target="_blank" rel="noopener">awslabs.github.io/aidlc-workflows</a> — เว็บเอกสารของ engine เอง: รายละเอียดเต็มของ 5 เฟส / 33 stage, agent เฉพาะด้าน 11 ตัว, scope ที่ตั้งชื่อไว้ 11 แบบ, กลไก rules กับ learning loop และหมายเหตุการติดตั้งต่อ harness</li>
       <li><a href="https://ai-dlc.dev/" target="_blank" rel="noopener">ai-dlc.dev</a> — เว็บอ้างอิงของชุมชนสำหรับ methodology และหลักการของมัน</li>
       <li><a href="https://dev.to/aws-heroes/why-ai-dlc-exists-reimagining-software-development-in-an-ai-first-world-4f20" target="_blank" rel="noopener">"Why AI-DLC Exists: Reimagining Software Development in an AI-First World"</a>, DEV / AWS Heroes — เดินผ่านหลักการก่อตั้ง</li>
       <li><a href="https://aws.amazon.com/blogs/devops/open-sourcing-adaptive-workflows-for-ai-driven-development-life-cycle-ai-dlc/" target="_blank" rel="noopener">"Open-Sourcing Adaptive Workflows for AI-DLC"</a>, AWS DevOps Blog — 3 ความท้าทาย (one-size-fits-all, depth ตายตัว, over-automation), หลักการข้อ 10 และ engine แบบ adaptive</li>
@@ -791,6 +829,12 @@ Match the component pattern in #[[file:components/ui/button.tsx]]</code></pre>
       <li><strong>learning loop</strong> เมื่อคุณแก้ agent การแก้นั้นถูกเก็บเป็นกฎถาวรได้ ความผิดเดิมจะได้ไม่กลับมาใน session ถัดไป</li>
     </ul>
 
+    <h2>learning loop ในเชิงกลไก</h2>
+    <p>"learning loop" พูดง่าย แต่นึกภาพยาก engine โอเพนซอร์สของ AWS (บทที่ 0, ตารางคำศัพท์ของบทที่ 9) ทำมันเป็นสี่ moment ที่จับต้องได้ — ควรศึกษาไว้แม้ทีมคุณจะใช้แค่ steering file ของ Kiro เอง เพราะมันคือภาพที่ชัดที่สุดว่า "เก็บการแก้เป็นกฎ" หมายความว่าอะไรจริง ๆ</p>
+    <p>rule อยู่เป็น markdown ธรรมดาข้ามสี่ไฟล์ resolve แบบ <strong>strict-additive</strong> — <code>org.md → team.md → project.md → phases/*.md</code> — ทำให้ "rule ที่เกี่ยวข้องทุกอันปรากฏใน context ของ agent ไม่มีอะไรถูกดร็อปหรือ override แบบเงียบ ๆ ตอน runtime" การแก้ไม่ได้แก้ไฟล์พวกนั้นตรง ๆ ระหว่าง run ข้อสังเกตจะสะสมใน diary <code>memory.md</code> ต่อ stage ภายใต้สี่หัวข้อ — <em>Interpretations, Deviations, Tradeoffs, Open questions</em> ที่ gate อนุมัติถัดไป framework จะเอา diary entry พวกนั้นบวกกับสิ่งที่คุณพิมพ์มาโชว์ เช็คแต่ละตัวกับ <code>org.md</code> ว่ามีความขัดแย้งไหม แล้วเมื่อคุณยืนยันเท่านั้นถึงติดตั้งลง <code>project.md</code> — พร้อมตัวเลือก promote ต่อไปยัง <code>team.md</code> ในคลิกเดียว</p>
+    <p>รายละเอียดที่ควรจำไว้สำหรับการคุยเรื่อง governance ในบทที่ 8: <strong>"learning ที่จับได้ที่ gate หนึ่งไม่เปลี่ยน rule สำหรับส่วนที่เหลือของ workflow ปัจจุบัน"</strong> rule ถูกคอมไพล์ครั้งเดียวตอนเริ่ม run แล้วตรึงไว้เพื่อ reproducibility — การแก้ปกป้อง bolt <em>ถัดไป</em> ไม่ใช่เขียน bolt ที่กำลังทำอยู่ใหม่กลางทาง</p>
+    <div class="callout"><span class="label">ที่มา</span> <a href="https://awslabs.github.io/aidlc-workflows/guide/09-rules-and-the-learning-loop/" target="_blank" rel="noopener">awslabs.github.io/aidlc-workflows — Rules & the Learning Loop</a></div>
+
     <h2>เลือกโหมดไหน — decision tree</h2>
     <figure class="diagram">
 <pre class="mermaid">
@@ -1188,6 +1232,19 @@ HTTP endpoint"]
       <tr><td>เนื้อหาของ rule / steering และ workflow artifacts ใน <code>aidlc-docs/</code> (requirements, design, plans, state)</td><td>ที่อยู่ของ rules file: <code>.kiro/steering/</code>, <code>.cursor/rules/</code>, <code>.amazonq/rules/</code>, <code>.github/copilot-instructions.md</code>, <code>CLAUDE.md</code> บวก hooks / permissions / sub-agent adapter ของ host นั้น</td></tr>
     </table>
     <p>ผลในทางปฏิบัติ: เพื่อนร่วมทีมใช้เครื่องมือคนละตัวบนโปรเจกต์เดียวกันได้ Dev A ใน Cursor, Dev B ใน Claude Code, Dev C ใน Amazon Q — ทุกคนอ่านและเขียน <code>aidlc-docs/aidlc-state.md</code> เดียวกัน และ bolt ที่เริ่มใน IDE หนึ่งทำต่อในอีก IDE ได้ Power ส่วนตัวที่คุณแพ็กให้ทีมก็เดินทางแบบเดียวกัน harness ทุกตัวในนี้เป็นของนักพัฒนาคนเดียวและไม่ต้องมี infrastructure — <a href="#m9">บทที่ 9</a> พูดถึง reference implementation อีกตัวของ AI-DLC จาก AWS ซึ่งเป็นแพลตฟอร์ม hosted แบบหลายผู้ใช้ที่เลือกสวนทาง</p>
+
+    <h2>ติดตั้ง harness ให้ใช้งานได้จริง</h2>
+    <p>แต่ละ harness มีเกณฑ์ขั้นต่ำของตัวเองก่อน engine จะรันได้ — ควรเช็คก่อนไปสัญญาเพื่อนร่วมทีมว่า "แค่ติดตั้งก็จบ":</p>
+    <table>
+      <tr><th>Harness</th><th>ข้อกำหนด</th></tr>
+      <tr><td>Claude Code</td><td>harness หลัก — เอกสารของ engine พูดถึงเป็นตัวแรกทั่วทั้งคู่มือ</td></tr>
+      <tr><td>Kiro IDE / CLI</td><td>ต้องใช้ Claude Opus 4.8 และแผน Kiro แบบเสียเงิน</td></tr>
+      <tr><td>Codex CLI</td><td>v0.145.0 ขึ้นไป และต้องมี git repository (hook ถูกค้นหาจากมัน)</td></tr>
+      <tr><td>Cursor</td><td>ติดตั้งครั้งเดียวครอบทั้ง IDE และ CLI ใช้ sub-agent ของ Cursor เอง</td></tr>
+      <tr><td>opencode</td><td>v1.17 ขึ้นไป; config แยกเป็น <code>.aidlc/</code> กับ <code>.opencode/</code></td></tr>
+      <tr><td>GitHub Copilot</td><td>CLI v1.0.74 ขึ้นไป และ VS Code v1.130 ขึ้นไป</td></tr>
+    </table>
+    <p>การติดตั้งเองเป็น native installer แบบ checksum-verified ตัวเดียว (macOS, Linux, WSL, Windows — <code>install.ps1</code> บน Windows) ที่รวม runtime ของทุก harness ไว้ ตามด้วย <code>aidlc config</code> เอกสารของ engine เองพูดเรื่อง harness-neutral ไว้ตรง ๆ: <strong>"methodology — phase และ stage, agent, scope, gate อนุมัติ — เหมือนกันทุก harness"</strong> สิ่งที่ต่างมีแค่ "gate render ยังไง, sub-agent ถูก dispatch ยังไง, session event ไหนยิง, config อยู่ที่ไหน"</p>
 
     <h2>intelligent loading ตัดสินใจยังไง</h2>
     <figure class="diagram">
